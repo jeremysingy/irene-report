@@ -1,0 +1,44 @@
+% Configuration for the listings package
+
+% General listings formatting
+\lstset
+{
+    basicstyle=\footnotesize\ttfamily,
+    keywordstyle=\color{blue}, %keywordstyle=\color{MidnightBlue}\bfseries,
+    %identifierstyle=\color{MidnightBlue},
+    commentstyle=\color{OliveGreen},
+    stringstyle=\color{BrickRed},
+    numbers=left,
+    numberstyle=\color{Gray}\tiny,
+    frame=bt, %frame=single,
+    rulecolor=\color{Gray},
+    numbersep=7pt,
+    extendedchars=true,
+    captionpos=b,
+    breaklines=true,
+    showspaces=false,
+    showtabs=false,
+    tabsize=4, 
+    xleftmargin=20pt,
+    framexleftmargin=20pt,
+    framexrightmargin=0pt,
+    framextopmargin=0pt,
+    framexbottommargin=0pt,
+    showstringspaces=false,
+    aboveskip=20pt,
+    belowskip=20pt
+}
+
+% Custom captions
+%\DeclareCaptionFont{white}{\color{white}}
+%\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
+%\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+
+% To add keywords
+%\lstset{emph={%  
+%    uchar, uint, int2, int3, int4, by%
+%    },emphstyle={\color{blue}}%
+%}%
+
+% Preload used languages
+\lstloadlanguages{C++,xml}

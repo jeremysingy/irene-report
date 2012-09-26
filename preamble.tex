@@ -1,0 +1,104 @@
+%------------------------------------------------
+% Main configuration and package imports
+%------------------------------------------------
+
+% Document class and metrics
+\documentclass[a4paper,twoside,11pt]{report}
+
+% Custom margins
+%\usepackage[cm]{fullpage} % Simple thiner margins
+%\usepackage[top=2cm, bottom=2cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage[left=3cm, right=3cm]{geometry}
+
+% Don't indent paragraphs, instead separate them
+%\usepackage[parfill]{parskip}
+
+% Encoding and internationalization
+\usepackage[francais,english]{babel}
+\usepackage[utf8x]{inputenc}
+%\usepackage[ansinew]{inputenc} % Windows specific encoding
+%\usepackage[latin1]{inputenc} % Linux specific encoding
+\usepackage{ucs}
+\usepackage[T1]{fontenc}
+
+% Extra symbols (euro, celsius, ...)
+\usepackage{textcomp}
+
+% Math and numerical support
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{numprint}
+\usepackage{siunitx} % Proper SI units handling
+
+% Figures, tables and graphics
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption} % Subfigures / subtables
+
+% Listings handling
+\usepackage{listings}
+\usepackage{courier}
+
+% Add bibliography and lists of xx to the TOC
+\usepackage[nottoc]{tocbibind}
+
+\renewcommand{\lstlistingname}{List of Listings}
+\renewcommand{\lstlistoflistings}
+{
+\begingroup
+    \tocfile{\lstlistingname}{lol}
+\endgroup
+}
+
+% Advanced appendicies support
+\usepackage[toc,page]{appendix}
+
+% Support for internal links
+\usepackage{hyperref}
+%\usepackage{breakurl} % Fix hyperref line-breaks problem (only with plain old latex compiler)
+
+% Advanced headers options
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% Advanced arrays features
+\usepackage{array}
+\usepackage{supertabular}
+\usepackage{multirow}
+
+% Glossary support
+%\usepackage[xindy][toc]{glossaries}
+\usepackage[toc]{glossaries}
+\makeglossaries
+
+% Cut words even with texttt font
+\usepackage[htt]{hyphenat}
+%\newcommand\texttthyph[1]{\begingroup\ttfamily\hyphenchar\font`\-\relax#1\endgroup} % old version
+%TODO see also to change the sign
+
+%------------------------------------------------
+% Custom LaTeX commands
+%------------------------------------------------
+
+% Set the document title
+\newcommand{\doctitle}{notitle}
+\newcommand{\setdoctitle}[1]
+{
+    \renewcommand{\doctitle}{#1}
+}
+
+% Set the author name
+\newcommand{\authorname}{noname}
+\newcommand{\setauthor}[2]
+{
+    \renewcommand{\authorname}{#1~\textsc{#2}}
+}
+
+% Clear double page working in one-sided mode
+\newcommand{\cleardoublepageoneside}
+{
+    \newpage
+    \thispagestyle{empty}
+    \strut
+    \newpage
+}

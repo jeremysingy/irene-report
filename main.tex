@@ -1,0 +1,67 @@
+%------------------------------------------------
+% Main LaTeX file for the Master Thesis report
+%
+% Author: Jérémy Singy
+%------------------------------------------------
+
+\input{preamble}
+
+% General information
+\setdoctitle{Cracked records with 3D/IRENE}
+\setauthor{Jérémy}{Singy}
+
+% Import external configurations
+\input{config/headers}
+\input{config/hyperref}
+\input{config/listings}
+
+% Import glossary entries
+\input{content/glossary}
+
+\begin{document}
+
+% Title page is followed by a blank page
+\input{title}
+\maketitle
+\cleardoublepageoneside
+%\cleardoublepage
+
+%TODO use for front matter
+%\pagestyle{plain} % No headers, just page numbers
+%\pagenumbering{roman} % Roman numerals
+
+% Table of contents
+\setlength{\headheight}{44.5pt}
+
+% Display header of the TOC to lowercase
+\fancyhead[RO]{\nouppercase\rightmark}
+
+% Include the abstract
+\input{content/abstract}
+
+% Reset the page counter and display the TOC
+\setcounter{page}{1}
+\tableofcontents
+
+% Include the actual report content
+\input{content/chapters.tex}
+
+% Glossary
+\printglossaries
+
+% List of figures, tables and listings
+%TODO put just after TOC
+\listoffigures
+\listoftables
+\lstlistoflistings
+
+% Bibliography
+\bibliographystyle{plain}
+\bibliography{content/bibliography}
+
+\appendix
+
+% Include the appendicies
+\input{content/appendicies.tex}
+
+\end{document}
