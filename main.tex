@@ -22,6 +22,7 @@
 
 % Title page is followed by a blank page
 \input{title}
+\pagenumbering{alph} % Avoid the problem with glossary hyperrefs
 \maketitle
 \cleardoublepageoneside
 %\cleardoublepage
@@ -36,10 +37,11 @@
 % Display header of the TOC to lowercase
 \fancyhead[RO]{\nouppercase\rightmark}
 
-% Include the abstract
-\input{content/abstract}
+%TODO Include the abstract
+%\input{content/abstract}
 
 % Reset the page counter and display the TOC
+\pagenumbering{arabic}
 \setcounter{page}{1}
 \tableofcontents
 
