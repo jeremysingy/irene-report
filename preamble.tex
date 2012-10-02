@@ -76,6 +76,14 @@
 %\newcommand\texttthyph[1]{\begingroup\ttfamily\hyphenchar\font`\-\relax#1\endgroup} % old version
 %TODO see also to change the sign
 
+% Leave out page numbers on empty pages
+\let\origdoublepage\cleardoublepage
+\renewcommand{\cleardoublepage}{%
+    \clearpage
+    {\pagestyle{empty}\origdoublepage}%
+}
+
+
 %------------------------------------------------
 % Custom LaTeX commands
 %------------------------------------------------

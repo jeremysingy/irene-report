@@ -4,23 +4,32 @@
 
 \section{Context}
 
-%IRENE and PRISM
-For several years, Carl Haber and his team have been working on the sound recovery of old mechanical records. They developed two different systems able to extract the sound without any physical contact, using optical methods. This is an important characteristic as a lot of old records are fragile and could be damaged when read from with a mechanical system.
+For several years, Carl Haber and his team at Lawrence Berkeley National Laboratory (\gls{lbnl}) have been working on the sound recovery of old mechanical records. They developed two different systems able to extract the sound without any physical contact, using optical methods. These are capable to process many different types of mediums, from early Edison records to vinyl discs, including shellac or lacquer composed discs and others.
 
-The first system is called \gls{irene}.
+Nowadays, a lot of unique and historical records remain in archives from different libraries and museums. They contain some important historical and cultural recordings but as they are aging and deteriorated, it is too delicate to play them with a normal mechanical phonograph. Non-contact feature of optical methods is then important.
 
-The second TODO.
+The first developed system is called \gls{irene}. It enables to extract the sound using digitized images of the disc. The corresponding program that processes the extraction from the acquisition step is called \gls{rene}.
 
-The aim of this Master thesis is to find ways to read correctly different kinds of degraded records with the solutions developed at LBNL by Carl Haber and his team.
+The second one, \gls{3dprobe}, uses a special probe able to measure the real depth at each position of the scanned record. This gives the best results for certain types of records as the cylinders.
 
-For example, cracked discs is a frequent defect, when the lacquer coating shrinks as the disc is getting old. This causes the groove traces to be separated and makes it difficult for the programs to track them.
+Meanwhile in Switzerland, at the College of Engineering and Architecture of Fribourg, a project called VisualAudio has been developed. It also enables to extract the sound using non-contact optical scanning in a similar manner as \gls{irene}, but it applies not to experimental records such as cylinders.
 
-TODO end.
+\section{Project goals}
 
-% Glossary words test: the \gls{gui} is very useful for \gls{irene}.
+%Old records can suffer from degradations. One of the most common is known as ``cracked discs''. This problem appears when the lacquer coating shrinks as the disk is getting older. This causes cracks where the underneath hard support is visible, as seen in \autoref{fig:crackeddisc}.
+%
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.7\textwidth]{images/cracked-disc}
+%\caption{An example of cracked disc.}
+%\label{fig:crackeddisc}
+%\end{figure}
 
-%\section{Project goals}
-%TODO
+Up to now, \gls{irene} and \gls{3dprobe} cannot automatically process these damaged records, because the groove traces are sometimes widely separated and may be shifted from each other. Though a special feature is implemented, enabling the user to manually track the traces, it is not a perfect tool for practical use. Moreover, even with such a feature, it could be really difficult to visually find the correct shifting when the traces look similar.
+
+The aim of this Master's thesis is to find ways to read correctly these kinds of degraded records with the solutions developed at LBNL by Carl Haber and his team. In a first step, an improvement of the manual tracking will be implemented. It is still useful to keep it for some cases, e.g for special early recordings or when a disc is heavily cracked.
+
+Then, the next step will be to design and implement a tracking feature able to process cracked records and link their traces automatically. VisualAudio implements already such a feature. It can then be taken as an example, though it is obviously not possible to directly use its implementation, due to the differences between the systems.
 
 %\section{Report structure}
 
