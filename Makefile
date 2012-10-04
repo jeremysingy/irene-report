@@ -20,7 +20,7 @@ $(REPORT).pdf:
 #	latexmk -jobname=$(REPORT) $(MAINFILE).tex
 
 draft: all
-	cp $(REPORT).pdf $(REDDROPFOLDER)/$(REPORT)_$(shell date +%y-%m-%d).pdf
+	cp $(REPORT).pdf $(REDDROPFOLDER)/$(REPORT)_draft_$(shell date +%y-%m-%d).pdf
 
 clean:
 	latexmk -c
