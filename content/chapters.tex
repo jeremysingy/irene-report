@@ -18,7 +18,7 @@ Meanwhile in Switzerland, at the College of Engineering and Architecture of Frib
 
 Old records can suffer from degradations. One of the most common is known as ``cracked discs''. This problem appears when the lacquer coating shrinks as the disk is getting older. This causes cracks where the underneath hard support is visible, as seen in \autoref{fig:crackeddisc}.
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.7\textwidth]{images/cracked-disc}
 \caption{An example of cracked disc.}
@@ -35,17 +35,82 @@ Then, the next step will be to design and implement a tracking feature able to p
 
 %TODO This report is separated in...
 
-\chapter{Principle of the phonograph records}
+\chapter{Phonograph cylinders and records}
 
-This chapter will explain the main principles behind the mechanical records technology. It will also give a quick overview of the different types of mediums encountered.
+This chapter will give a quick historical overview of the different mechanical phonograph technologies and the types of mediums encountered. It will also explain the main principles behind the analog recording
 
-\section{Recording and playback technologies}
+\section{History}
 
-TODO.
+The first known sound recording was realized by the French printer Édouard-Léon Scott de Martinville in 1860. However, the used device called the \emph{phonautograph} was not able to playback the recordings. It acted as an early oscilloscope and was used by scientists to study visual representations of the sound.
 
-\section{Types of records}
+The phonograph was created by Thomas Edison in 1877. It was the first device able to record \emph{and} reproduce the sound. The general principle was to mechanically engrave the audio signal on a rotating cylinder. The resulting groove undulated then vertically. Then, for the playback, a stylus (needle) retraced the groove and was able to reproduce the sound waves from the generated vibrations. Finally, the signal was amplified with a horn so that the recording was audible. A newer version of this phonograph and an example of cylinder are presented in \autoref{fig:edisonphonocyl}.
 
-TODO Edison/cylinders/discs/etc.
+\begin{figure}[!ht]
+    \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[height=0.5\textwidth]{images/edison-phonograph}
+    \caption{An Edison phonograph.}
+    \label{fig:edisonphono}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[height=0.5\textwidth]{images/edison-cylinder}
+    \caption{An Edison wax-cylinder.}
+    \label{fig:edisoncyl}
+    \end{subfigure}
+    \caption{Pictures of Edison wax phonograph and record.}
+    \label{fig:edisonphonocyl}
+    %\floatfoot{Norman Bruderhofer, www.cylinder.de}
+\end{figure}
+
+Since then, the phonograph has been used as the only device for sound reproduction until around the 1950's when the magnetic tape has become widely used on the market. From the first Edison's version, a lot of improvements have been made. Edison used first a tinfoil around the cylinders to engrave the groove. However, this material gave bad quality and was rapidly degrading. Alexander Graham Bell started to use wax-coated cylinders instead of the tinfoil which improved a lot the sound quality.
+
+Then, in the early twentieth century, the cylinders were gradually replaced by the gramophone records which were flat discs that could be double-sided. On the latter, the groove undulated laterally instead of vertically.
+
+After the wax-cylinders, a lot of different materials have been used for the discs covering. For example, the shellac discs became the first widely use until the 1950's. Some discs were also using a special lacquer coat. Finally, the vinyl disc is one of the last types of gramophone record and is still being used today.
+
+\section{Basic principle}
+
+\subsection{Edison phonograph}
+
+With the early Edison phonograph, the same device was used to record and replay the sound. As already explained, the sound is mechanically engraved with a needle. In fact, the needle is connected to a diaphragm that vibrates when audio waves are emitted. The cylinder is put on a mechanism which can be rotated by a crank and that shifts slowly resulting in helical grooves (see \autoref{fig:phonoschema}).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/phono-schema}
+\caption{Schema of a simple phonograph.}
+\label{fig:phonoschema}
+\end{figure}
+
+Then, to reproduce the recorded sound, the cylinder is repositioned at its starting position. The needle is placed with slightly less pressure, and when the crank is turned, the needle follows the groove which vibrates the diaphragm and returns the sound waves. This is in fact the exactly inverse process as the recording.
+
+\subsection{Other recording types}
+
+The Edison phonograph uses a groove that undulates vertically. However, a lot of records, particularly the discs, use laterally modulated grooves. It is no more the depth that determines the signal, but rather the lateral position of the bottom of the groove. The difference can be clearly seen in \autoref{fig:groovesdiff}.
+
+\begin{figure}[!ht]
+    \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/grooves-vertical}
+    \caption{Vertically modulated.}
+    \label{fig:groovesvert}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/grooves-lateral}
+    \caption{Laterally modulated.}
+    \label{fig:grooveslat}
+    \end{subfigure}
+    \caption{The two types of groove modulation.}
+    \label{fig:groovesdiff}
+    %\floatfoot{Norman Bruderhofer, www.cylinder.de}
+\end{figure}
+
+It exhibits a 3D representation of record surfaces for both groove types. In \autoref{fig:groovesvert} the boundaries are straight and the depth  varies while in \autoref{fig:grooveslat} they form an horizontal wave.
+
+\section{Summary}
+
+This chapter gives an idea of the phonograph history and different devices, showing the heterogeneous nature of the audio recording, with a lot of different techniques and materials.
 
 \chapter{Acquisition and processing systems}
 
@@ -57,20 +122,41 @@ This chapter will detail the systems used in the audio laboratory at LBNL to ext
 
 As already explained, \gls{irene} uses numerical macro photography for the acquisition. The scanner takes some monochromatic pictures of the disc. The resulting image is influenced by the shape of the surface because of the light reflection. Therefore, the intensity of the resulting pixels depends finally on the slope at this of the surface light reflection.
 
+This enables to visually find the grooves on the resulting picture. An example of such a picture is shown in xx.
+
+
+In fact, the camera yy shows the image zoomed out of 
+
 \section{PRISM}
 
 TODO.
 
 %\chapter{Sample recordings}
-%
-%TODO.
+
+%TODO???.
 
 %\chapter{Manual tracking}
-%
+
 %TODO.
 
-%\chapter{Manual tracking}
-%
+%\section{Design}
+
+%TODO.
+
+%\section{Implementation}
+
+%TODO.
+
+%\chapter{Automatic scanning}
+
+%TODO.
+
+%\section{Design}
+
+%TODO.
+
+%\section{Implementation}
+
 %TODO.
 
 %\chapter{Tests and extraction of the sample recordings}
@@ -83,14 +169,14 @@ TODO.
 
 %------------------------ Float samples ------------------------
 
-%\begin{figure}[!h]
+%\begin{figure}[!ht]
 %\centering
 %\includegraphics[width=0.7\textwidth]{images/logo_lbnl}
 %\caption{Image caption.}
 %\label{fig:figname}
 %\end{figure}
 
-%\begin{table}[!h]
+%\begin{table}[!ht]
 %\begin{center}
 %\begin{tabular}{| l c r |}
 %    \hline
