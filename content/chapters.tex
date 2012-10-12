@@ -1,3 +1,12 @@
+%------------------------------------------------
+% Contains the actual report content
+%
+% Author: Jérémy Singy
+%------------------------------------------------
+
+% Define a nice and C# for the text
+\newcommand{\Csh}{C$^\sharp$}
+
 % Chapters content
 
 \chapter{Introduction}
@@ -120,45 +129,90 @@ This chapter will detail the systems used in the audio laboratory at LBNL to ext
 
 \subsection{Acquisition}
 
+\subsubsection{General process}
+
 As already explained, \gls{irene} uses numerical macro photography for the acquisition. The scanner takes some monochromatic pictures of the disc. The resulting image is influenced by the shape of the surface because of the light reflection. Therefore, the intensity of the resulting pixels depends finally on the slope at this of the surface light reflection.
 
 This enables to visually find the grooves on the resulting picture. An example of such a picture is shown in \autoref{fig:irenecapex}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.8\textwidth]{images/irene-capture-ex}
+\includegraphics[width=0.7\textwidth]{images/irene-capture-ex}
 \caption{IRENE capture excerpt.}
 \label{fig:irenecapex}
 \end{figure}
 
-A single groove can be seen as two black strips with a thin white line at the middle. The parts in black represent the edges (higher slop) while the thin line is the bottom of the groove (very little slop). xx illustrates these different parts.
+A single groove can be seen as two black strips with a thin bright line in between. The parts in black represent the edges (higher slop) while the thin line is the bottom of the groove (very little slop). Between two grooves, the structure is approximately flat, so the reflected color is white. \autoref{fig:irenegroove} illustrates these different parts.
 
 \begin{figure}[!ht]
-    \begin{subfigure}[b]{0.49\textwidth}
+\centering
+    \begin{subfigure}[t]{0.29\textwidth}
     \centering
-    \includegraphics[height=0.5\textwidth]{images/irene-capture-ex}
-    \caption{A scanned groove.}
+    %\includegraphics[height=3cm]{images/irene-grooves}
+    \raisebox{0.3cm}{\includegraphics[width=4cm]{images/irene-grooves}}
+    \caption{Two scanned grooves.}
     \label{fig:irenegrimg}
     \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[t]{0.7\textwidth}
     \centering
-    \includegraphics[height=0.5\textwidth]{images/irene-capture-ex}
+    %\includegraphics[height=3.5cm]{images/irene-grooves-schema}
+    \includegraphics[width=9.5cm]{images/irene-grooves-schema}
     \caption{The corresponding shape.}
     \label{fig:irenegrschema}
     \end{subfigure}
-    \caption{Visualisation of a groove.}
+    \caption{Visualization of scanned grooves.}
     \label{fig:irenegroove}
     %\floatfoot{Norman Bruderhofer, www.cylinder.de}
 \end{figure}
 
-%TODO
-%Because the groove form a gap,
+\autoref{fig:irenegrimg} represents two grooves as the appear from the acquisition part. The approximate corresponding shape in a sectional view is visualized in \autoref{fig:irenegrschema}.
 
-%In fact, the camera cannot take a whole picture of one disc in a snapshot.  yy shows the image zoomed out of 
+\subsubsection{Capture properties}
+
+The camera cannot take a whole picture of one disc in a snapshot. It captures a line of \SI{3.072}{\milli\metre} with \num{4096} pixel samples. For a total disc revolution, \num{80000} lines are captured this way. Therefore, it results in an image of \SI[product-units=single]{4096x80000}{px} representing a ring-shaped disc capture in polar coordinates.
+
+To simplify the manipulation, the high resolution image is exported as eight separate pictures of \SI[product-units=single]{4096x10000}{px} easier to process.
+
+\subsection{Processing}
+
+After the acquisition, the original record is digitized and can be archived on digital media. To extract the sound, the next step is to use the \gls{rene} program. It offers features to process the record images and output the final corresponding sound as a WAV file.
+
+\gls{rene} embeds a lot of algorithms and parameters to adapt at best the processing to the different record types. It is written in the \Csh{} programming language, enabling to easily build a complete graphical application without the use of third-party libraries. The \gls{gui} simplifies its utilization and offers the possibility to visually follow the tracking, as seen in \autoref{fig:irenegui}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.8\textwidth]{images/cracked-disc}
+\caption{The IRENE user interface.}
+\label{fig:irenegui}
+\end{figure}
+
+The left panel is used to specify the different parameters and algorithms for the separate steps and more generally to control the application. The upper right panel shows the processed record image. When the tracking is applied, the detected edge are directly drawn on top of the image. The panel at the bottom presents diverse information and statistics on the records.
+
+The whole processing is applied in several steps.
+
+\subsubsection{Tracking}
+
+The tracking is a general edge detection algorithm. The image is vertically binned by a certain factor, resulting in a general view of the record. This is actually the view seen in the upper right panel (see \autoref{fig:irenegui}).
+
+The tracking is applied on this binned image. This enables to approximately find the different groove positions, disregarding possible noise or imperfections cleared by the binning.
+
+Several different algorithm for the tracking can be performed. The best one depends on the scanned medium. As already mentioned, there is also an option to manually track the grooves when the other methods are not applicable. The user can directly select points that define a line, which must follow the edge of the groove.
+
+\subsubsection{Processing}
+
+The next step is the actual processing. When the grooves are tracked, it remains to precisely find the groove center, which defines the sound information. 
 
 \section{PRISM}
 
-%TODO
+\subsection{Acquisition}
+
+\subsection{Processing}
+
+\section{Acquisition system}
+
+Both \gls{irene} and \gls{3dprobe} use the same hardware for the acquisition. It consists of different sensors and motors connected to a controller. This controller is himself piloted by a computing, using a special software library embedded in a \gls{labview} environment.
+
+\section{Summary}
 
 %\chapter{Sample recordings}
 
