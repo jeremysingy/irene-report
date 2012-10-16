@@ -50,20 +50,20 @@ This chapter will give a quick historical overview of the different mechanical p
 
 \section{History}
 
-The first known sound recording was realized by the French printer Édouard-Léon Scott de Martinville in 1860. However, the used device called the \emph{phonautograph} was not able to playback the recordings. It acted as an early oscilloscope and was used by scientists to study visual representations of the sound.
+The first known sound recording was realized by the French printer Édouard-Léon Scott de Martinville in 1860. However, the used device called the \emph{phonautograph} was not able to playback the recordings. It rather acted as an early oscilloscope and was used by scientists to study visual representations of the sound.
 
 The phonograph was created by Thomas Edison in 1877. It was the first device able to record \emph{and} reproduce the sound. The general principle was to mechanically engrave the audio signal on a rotating cylinder. The resulting groove undulated then vertically. Then, for the playback, a stylus (needle) retraced the groove and was able to reproduce the sound waves from the generated vibrations. Finally, the signal was amplified with a horn so that the recording was audible. A newer version of this phonograph and an example of cylinder are presented in \autoref{fig:edisonphonocyl}.
 
 \begin{figure}[!ht]
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[height=0.5\textwidth]{images/edison-phonograph}
+    \includegraphics[width=0.8\textwidth]{images/edison-phonograph}
     \caption{An Edison phonograph.}
     \label{fig:edisonphono}
     \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[height=0.5\textwidth]{images/edison-cylinder}
+    \includegraphics[width=0.9\textwidth]{images/edison-cylinder}
     \caption{An Edison wax-cylinder.}
     \label{fig:edisoncyl}
     \end{subfigure}
@@ -82,7 +82,7 @@ After the wax-cylinders, a lot of different materials have been used for the dis
 
 \subsection{Edison phonograph}
 
-With the early Edison phonograph, the same device was used to record and replay the sound. As already explained, the sound is mechanically engraved with a needle. In fact, the needle is connected to a diaphragm that vibrates when audio waves are emitted. The cylinder is put on a mechanism which can be rotated by a crank and that shifts slowly resulting in helical grooves, as represented in \autoref{fig:phonoschema}.
+With the early Edison phonograph, the same device was used to record and play the sound. As already explained, the sound is mechanically engraved with a needle. In fact, the needle is connected to a diaphragm that vibrates when audio waves are emitted. The cylinder is put on a mechanism which can be rotated by a crank and that shifts slowly resulting in helical grooves, as represented in \autoref{fig:phonoschema}.
 
 \begin{figure}[!ht]
 \centering
@@ -94,8 +94,9 @@ With the early Edison phonograph, the same device was used to record and replay 
 Then, to reproduce the recorded sound, the cylinder is repositioned at its starting position. The needle is placed with slightly less pressure, and when the crank is turned, the needle follows the groove which vibrates the diaphragm and returns the sound waves. This is in fact the exactly inverse process as the recording.
 
 \subsection{Other recording types}
+\label{sec:rectypes}
 
-The Edison phonograph uses a groove that undulates vertically. However, a lot of records, particularly the discs, have used laterally modulated grooves. This way, it is no more the depth that determines the signal, but rather the lateral position of the bottom of the groove. The difference can be clearly seen in \autoref{fig:groovesdiff}.
+The Edison phonograph uses a groove that undulates vertically. However, a lot of records, particularly the discs, have used laterally modulated grooves. This way, it is no more the depth that determines the signal, but rather the lateral position of the groove bottom. The difference can be clearly seen in \autoref{fig:groovesdiff}.
 
 \begin{figure}[!ht]
     \begin{subfigure}[b]{0.49\textwidth}
@@ -112,26 +113,25 @@ The Edison phonograph uses a groove that undulates vertically. However, a lot of
     \end{subfigure}
     \caption{The two types of groove modulation.}
     \label{fig:groovesdiff}
-    %\floatfoot{Norman Bruderhofer, www.cylinder.de}
 \end{figure}
 
 It exhibits a 3D representation of record surfaces for both groove types. In \autoref{fig:groovesvert} the boundaries are straight and the depth  varies while in \autoref{fig:grooveslat} they form an horizontal wave.
 
 \section{Summary}
 
-This chapter gives an idea of the phonograph history and different devices, showing the heterogeneous nature of the audio recording, with a lot of different techniques and materials. This outlines the difficulties that might appear while trying to recover old recordings.
+This chapter gave an idea of the phonograph history and different devices, showing the heterogeneous nature of the audio recording, with a lot of different techniques and materials. This outlines the difficulties that might appear while trying to recover old recordings.
+
+The next chapter will discuss the technology developed at \gls{lbnl} in order to extract optically the sound from old records.
 
 \chapter{Acquisition and processing systems}
 
-This chapter will detail the systems used in the audio laboratory at LBNL to extract records. For both systems, the main process is separated in two main steps: the acquisition and the processing.
+This chapter details the systems used in the audio laboratory at \gls{lbnl} to extract records. For both systems, the main process is separated in two main steps: the acquisition and the processing.
 
 \section{IRENE}
 
 \subsection{Acquisition}
 
-\subsubsection{General process}
-
-As already explained, \gls{irene} uses numerical macro photography for the acquisition. The scanner takes some monochromatic pictures of the disc. The resulting image is influenced by the shape of the surface because of the light reflection. Therefore, the intensity of the resulting pixels depends finally on the slope at this of the surface light reflection.
+As already explained, \gls{irene} uses numerical macro photography for the acquisition. The scanner takes some monochromatic pictures of the disc. The resulting image is influenced by the shape of the surface because of the light reflection. Therefore, the intensity of the resulting pixels depends finally on the slope of the surface.
 
 This enables to visually find the grooves on the resulting picture. An example of such a picture is shown in \autoref{fig:irenecapex}.
 
@@ -142,30 +142,27 @@ This enables to visually find the grooves on the resulting picture. An example o
 \label{fig:irenecapex}
 \end{figure}
 
-A single groove can be seen as two black strips with a thin bright line in between. The parts in black represent the edges (higher slop) while the thin line is the bottom of the groove (very little slop). Between two grooves, the structure is approximately flat, so the reflected color is white. \autoref{fig:irenegroove} illustrates these different parts.
+A single groove can be seen as two black strips with a thin bright line in between. The black parts represent the edges (higher slop) while the thin line is the bottom of the groove (very little slop, almost flat). Between two grooves, the structure is approximately flat, so the reflected color is also white. \autoref{fig:irenegroove} illustrates these different parts.
 
 \begin{figure}[!ht]
 \centering
     \begin{subfigure}[t]{0.29\textwidth}
     \centering
-    %\includegraphics[height=3cm]{images/irene-grooves}
     \raisebox{0.3cm}{\includegraphics[width=4cm]{images/irene-grooves}}
     \caption{Two scanned grooves.}
     \label{fig:irenegrimg}
     \end{subfigure}
     \begin{subfigure}[t]{0.7\textwidth}
     \centering
-    %\includegraphics[height=3.5cm]{images/irene-grooves-schema}
     \includegraphics[width=9.5cm]{images/irene-grooves-schema}
     \caption{The corresponding shape.}
     \label{fig:irenegrschema}
     \end{subfigure}
     \caption{Visualization of scanned grooves.}
     \label{fig:irenegroove}
-    %\floatfoot{Norman Bruderhofer, www.cylinder.de}
 \end{figure}
 
-\autoref{fig:irenegrimg} represents two grooves as the appear from the acquisition part. The approximate corresponding shape in a sectional view is visualized in \autoref{fig:irenegrschema}.
+\autoref{fig:irenegrimg} represents two grooves as they appear from the acquisition part. The approximate corresponding shape in a sectional view is visualized in \autoref{fig:irenegrschema}.
 
 \subsubsection{Capture properties}
 
@@ -174,6 +171,7 @@ The camera cannot take a whole picture of one disc in a snapshot. It captures a 
 To simplify the manipulation, the high resolution image is exported as eight separate pictures of \SI[product-units=single]{4096x10000}{px} easier to process.
 
 \subsection{Processing}
+\label{sec:processing}
 
 After the acquisition, the original record is digitized and can be archived on digital media. To extract the sound, the next step is to use the \gls{rene} program. It offers features to process the record images and output the final corresponding sound as a \gls{wav} file.
 
@@ -181,7 +179,9 @@ After the acquisition, the original record is digitized and can be archived on d
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.9\textwidth]{images/rene-gui}
+\includegraphics[width=0.89\textwidth]{images/rene-gui}
+%\includegraphics{images/rene-gui}
+%\makebox[\textwidth]{\framebox[0.9\textwidth]{\rule{0pt}{10cm}}}
 \caption{The IRENE user interface.}
 \label{fig:irenegui}
 \end{figure}
@@ -192,17 +192,17 @@ The whole processing is applied in several steps.
 
 \subsubsection{Tracking}
 
-The tracking is a general edge detection algorithm. The image is vertically binned by a certain factor, resulting in a general view of the record. This is actually the view seen in the upper right panel (see \autoref{fig:irenegui}).
+The tracking is a general edge detection algorithm. The image is binned in the vertical axis by a certain factor, resulting in a general view of the record. This is actually the view seen in the upper right panel (see \autoref{fig:irenegui}).
 
 The tracking is applied on this binned image. This enables to approximately find the different groove positions, disregarding possible noise or imperfections cleared by the binning.
 
-Several different algorithm for the tracking can be performed. The best one depends on the scanned medium. As already mentioned, there is also an option to manually track the grooves when the other methods are not applicable. The user can directly select points that define a line, which must follow the edge of the groove.
+Several different algorithm for the tracking can be performed. The best one depends on the scanned medium. As already mentioned, there is also an option to manually track the grooves when the other methods are not applicable. The user can directly select points that define an interpolated line, which must follow the edge of the groove.
 
-The result of this step is seen on \autoref{fig:irenegui} as the purple and red external lines delimiting the grooves.
+The result of this step is seen on the top-panel in \autoref{fig:irenegui} as the purple and red external lines delimiting the grooves.
 
 \subsubsection{Image processing}
 
-The next step is the actual processing. When the grooves are tracked, it remains to precisely find the groove center, which defines the sound information. Again, different algorithms can be used as methods using the derivative, threshold, etc.
+The next step is the actual processing. When the grooves are tracked, it remains to precisely find the groove center, which defines the sound information. Again, different algorithms can be used as methods using the derivative, thresholding, etc.
 
 The result is the precise groove bottom defined between the blue and green traces on \autoref{fig:irenegui}.
 
@@ -231,7 +231,7 @@ Hence, the color reflecting in focus on the surface will depend on the distance 
 
 In a single snapshot, the sensor is able to capture 180 points in one line of \SI{1.8}{\milli\metre} in a similar way than the 2D camera with \gls{irene}. The depth is measured in a range of \SI{400}{\micro\metre} with a resolution of \SI{0.125}{\micro\metre}.
 
-The software outputs the data in a specific binary file format with extension \emph{.pri}, containing essentially float-point values corresponding to the depth captures.
+The acquisition software outputs the data in a specific binary file format with extension \emph{.pri}, containing essentially floating-point values corresponding to the depth captures. The brightness is stored separately in a \emph{.bri} file, using exactly the same structure.
 
 \subsubsection{Multiple-pass acquisition}
 
@@ -241,19 +241,63 @@ Therefore, the \gls{labview} acquisition software is able to perform a multiple-
 
 \subsection{Processing}
 
-The processing is done with the program called \gls{prism}. It uses the data stored in the \emph{.pri} ()and \emph{.bri} files
+The processing is done with the program called \gls{prism}. It uses the data stored in the \emph{.pri} and \emph{.bri} files to process and outputs the sound. The application is very similar to \gls{rene} and is also written in \Csh. There are also a lot of different parameters to tune the tracking and processing at best for the corresponding record type. Some parameters are also specifically related to cylinder processing.
 
-\section{Acquisition system}
+The user interface (\autoref{fig:prismgui}) embeds approximately the same main parts as \gls{rene}, though differently disposed.
 
-Both \gls{irene} and \gls{3dprobe} use the same hardware for the acquisition. It consists of different sensors and motors connected to a controller. This controller is himself piloted by a computing, using a special software library embedded in a \gls{labview} environment.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/prism-gui}
+\caption{The PRISM user interface.}
+\label{fig:prismgui}
+\end{figure}
+
+The parameters and algorithms can be set on the top panel. In the middle and the right, the scanned media is visualized as a 2D heightmap. The dark and bright colors emphasize the highest, respectively the less high points on the surface. The image at the left-hand side is a general view while the other one shows a full resolution portion of the image that is selected. The lower panel gives the same type of information as the other program.
+
+\subsubsection{Processing steps}
+
+The processing part is performed in the same steps as \gls{rene} (see~\autoref{sec:processing}). The main point is to take in account that a pixel value denotes a real height and not a brightness difference capture form a photography. Likewise, the 3D acquisition suffers of bad points, that is, pixels with incorrect height value. Special algorithms are then set up to clean the scanned data and suppress these bad points.
+
+Finally, the cylinder processing algorithm is specific, as it considers of course the vertically engraved nature of these type of record (see~\autoref{sec:rectypes}). The waveform is indeed defined by the surface height in the groove bottom (the ``color'' in the heightmap) and not by its lateral position.
+
+\section{Acquisition hardware}
+
+Both \gls{irene} and \gls{3dprobe} use the same hardware for the acquisition. It consists of different sensors and motors connected to a controller. This controller is itself piloted by a software, using a special software library embedded in a \gls{labview} environment.
+
+\section{Components}
+
+There are two main different supports. The first one is a turntable specifically designed for flat discs with the scanner put vertically and the disc rotating horizontally. The second one enables cylinder scanning, the probe being placed horizontally and directly facing the record. \autoref{fig:labhw} represent the installation in the laboratory.
+
+\begin{figure}[!ht]
+    \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    %\includegraphics[width=0.8\textwidth]{images/disc-hardware}
+    TODO
+    \caption{The turntable to acquire flat discs.}
+    \label{fig:labirene}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    %\includegraphics[width=0.8\textwidth]{images/cylinder-hardware}
+    TODO
+    \caption{The scanning equipment for cylinders.}
+    \label{fig:lab3d}
+    \end{subfigure}
+    \caption{The acquisition hardware as installed at LBNL.}
+    \label{fig:labhw}
+\end{figure}
+
+In both cases, in addition to the rotary motor, there is a X- and Z- shifting motor. The X-motor enables to shift the record to scan another portion. The Z-motor is used to adapt the sensor height for a correct focus.
+
+\subsection{Z-correction}
+
+Small differences can cause the 2D image to be blurred or the 3D scan to be out of range. To avoid this problem, a Z-shift correction is applied. The height shifting is controlled using a laser displacement sensor. It follows up the record and adjusts the sensor height, acting as an ``autofocus system''.
 
 \section{Summary}
 
-%\chapter{Sample recordings}
+This chapter presented an overview of the solutions developed at \gls{lbnl}. It covered the two systems, \gls{irene} and \gls{3dprobe}, both in terms of software and hardware.
 
-%TODO ???
-
-%\chapter{Manual tracking}
+\chapter{Interactive tracking}
 
 %TODO.
 
