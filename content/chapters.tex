@@ -175,13 +175,13 @@ To simplify the manipulation, the high resolution image is exported as eight sep
 
 \subsection{Processing}
 
-After the acquisition, the original record is digitized and can be archived on digital media. To extract the sound, the next step is to use the \gls{rene} program. It offers features to process the record images and output the final corresponding sound as a WAV file.
+After the acquisition, the original record is digitized and can be archived on digital media. To extract the sound, the next step is to use the \gls{rene} program. It offers features to process the record images and output the final corresponding sound as a \gls{wav} file.
 
 \gls{rene} embeds a lot of algorithms and parameters to adapt at best the processing to the different record types. It is written in the \Csh{} programming language, enabling to easily build a complete graphical application without the use of third-party libraries. The \gls{gui} simplifies its utilization and offers the possibility to visually follow the tracking, as seen in \autoref{fig:irenegui}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.8\textwidth]{images/cracked-disc}
+\includegraphics[width=0.9\textwidth]{images/rene-gui}
 \caption{The IRENE user interface.}
 \label{fig:irenegui}
 \end{figure}
@@ -198,15 +198,50 @@ The tracking is applied on this binned image. This enables to approximately find
 
 Several different algorithm for the tracking can be performed. The best one depends on the scanned medium. As already mentioned, there is also an option to manually track the grooves when the other methods are not applicable. The user can directly select points that define a line, which must follow the edge of the groove.
 
-\subsubsection{Processing}
+The result of this step is seen on \autoref{fig:irenegui} as the purple and red external lines delimiting the grooves.
 
-The next step is the actual processing. When the grooves are tracked, it remains to precisely find the groove center, which defines the sound information. 
+\subsubsection{Image processing}
 
-\section{PRISM}
+The next step is the actual processing. When the grooves are tracked, it remains to precisely find the groove center, which defines the sound information. Again, different algorithms can be used as methods using the derivative, threshold, etc.
+
+The result is the precise groove bottom defined between the blue and green traces on \autoref{fig:irenegui}.
+
+\subsubsection{Sound processing}
+
+Finally, it remains to create the output \gls{wav} file from the tracked groove bottom positions. At this step, some fixes can also be applied to improve the sound quality.
+
+\section{3D Probe}
 
 \subsection{Acquisition}
 
+With \gls{3dprobe}, the acquisition stage is the main difference. Instead of using a regular camera, a special probe is used, getting the actual depth for each points over a scanned part. This gives a real heightmap of the disc surface, as shown in three-dimensional view in \autoref{fig:groovesdiff}.
+
+To measure the height of the scanned surface, the sensor takes advantage of the chromatic aberration \footnote{Optical distortion occurring when a lens cannot properly focus all colors of a same point due to different refractive indices for different wavelengths of the light.}. Light is emitted and passes through an objective. Because the refraction index depends on the wavelength, the light is refracted differently regarding the wavelength, as shown in \autoref{fig:chromaber}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.8\textwidth]{images/chromatic-aberration}
+\caption{Chromatic aberration through a lens.}
+\label{fig:chromaber}
+\end{figure}
+
+Hence, the color reflecting in focus on the surface will depend on the distance from the lens. The sensor captures then the reflected wavelength and can deduce the height. The probe can also give the value of the brightness, that is, the captured light intensity for a given point.
+
+\subsubsection{Capture properties}
+
+In a single snapshot, the sensor is able to capture 180 points in one line of \SI{1.8}{\milli\metre} in a similar way than the 2D camera with \gls{irene}. The depth is measured in a range of \SI{400}{\micro\metre} with a resolution of \SI{0.125}{\micro\metre}.
+
+The software outputs the data in a specific binary file format with extension \emph{.pri}, containing essentially float-point values corresponding to the depth captures.
+
+\subsubsection{Multiple-pass acquisition}
+
+From the capture properties, the distance between two points is \SI{10}{\micro\metre}. The corresponding resolution is then quite low and could not be enough in some cases.
+
+Therefore, the \gls{labview} acquisition software is able to perform a multiple-pass scanning. The same part a record is capture several times with a different shift. For example, by using two-pass, the number of points, and so the resolution are multiplied by two resulting in 360 points for the same distance.
+
 \subsection{Processing}
+
+The processing is done with the program called \gls{prism}. It uses the data stored in the \emph{.pri} ()and \emph{.bri} files
 
 \section{Acquisition system}
 
