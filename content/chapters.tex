@@ -21,7 +21,7 @@ The first developed system is called \gls{irene}. It enables to extract the soun
 
 The second one, \gls{3dprobe}, uses a special probe able to measure the real depth at each position of the scanned record. This gives the best results for certain types of records as the cylinders.
 
-Meanwhile in Switzerland, at the College of Engineering and Architecture of Fribourg, a project called VisualAudio has been developed. It also enables to extract the sound using non-contact optical scanning in a similar manner as \gls{irene}, but it does not apply to experimental records such as cylinders.
+Meanwhile in Switzerland, at the College of Engineering and Architecture of Fribourg, a project called VisualAudio has been developed. It also enables to extract the sound using non-contact optical scanning in a manner similar to \gls{irene}, but it does not apply to experimental records such as cylinders.
 
 \section{Project goals}
 
@@ -142,7 +142,7 @@ This enables to visually find the grooves on the resulting picture. An example o
 \label{fig:irenecapex}
 \end{figure}
 
-A single groove can be seen as two black strips with a thin bright line in between. The black parts represent the edges (higher slop) while the thin line is the bottom of the groove (very little slop, almost flat). Between two grooves, the structure is approximately flat, so the reflected color is also white. \autoref{fig:irenegroove} illustrates these different parts.
+A single groove can be seen as two black strips with a thin bright line in between. The black parts represent the edges (higher slope) while the thin line is the bottom of the groove (very little slope, almost flat). Between two grooves, the structure is approximately flat, so the reflected color is also white. \autoref{fig:irenegroove} illustrates these different parts.
 
 \begin{figure}[!ht]
 \centering
@@ -208,13 +208,13 @@ The result is the precise groove bottom defined between the blue and green trace
 
 \subsubsection{Sound processing}
 
-Finally, it remains to create the output \gls{wav} file from the tracked groove bottom positions. At this step, some fixes can also be applied to improve the sound quality.
+Finally, it remains to create the output \gls{wav} file from the tracked groove bottom positions. At this step, some filters can also be applied to improve the sound quality.
 
 \section{3D Probe}
 
 \subsection{Acquisition}
 
-With \gls{3dprobe}, the acquisition stage is the main difference. Instead of using a regular camera, a special probe is used, getting the actual depth for each points over a scanned part. This gives a real heightmap of the disc surface, as shown in three-dimensional view in \autoref{fig:groovesdiff}.
+With \gls{3dprobe}, the acquisition stage is the main difference. Instead of using a regular camera, a special probe is used, getting the actual depth for each point over a scanned part. This gives a real heightmap of the disc surface, as shown in three-dimensional view in \autoref{fig:groovesdiff}.
 
 To measure the height of the scanned surface, the sensor takes advantage of the chromatic aberration \footnote{Optical distortion occurring when a lens cannot properly focus all colors of a same point due to different refractive indices for different wavelengths of the light.}. Light is emitted and passes through an objective. Because the refraction index depends on the wavelength, the light is refracted differently regarding the wavelength, as shown in \autoref{fig:chromaber}.
 
@@ -229,7 +229,7 @@ Hence, the color reflecting in focus on the surface will depend on the distance 
 
 \subsubsection{Capture properties}
 
-In a single snapshot, the sensor is able to capture 180 points in one line of \SI{1.8}{\milli\metre} in a similar way than the 2D camera with \gls{irene}. The depth is measured in a range of \SI{400}{\micro\metre} with a resolution of \SI{0.125}{\micro\metre}.
+In a single snapshot, the sensor is able to capture 180 points in one line of \SI{1.8}{\milli\metre} in a way similar to the 2D camera with \gls{irene}. The depth is measured in a range of \SI{400}{\micro\metre} with a resolution of \SI{0.125}{\micro\metre}.
 
 The acquisition software outputs the data in a specific binary file format with extension \emph{.pri}, containing essentially floating-point values corresponding to the depth captures. The brightness is stored separately in a \emph{.bri} file, using exactly the same structure.
 
@@ -241,7 +241,7 @@ Therefore, the \gls{labview} acquisition software is able to perform a multiple-
 
 \subsection{Processing}
 
-The processing is done with the program called \gls{prism}. It uses the data stored in the \emph{.pri} and \emph{.bri} files to process and outputs the sound. The application is very similar to \gls{rene} and is also written in \Csh. There are also a lot of different parameters to tune the tracking and processing at best for the corresponding record type. Some parameters are also specifically related to cylinder processing.
+The processing is done with the program called \gls{prism}. It uses the data stored in the \emph{.pri} and \emph{.bri} files to process and output the sound. The application is very similar to \gls{rene} and is also written in \Csh. There are also a lot of different parameters to tune the tracking and processing at best for the corresponding record type. Some parameters are also specifically related to cylinder processing.
 
 The user interface (\autoref{fig:prismgui}) embeds approximately the same main parts as \gls{rene}, though differently disposed.
 
@@ -252,17 +252,17 @@ The user interface (\autoref{fig:prismgui}) embeds approximately the same main p
 \label{fig:prismgui}
 \end{figure}
 
-The parameters and algorithms can be set on the top panel. In the middle and the right, the scanned media is visualized as a 2D heightmap. The dark and bright colors emphasize the highest, respectively the less high points on the surface. The image at the left-hand side is a general view while the other one shows a full resolution portion of the image that is selected. The lower panel gives the same type of information as the other program.
+The parameters and algorithms can be set on the top panel. In the middle and the right, the scanned media is visualized as a 2D heightmap. The dark and bright colors emphasize the higher, respectively the lower points on the surface. The image at the left-hand side is a general view while the other one shows a full resolution portion of the record (selected with the cursor and highlighted with the red square on the left panel). The lower panel gives the same type of information as the other program.
 
 \subsubsection{Processing steps}
 
-The processing part is performed in the same steps as \gls{rene} (see~\autoref{sec:processing}). The main point is to take in account that a pixel value denotes a real height and not a brightness difference capture form a photography. Likewise, the 3D acquisition suffers of bad points, that is, pixels with incorrect height value. Special algorithms are then set up to clean the scanned data and suppress these bad points.
+The processing part is performed through the same steps as with \gls{rene} (see~\autoref{sec:processing}). The main point is to take into account that a pixel value now denotes a real height and no more a brightness difference as on a photography. Likewise, the 3D acquisition suffers from bad points, that is, pixels with incorrect height value coming from the acquisition. Special algorithms are then set up to clean the scanned data and suppress these bad points.
 
-Finally, the cylinder processing algorithm is specific, as it considers of course the vertically engraved nature of these type of record (see~\autoref{sec:rectypes}). The waveform is indeed defined by the surface height in the groove bottom (the ``color'' in the heightmap) and not by its lateral position.
+Finally, the cylinder processing algorithm is specific, as it considers of course the vertically engraved nature of these type of record (see~\autoref{sec:rectypes}). The waveform is indeed defined by the surface height in the groove bottom (the intensity in the heightmap) and not by its lateral position.
 
 \section{Acquisition hardware}
 
-Both \gls{irene} and \gls{3dprobe} use the same hardware for the acquisition. It consists of different sensors and motors connected to a controller. This controller is itself piloted by a software, using a special software library embedded in a \gls{labview} environment.
+Both \gls{irene} and \gls{3dprobe} use the same hardware for the acquisition. It consists of different sensors and motors connected to a controller. This controller is itself driven by a software, using a special library embedded in a \gls{labview} environment.
 
 \section{Components}
 
