@@ -124,6 +124,7 @@ This chapter gave an idea of the phonograph history and different devices, showi
 The next chapter will discuss the technology developed at \gls{lbnl} in order to extract optically the sound from old records.
 
 \chapter{Acquisition and processing systems}
+\label{chap:acqprocsys}
 
 This chapter details the systems used in the audio laboratory at \gls{lbnl} to extract records. For both systems, the main process is separated in two main steps: the acquisition and the processing.
 
@@ -192,13 +193,11 @@ The whole processing is applied in several steps.
 
 \subsubsection{Tracking}
 
-The tracking is a general edge detection algorithm. The image is binned in the vertical axis by a certain factor, resulting in a general view of the record. This is actually the view seen in the upper right panel (see \autoref{fig:irenegui}).
+The tracking is a general groove detection algorithm. The image is binned in the vertical axis by a certain factor, resulting in a general view of the record. This is actually the view seen in the upper right panel (see \autoref{fig:irenegui}).
 
-The tracking is applied on this binned image. This enables to approximately find the different groove positions, disregarding possible noise or imperfections cleared by the binning.
+The tracking is applied on this binned image. This enables to approximately find the different groove positions, disregarding possible noise or imperfections cleared by the binning. The result of this step can be viewed on the top-panel in \autoref{fig:irenegui} as the purple and red external lines delimiting the grooves.
 
-Several different algorithm for the tracking can be performed. The best one depends on the scanned medium. As already mentioned, there is also an option to manually track the grooves when the other methods are not applicable. The user can directly select points that define an interpolated line, which must follow the edge of the groove.
-
-The result of this step is seen on the top-panel in \autoref{fig:irenegui} as the purple and red external lines delimiting the grooves.
+Several different algorithm can be selected to track the grooves. The best one to apply depends naturally on the scanned medium. As already mentioned, there is also an option to manually define the grooves position when the other methods are not applicable. The user can directly select points that define an interpolated line, which must follow the edge of the groove. This feature will be further explained in \autoref{sec:mancurrentimpl}.
 
 \subsubsection{Image processing}
 
@@ -264,7 +263,7 @@ Finally, the cylinder processing algorithm is specific, as it considers of cours
 
 Both \gls{irene} and \gls{3dprobe} use the same hardware for the acquisition. It consists of different sensors and motors connected to a controller. This controller is itself driven by a software, using a special library embedded in a \gls{labview} environment.
 
-\section{Components}
+\subsection{Components}
 
 There are two main different supports. The first one is a turntable specifically designed for flat discs with the scanner put vertically and the disc rotating horizontally. The second one enables cylinder scanning, the probe being placed horizontally and directly facing the record. \autoref{fig:labhw} represent the installation in the laboratory.
 
@@ -288,12 +287,51 @@ There are two main different supports. The first one is a turntable specifically
 In both cases, in addition to the rotary motor, there is a X- and Z- shifting motor. The X-motor enables to shift the record to scan another portion. The Z-motor is used to adapt the sensor height for a correct focus.
 
 \subsection{Z-correction}
+\label{sec:zcorr}
 
 Small differences can cause the 2D image to be blurred or the 3D scan to be out of range. To avoid this problem, a Z-shift correction is applied. The height shifting is controlled using a laser displacement sensor. It follows up the record and adjusts the sensor height, acting as an ``autofocus system''.
 
+\section{Typical records issues}
+
+As already stated, a lot of important and historical recordings are still stored on old records without other copies. Most of them can no more be read with regular phonographs. \gls{irene} and \gls{3dprobe} systems can then be used to restore the sound. However, some of the recordings are already altered, e.g. with some cracks appearing on disc surface, or completely broken into pieces, as old cylinders. These latter can still be acquired in several steps by strapping the pieces together, resulting in the same kind of issues in the processing step.
+
+Depending on the degradation level, other issues can also appear with optical methods. In some cases they are still not able to perform a proper scan. The next sections depict the most common problems.
+
+\subsection{Shifting}
+
+Visible cracks on a record as shown in \autoref{fig:crackeddisc} is only the tip of the iceberg. Usually, it involves other problems to be solved algorithmically. One of the most common problem is shifting. When different parts of a disc surface are separated because of the cracks, they typically move slightly from each other, resulting in grooves mismatch. An example of this kind of issue is illustrated in \autoref{fig:shiftedgrooves}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.8\textwidth]{images/shifted-grooves}
+\caption{Grooves shifted because of a crack.}
+\label{fig:shiftedgrooves}
+\end{figure}
+
+The acquisition shows clearly the two distinct pieces separated by a arch-shaped crack. In this case, the grooves are only slightly shifted. However the difference can be much larger and became more than one groove large, causing difficulty to visually find the correct matching.
+
+\subsection{Focus}
+
+As explained in \autoref{sec:zcorr}, the acquisition needs always to stay in focus to get a sharp image. However, when the height varies abruptly, the laser is not able to directly compensate the Z-shift. This can happen sometimes when the lacquer inflates resulting in bubbles on the surface. The result in the acquisition is shown in \autoref{fig:blurredgrooves}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.7\textwidth]{images/blurred-grooves}
+\caption{Blurred grooves on the bottom part under the crack.}
+\label{fig:blurredgrooves}
+\end{figure}
+
+\subsection{Other issues}
+
+Other problems may occur because of the cracks. For example, because of the lacquer deformation, the pieces can sometimes expand or shrink, which results in other corrections to apply. Likewise, the gaps introduced by the cracks can sometimes be large and the resulting sound affected. The trouble is to find out what is the best interpolation scheme to match the sound, e.g. simply avoiding the corresponding signal or introduce a silence instead.
+
+Furthermore, these latter issues become more important when a sound has to be synced with a visual representation, as for a movie sound track for example. The sound must match the picture so that the film is properly watchable.
+
 \section{Summary}
 
-This chapter presented an overview of the solutions developed at \gls{lbnl}. It covered the two systems, \gls{irene} and \gls{3dprobe}, both in terms of software and hardware.
+This chapter presented an overview of the solutions developed at \gls{lbnl}. It covered the two systems, \gls{irene} and \gls{3dprobe}, both in terms of software and hardware. It also presented the common issues appearing while processing damaged audio records.
+
+The next chapters will cover the existing ways of figuring out these issues, and the new implemented features during this thesis to improve it.
 
 \chapter{Interactive tracking}
 
