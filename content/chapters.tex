@@ -4,7 +4,7 @@
 % Author: Jérémy Singy
 %------------------------------------------------
 
-% Define a nice and C# for the text
+% Define a nice-looking C# logo for the text
 \newcommand{\Csh}{C$^\sharp$}
 
 % Chapters content
@@ -333,9 +333,27 @@ This chapter presented an overview of the solutions developed at \gls{lbnl}. It 
 
 The next chapters will cover the existing ways of figuring out these issues, and the new implemented features during this thesis to improve it.
 
-\chapter{Interactive tracking}
+\chapter{Manual tracking}
 
-%TODO.
+This chapter explains the steps that have been made in order to improve the manual tracking. Because there are a lot of different mediums and the same amount of issues coming with, it is not likely to find the best solution to solve each of them. There are some recordings to be recovered that have particular and unique issues, appearing only in a small section of the record. Likewise, some small artifacts can appear visually easy to catch and fix for the human eye, but very tricky to solve with a particular algorithm.
+
+Therefore, for this kind of thing, falling back to a manual tracking can be the more appropriate solution.
+
+\section{Current implementation}
+\label{sec:mancurrentimpl}
+
+As summarized in \autoref{chap:acqprocsys}, both \gls{rene} and \gls{prism} features similar manual groove tracking. The system is simple but useful on specific cases. To start tracking, the user must select the proper option in the tracking options. Then, when clicking on the general record view with the CTRL key pressed (left image on \gls{prism}), a first tracking point is stored. Then, each successive click add a new point and a polyline is drawn connecting all previous points, giving the general track path as seen in \autoref{fig:mantrackprism}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{images/manual-tracking-prism}
+\caption{Manual tracking example in PRISM.}
+\label{fig:mantrackprism}
+\end{figure}
+
+The program offers the possibility to store the tracked coordinates in a file to be used later. Finally, when the user applies the tracking, all points are interpolated and the processing step starts as usual.
+
+%\subsection{Evaluation}
 
 %\section{Design}
 
