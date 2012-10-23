@@ -298,6 +298,7 @@ As already stated, a lot of important and historical recordings are still stored
 Depending on the degradation level, other issues can also appear with optical methods. In some cases they are still not able to perform a proper scan. The next sections depict the most common problems.
 
 \subsection{Shifting}
+\label{sec:issueshift}
 
 Visible cracks on a record as shown in \autoref{fig:crackeddisc} is only the tip of the iceberg. Usually, it involves other problems to be solved algorithmically. One of the most common problem is shifting. When different parts of a disc surface are separated because of the cracks, they typically move slightly from each other, resulting in grooves mismatch. An example of this kind of issue is illustrated in \autoref{fig:shiftedgrooves}.
 
@@ -353,13 +354,60 @@ As summarized in \autoref{chap:acqprocsys}, both \gls{rene} and \gls{prism} feat
 
 The program offers the possibility to store the tracked coordinates in a file to be used later. Finally, when the user applies the tracking, all points are interpolated and the processing step starts as usual.
 
-%\subsection{Evaluation}
+\subsection{Limitations}
 
-%\section{Design}
+The current implementation is suitable to handle some complicated cases but suffers from several limitations.
+
+\begin{itemize}
+\item Unnatural way to draw a path over an image.
+\item Tracking only on the general image, which can be laborious to be clearly seen, especially if the scanned part is big and the record is cracked or damaged.
+\item No possibility to undo parts already traced.
+\item Tracking a whole record manually is a very slow process.
+\end{itemize}
+
+\subsection{Suggestions for improvement}
+
+Regarding the previous limitations, several proposals were made at the project startup to find ways to improve the user experience and enhance the tracking efficiency.
+
+\subsubsection{Touchscreen interface}
+
+One of the concepts was to use a touchscreen interface. Nowadays, a lot of people are used to these interfaces such as tablets, smartphones, etc. Moreover, following a trace on a touch screen with the finger or a stylus seems to be user-friendly. This interface could also be convenient to re-align broken discs with shifted grooves (see \autoref{sec:issueshift}).
+
+However, using a tablet would imply working on a specific operating system which would not be compatible with the current applications. It would be possible to implement a communication interface between the standard application and the UI but another problem could arise: these devices have mostly a limited capacity, while the amount of data processed for the sound recovery is very large. Nevertheless, using a simple touch screen within the current system and adapt the interface accordingly is still worth considering.
+
+\subsubsection{Interactive tracking}
+
+Another idea was to develop an \emph{interactive} way of tracking the grooves. The interface would display the groove scrolling \emph{continuously}, and the user would have to correct the lateral position to stay over the groove center.
+
+The scrolling speed must be adaptable so that the tracking is convenient in different situations. Over areas where the surface is clean, it can be fast because there is no big correction to fix the track. When the right way is less obvious, the user can slow down and stop to choose the right way.
+
+The zoom could also be adapted regarding of the speed. When the speed is slowed down, the zoom factor is greater to see precisely a specific part. When the speed is high, the user does not need to see the groove scrolling rapidly but should instead have an overview to stop at the next difficult point.
+
+In fact, this feature could also be seen as a more entertaining way for this kind of work, because it could look like a ``game'' because of its animated and lively interface.
+
+\subsubsection{Further improvements}
+
+Beyond a brand new specific interface, other improvements to the user experience can be made to ease and accelerate the manual tracking.
+
+The ability to undo what was done so far to be able to correct a wrong decision is a useful feature. Likewise, it could be gainful to be able to put some annotations before actually track the grooves. \gls{rene} and \gls{prism} offer already information and statistics about the scanned record. For example, one could notice that the signal on the graph between two shifted grooves is similar. It could then click on the specific ends to indicate that they are likely to be linked together for the tracking.
+
+\subsection{Summary}
+
+The current user interface for manual tracking is functional but can still be improved in many ways. The concept for a touchscreen interface is interesting but not easily applicable in the current state of the system. Therefore, the interactive method seems to be a good idea and its design and implementation is detailed in the next sections.
+
+\section{Interactive tracking}
+
+This section presents the interactive tracking feature as it will be integrated into the \gls{prism} program.
+
+%\subsection{Design}
 
 %TODO.
 
-%\section{Implementation}
+%\subsection{Implementation}
+
+%TODO.
+
+%\subsection{Indicating grooves}
 
 %TODO.
 
