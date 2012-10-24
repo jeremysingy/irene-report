@@ -13,15 +13,13 @@
 
 \section{Context}
 
-For several years, Carl Haber and his team at Lawrence Berkeley National Laboratory (\gls{lbnl}) have been working on the sound recovery of old mechanical records. They developed two different systems able to extract the sound without any physical contact, using optical methods. These are capable to process many different types of mediums, from early Edison records to vinyl discs, including shellac or lacquer composed discs and others.
+For several years, Carl Haber and his team at Lawrence Berkeley National Laboratory (\gls{lbnl}) have been working on the sound recovery of old mechanical records. They developed systems able to recover the sound from mediums using optical technologies, without any physical contact. These solutions are able to process many different record types, from early Edison cylinders to vinyl discs, including shellac or lacquer composed discs and others.
 
-Nowadays, a lot of unique and historical records remain in archives from different libraries and museums. They contain some important historical and cultural recordings but as they are aging and deteriorated, it is too delicate to play them with a normal mechanical phonograph. Non-contact feature of optical methods is then important.
+Nowadays, a lot of unique records remain in archives stored in different libraries, museums and academic institutions, containing materials of important historical and cultural value. Since most of them are recorded on aging and deteriorated mediums, it is often too delicate to play them with a normal mechanical phonograph. Non-contact feature of optical methods is then important.
 
-The first developed system is called \gls{irene}. It enables to extract the sound using digitized images of the disc. The corresponding program that processes the extraction from the acquisition step is called \gls{rene}.
+The team at \gls{lbnl} first started to develop a system called \gls{irene}. It enables to extract the sound using digitized images of a disc. The installation for acquisition is completed by a software package that processes the extraction step, called \gls{rene}. Some time later, the development of a new project called \gls{3dprobe} started. Instead of capturing 2D images, the acquisition uses a special probe able to measure the real depth on the surface of the scanned record. This new system has enabled to process other types of records such as cylinders and is able to offer a better outcome with some specific mediums.
 
-The second one, \gls{3dprobe}, uses a special probe able to measure the real depth at each position of the scanned record. This gives the best results for certain types of records as the cylinders.
-
-Meanwhile in Switzerland, at the College of Engineering and Architecture of Fribourg, a project called VisualAudio has been developed. It also enables to extract the sound using non-contact optical scanning in a manner similar to \gls{irene}, but it does not apply to experimental records such as cylinders.
+Meanwhile in Switzerland, at the College of Engineering and Architecture of Fribourg, another project called VisualAudio has been set up. It aims to archive discs that are deteriorating in a durable way so that the recordings can be heard years later. The discs are stored on a photographic film which is a support with a long life span. An application has also been developed, enabling to extract the sound using non-contact optical scanning in a way similar to \gls{irene}.
 
 \section{Project goals}
 
@@ -38,7 +36,7 @@ Up to now, \gls{irene} and \gls{3dprobe} cannot automatically process such damag
 
 The aim of this Master's thesis is to find ways to read correctly these kinds of degraded records with the solutions developed at LBNL by Carl Haber and his team. In a first step, an improvement of the manual tracking will be implemented. It is still useful to keep it for some cases, e.g for special early recordings or when a disc is heavily cracked.
 
-Then, the next step will be to design and implement a tracking feature able to process cracked records and link their traces automatically. VisualAudio already implements such a feature. It can then be taken as an example, though it is obviously not possible to directly use its implementation, due to the differences between the systems.
+Then, the next step will be to design and implement a tracking feature able to process cracked records and link their traces automatically. VisualAudio already implements a feature enabling to track cracked discs in an automatic or semi-automatic way. It can then be taken as an example, though it will obviously not be possible to directly adopt its implementation, as the systems are quite different.
 
 %\section{Report structure}
 
@@ -93,8 +91,10 @@ With the early Edison phonograph, the same device was used to record and play th
 
 Then, to reproduce the recorded sound, the cylinder is repositioned at its starting position. The needle is placed with slightly less pressure, and when the crank is turned, the needle follows the groove which vibrates the diaphragm and returns the sound waves. This is in fact the exactly inverse process as the recording.
 
-\subsection{Other recording types}
+\subsection{Record types}
 \label{sec:rectypes}
+
+\subsubsection{Groove modulation}
 
 The Edison phonograph uses a groove that undulates vertically. However, a lot of records, particularly the discs, have used laterally modulated grooves. This way, it is no more the depth that determines the signal, but rather the lateral position of the groove bottom. The difference can be clearly seen in \autoref{fig:groovesdiff}.
 
@@ -115,7 +115,11 @@ The Edison phonograph uses a groove that undulates vertically. However, a lot of
     \label{fig:groovesdiff}
 \end{figure}
 
-It exhibits a 3D representation of record surfaces for both groove types. In \autoref{fig:groovesvert} the boundaries are straight and the depth  varies while in \autoref{fig:grooveslat} they form an horizontal wave.
+It exhibits a 3D representation of record surfaces for both groove types. In \autoref{fig:groovesvert} the boundaries are straight and the depth varies while in \autoref{fig:grooveslat} they form an horizontal wave.
+
+\subsubsection{Revolution per minute}
+
+Another important parameter is the number of revolutions per minute, abbreviated \emph{rpm}. It represents the rotational speed of the record while recording or playing. The speed of early records was not standardized, and it could vary from \SIrange[range-units=single]{60}{160}{rpm} for cylinders. Then, the speed has been progressively standardized to the common \SI{78}{rpm}. A lot of recording material to be restored now uses this format. The newer vinyl discs have then used the well-known speeds of \SI{33}{rpm} and \SI{45}{rpm}.
 
 \section{Summary}
 
@@ -167,9 +171,16 @@ A single groove can be seen as two black strips with a thin bright line in betwe
 
 \subsubsection{Capture properties}
 
-The camera cannot take a whole picture of one disc in a snapshot. It captures a line of \SI{3.072}{\milli\metre} with \num{4096} pixel samples. For a total disc revolution, \num{80000} lines are captured this way. Therefore, it results in an image of \SI[product-units=single]{4096x80000}{px} representing a ring-shaped disc capture in polar coordinates.
+The camera cannot take a whole picture of one disc in a snapshot. It captures a line of \SI{3.072}{\milli\metre} with \num{4096} pixel samples. For a total disc revolution, \num{80000} lines are captured this way. Therefore, it results in an image of \SI[product-units=single]{4096x80000}{px} representing a ring-shaped disc capture in polar coordinates. To simplify the manipulation, the high resolution image is exported as eight separate pictures of \SI[product-units=single]{4096x10000}{px} easier to process.
 
-To simplify the manipulation, the high resolution image is exported as eight separate pictures of \SI[product-units=single]{4096x10000}{px} easier to process.
+For a \SI{78}{rpm} disc, the time for one revolution $t_{cyc}$ is the inverse of the rotational speed $w_{cyc}$. Therefore, the sampling rate $f_s$ for the system is given by
+%
+\begin{equation}
+\label{eq:samprateirene}
+f_s = \frac{n_{sample}}{t_{cyc}} = \frac{n_{sample}}{\frac{1}{\omega_{cyc}}} = \frac{\num{80000}}{\frac{1}{\SI{78}{rpm} \cdot \SI[quotient-mode=fraction]{1/60}{\metre\per\second}}} \approx \SI{104}{\kilo\hertz}
+\end{equation}
+%
+This value satisfies the sampling theorem\footnote{The Nyquist–Shannon sampling theorem states that the minimum sampling frequency should be greater than twice the maximum of the sampled signal to reconstruct it properly. As the human hearing have a range from \SIrange[range-units=single]{20}{20000}{\hertz}, the sample rate for audio signal must be at least \SI{40}{\kilo\hertz}.} as it is greater than the minimum of \SI{40}{\kilo\hertz}.
 
 \subsection{Processing}
 \label{sec:processing}
@@ -180,9 +191,7 @@ After the acquisition, the original record is digitized and can be archived on d
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.89\textwidth]{images/rene-gui}
-%\includegraphics{images/rene-gui}
-%\makebox[\textwidth]{\framebox[0.9\textwidth]{\rule{0pt}{10cm}}}
+\includegraphics[width=0.9\textwidth]{images/rene-gui}
 \caption{The IRENE user interface.}
 \label{fig:irenegui}
 \end{figure}
@@ -232,11 +241,21 @@ In a single snapshot, the sensor is able to capture 180 points in one line of \S
 
 The acquisition software outputs the data in a specific binary file format with extension \emph{.pri}, containing essentially floating-point values corresponding to the depth captures. The brightness is stored separately in a \emph{.bri} file, using exactly the same structure.
 
+In this case, the number of samples for a full revolution depends on the angle $\alpha$ by witch the cylinder is rotated between two samples. Therefore, the sampling rate is not fixed and the formula for a cylinder at \SI{160}{rpm} become
+%
+\begin{equation}
+\label{eq:samprate3d}
+f_s = \frac{n_{sample}}{t_{cyc}} = \frac{n_{sample}}{\frac{1}{\omega_{cyc}}} = \frac{\frac{\ang{360}}{\alpha}}{\frac{1}{\SI{160}{rpm} \cdot \SI[quotient-mode=fraction]{1/60}{\metre\per\second}}}
+\end{equation}
+%
+
+For example, with an angle $\alpha$ of \ang{0.02}, the number of samples is $\frac{\ang{360}}{\ang{0.02}} = \num{18000}$ and the sampling rate become $\frac{\num{18000} \cdot 160}{60} = \SI{48}{\kilo\hertz}$.
+
 \subsubsection{Multiple-pass acquisition}
 
 From the capture properties, the distance between two points is \SI{10}{\micro\metre}. The corresponding resolution is then quite low and could not be enough in some cases.
 
-Therefore, the \gls{labview} acquisition software is able to perform a multiple-pass scanning. The same part a record is capture several times with a different shift. For example, by using two-pass, the number of points, and so the resolution are multiplied by two resulting in 360 points for the same distance.
+Therefore, the \gls{labview} acquisition software is able to perform a multiple-pass scanning. The same part a record is captured several times with a different shift. For example, by using two-pass, the number of points, and so the resolution are multiplied by two resulting in 360 points for the same distance.
 
 \subsection{Processing}
 
@@ -304,12 +323,12 @@ Visible cracks on a record as shown in \autoref{fig:crackeddisc} is only the tip
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.8\textwidth]{images/shifted-grooves}
+\includegraphics[width=0.6\textwidth]{images/shifted-grooves}
 \caption{Grooves shifted because of a crack.}
 \label{fig:shiftedgrooves}
 \end{figure}
 
-The acquisition shows clearly the two distinct pieces separated by a arch-shaped crack. In this case, the grooves are only slightly shifted. However the difference can be much larger and became more than one groove large, causing difficulty to visually find the correct matching.
+The acquisition shows clearly the two distinct pieces separated by a arch-shaped crack. In this case, the grooves are only slightly shifted. However the difference can be much larger and exceed up to several grooves large, causing difficulty to visually find the correct matching.
 
 \subsection{Focus}
 
@@ -317,16 +336,16 @@ As explained in \autoref{sec:zcorr}, the acquisition needs always to stay in foc
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.7\textwidth]{images/blurred-grooves}
+\includegraphics[width=0.6\textwidth]{images/blurred-grooves}
 \caption{Blurred grooves on the bottom part under the crack.}
 \label{fig:blurredgrooves}
 \end{figure}
 
 \subsection{Other issues}
 
-Other problems may occur because of the cracks. For example, because of the lacquer deformation, the pieces can sometimes expand or shrink, which results in other corrections to apply. Likewise, the gaps introduced by the cracks can sometimes be large and the resulting sound affected. The trouble is to find out what is the best interpolation scheme to match the sound, e.g. simply avoiding the corresponding signal or introduce a silence instead.
+Other problems may occur because of the cracks. For example, because of the lacquer deformation, the pieces can sometimes expand or shrink, which results in other corrections to apply. Likewise, the gaps introduced by the cracks can sometimes be large and the resulting sound affected. Most of time, the gap is not a loss of content but rather separation due to the shrinkage. Yet the reciprocal can also happen, i.e. when a piece of lacquer coat is folded on another one.
 
-Furthermore, these latter issues become more important when a sound has to be synced with a visual representation, as for a movie sound track for example. The sound must match the picture so that the film is properly watchable.
+The trouble is to find out what is the best interpolation scheme to match the sound between the cracks. Furthermore, these latter issues become more important when a sound has to be synced with a visual representation, as for a movie sound track for example. The sound must match the picture so that the film is properly watchable.
 
 \section{Summary}
 
