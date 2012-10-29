@@ -362,7 +362,7 @@ Therefore, for this kind of thing, falling back to a manual tracking can be the 
 \section{Current implementation}
 \label{sec:mancurrentimpl}
 
-As summarized in \autoref{chap:acqprocsys}, both \gls{rene} and \gls{prism} features similar manual groove tracking. The system is simple but useful on specific cases. To start tracking, the user must select the proper option in the tracking options. Then, when clicking on the general record view with the CTRL key pressed (left image on \gls{prism}), a first tracking point is stored. Then, each successive click add a new point and a polyline is drawn connecting all previous points, giving the general track path as seen in \autoref{fig:mantrackprism}.
+As summarized in \autoref{chap:acqprocsys}, both \gls{rene} and \gls{prism} feature similar manual groove tracking. The system is simple but useful on specific cases. To start tracking, the user must select the proper option in the tracking options. When clicking on the general record view with the CTRL key pressed (left image on \gls{prism}), a first tracking point is stored. Then, each successive click adds a new point and a polyline is drawn connecting all previous points, giving the general track path as seen in \autoref{fig:mantrackprism}.
 
 \begin{figure}[!ht]
 \centering
@@ -375,7 +375,7 @@ The program offers the possibility to store the tracked coordinates in a file to
 
 \subsection{Limitations}
 
-The current implementation is suitable to handle some complicated cases but suffers from several limitations.
+The current implementation is suitable to handle some complicated cases but suffers from several limitations:
 
 \begin{itemize}
 \item Unnatural way to draw a path over an image.
@@ -408,7 +408,7 @@ In fact, this feature could also be seen as a more entertaining way for this kin
 
 Beyond a brand new specific interface, other improvements to the user experience can be made to ease and accelerate the manual tracking.
 
-The ability to undo what was done so far to be able to correct a wrong decision is a useful feature. Likewise, it could be gainful to be able to put some annotations before actually track the grooves. \gls{rene} and \gls{prism} offer already information and statistics about the scanned record. For example, one could notice that the signal on the graph between two shifted grooves is similar. It could then click on the specific ends to indicate that they are likely to be linked together for the tracking.
+The ability to undo what was done so far to be able to correct a wrong decision is a useful feature. Likewise, it could be gainful to be able to put some annotations before actually track the grooves. \gls{rene} and \gls{prism} offer already information and statistics about the scanned record. For example, one could notice that the signal on the graph between two shifted grooves is similar. It would then be possible to click on the specific ends to indicate that they are likely to be linked together for the tracking.
 
 \subsection{Summary}
 
