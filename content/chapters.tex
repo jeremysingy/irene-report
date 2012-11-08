@@ -236,6 +236,7 @@ To measure the height of the scanned surface, the sensor takes advantage of the 
 Hence, the color reflecting in focus on the surface will depend on the distance from the lens. The sensor captures then the reflected wavelength and can deduce the height. The probe can also give the value of the brightness, that is, the captured light intensity for a given point.
 
 \subsubsection{Capture properties}
+\label{sec:captureprop}
 
 In a single snapshot, the sensor is able to capture 180 points in one line of \SI{1.8}{\milli\metre} in a way similar to the 2D camera with \gls{irene}. The depth is measured in a range of \SI{400}{\micro\metre} with a resolution of \SI{0.125}{\micro\metre}.
 
@@ -395,6 +396,7 @@ One of the concepts was to use a touchscreen interface. Nowadays, a lot of peopl
 However, using a tablet would imply working on a specific operating system which would not be compatible with the current applications. It would be possible to implement a communication interface between the standard application and the UI but another problem could arise: these devices have mostly a limited capacity, while the amount of data processed for the sound recovery is very large. Nevertheless, using a simple touch screen within the current system and adapt the interface accordingly is still worth considering.
 
 \subsubsection{Interactive tracking}
+\label{sec:inttrack}
 
 Another idea was to develop an \emph{interactive} way of tracking the grooves. The interface would display the groove scrolling \emph{continuously}, and the user would have to correct the lateral position to stay over the groove center.
 
@@ -416,21 +418,111 @@ The current user interface for manual tracking is functional but can still be im
 
 \section{Interactive tracking}
 
-This section presents the interactive tracking feature as it will be integrated into the \gls{prism} program.
+This section presents the interactive tracking feature as it has been integrated into the \gls{prism} program. The next subsections present it in terms of graphical interface, explain its utilization and detail its implementation.
 
-%\subsection{Design}
+\subsection{Graphical design}
 
-%TODO.
+\subsubsection{Location and integration}
 
-%\subsection{Implementation}
+As the current interface is already overflowed with all existing parameters and options, it is important to add the new feature so that it is integrated smoothly in the existing application, without make it tedious to use.
 
-%TODO.
+As seen in \autoref{fig:prismgui}, the interface is already able to show a detailed part of the disc on the right panel. When the user click on this detailed part, he can visualize other information on the signal. However, it is not designed to be interactive. In fact, each time the user select a part on the right image, the corresponding part is reloaded and stored in a bitmap to be drawn on screen. The whole process is too much time-consuming for an interactive drawing though it is suitable for its purpose.
 
-%\subsection{Indicating grooves}
+The new feature has then to be separated from this detailed view. It has been chosen to put a tabbed panel to choose between the two configuration. As the user will not need both features at the same time, this is a suitable solution.
 
-%TODO.
+\subsubsection{Tracking panel}
 
-%\chapter{Automatic scanning}
+The interactive tracking panel is separated in two parts: controls and visualization. The first part enables the user to manage and edit the different options while the second represents the record scan which the user has to follow to indicates the grooves. \autoref{fig:intpanelprism} represents the whole panel.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.6\textwidth]{images/int-track-panel-prism}
+\caption{Interactive tracking panel in PRISM.}
+\label{fig:intpanelprism}
+\end{figure}
+
+The controls enable to control the tracking by changing several parameters such as the speed or the zoom level. As explained in \autoref{sec:inttrack}, the zoom can also be locked regarding to the speed, using the corresponding option.
+
+\subsection{Principle of operation}
+
+To use the interactive tracking, the user first selects the correspond button in the tracking options. Then, when the record is loaded, the corresponding disc is visible in the interactive panel. A red triangle acts as a beacon to clearly see the current tracked position.
+
+When the user click on the panel and move the cursor, the horizontal position moves accordingly. The goal is then to place the triangle tip on the center of the groove. While maintaining the mouse button pressed, the user may then increase the speed by using the mouse wheel. The record vertically while the horizontal position is still following the cursor.
+
+To actually start the tracking, i.e. keep track of the points interpolated, the user must click the \emph{Play} button on the left.
+
+\subsubsection{Synchronization between views}
+
+The interactive view and the global view on the left are always synchronized. The current tracked position is visualized on the left panel of the application as a small red square and moves accordingly. When the tracking is performing, the corresponding polyline is drawn on the left part, as seen in \autoref{fig:intsynctrack}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/int-track-sync}
+\caption{Interactive tracking synchronized with the global view.}
+\label{fig:intsynctrack}
+\end{figure}
+
+The reverse is also true. When the left panel is clicked, the position in the interactive panel is changed accordingly. When the tracking is running (the \emph{Play} button is pushed), click on the panel has also the effect of adding an interpolation point. In fact, this acts at the same way as the original manual tracking. It is useful for some areas where the disc is in good quality and pass through the entire groove interactively would be too long. The user can easily switch between the two alternatives while tracking a record.
+
+\subsubsection{Undo option}
+
+One of the problems that happens with the manual tracking is the lack of an option to undo the last actions. It appears quite frequently that the last action is improper resulting in a back tracking. The interactive tracking offers the possibility to undo the steps up to the starting point.
+
+\subsection{Design and classes organization}
+
+This part of the implementation is much about user interface and does not require a lot of processing. The main point is to find an appropriate way of integrating the new feature without blowing up the existing codebase which is already quite complex.
+%TODO design of application in chapter about systems?
+
+The new feature has been implemented essentially in two new classes called \texttt{InteractiveControl} and \texttt{DrawPanel} as represented in the diagram of xx.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.8\textwidth]{images/int-track-prism-diag}
+\caption{Class diagram for the interactive tracking in PRISM.}
+\label{fig:inttrackprismdiag}
+\end{figure}
+
+The first one embeds the whole control with the controlling part (toolbox) and the visualization path. It is a specific control and inherits the \texttt{UserControl} class of the WinForms \gls{api}. The specific interactive part drawing the record is handled by the second class. It inherits from the WinForms \texttt{Panel} class.
+
+The interactive panel is owned by the \texttt{frmMain} class already created in PRISM. It uses the \texttt{Hardware} class for communicating with the record information, e.g. to get the original bitmap or set the points building the tracking path. The reference to \texttt{PictureBox} called \texttt{pict} and \texttt{picture} point to the same instance. It represents the left panel showing the global view. The \texttt{InteractiveControl} class needs it to force the drawing when the values are updated (e.g. while points are being added).
+
+An utility class called \texttt{Utils} stands for common operations used specifically for the new feature.
+
+\subsection{Implementation details}
+
+%Though the this feature does not use a lot of processing code, different
+
+\subsubsection{Bitmap creation}
+
+At creation, the scanned record must firstly be converted to a bitmap, so that it can be drawn on the panel. Most part of the process is implemented in the \texttt{BitmapFromData()} in the utility class.
+
+As already explained, the raw data of the scanned record is stored as an array of floating-point values (see~\autoref{sec:captureprop}). They must then be converted and normalized to be stored as values in the range \numrange[range-phrase=--]{0}{255} to represents pixel values. The bitmap created has the \SI{8}{bpp} format, using a 256 colors palette of grayscale values, so that the memory is not wasted with other colors.
+
+\subsubsection{Draw panel}
+
+The main implementation point is to update and draw the panel. This part is handled using \gls{gdi}, provided in Microsoft .NET through the \texttt{System.Drawing} classes.
+
+As its name implies, \emph{interactive} means to draw the objects several times per second, so that it is possible to output a smooth animation. The way WinForms are usually handled is not meant to perform animation. The panels are refreshed only when required, e.g. when a window has been hidden by another, or when it is resized to replace the components. To refresh the panel manually, it must be marked as invalid by calling the \texttt{Invalidate()} function.
+
+To perform an animation, one may then use a \texttt{Timer} (provided in the \gls{api}) and, at each tick, update the view before invalidate the panel. The interval should be set to a value giving a refresh rate high enough. For example, with an interval of \SI{40}{\milli\second}, the corresponding refresh rate is $1/0.04 = \SI{25}{fps}$.
+
+%TODO: Another consideration is the transformations. The stored information for the current position is, from an external point of view, the coordinates in the record. 
+
+\subsubsection{Miscellaneous}
+
+TODO.
+
+\subsection{Conclusion}
+
+TODO.
+
+\section{Indicating grooves}
+
+%TODO finding grooves, etc.
+
+%TODO
+%\chapter{Automatic scanning} OR
+%\chapter{Automatic reassembly}
 
 %TODO.
 
