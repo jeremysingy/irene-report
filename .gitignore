@@ -2,3 +2,5 @@ build/
 images/orig
 /*.pdf
 *.fls
+diagrams/*.mps
+diagrams/*.log

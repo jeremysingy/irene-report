@@ -84,6 +84,12 @@
     {\pagestyle{empty}\origdoublepage}%
 }
 
+% Metapost support
+%\usepackage{emp} % embedded metapost not working yet
+\usepackage{ifpdf}
+\ifpdf
+    \DeclareGraphicsRule{*}{mps}{*}{}
+\fi
 
 %------------------------------------------------
 % Custom LaTeX commands
