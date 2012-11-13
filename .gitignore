@@ -4,3 +4,4 @@ images/orig
 *.fls
 diagrams/*.mps
 diagrams/*.log
+diagrams/*.[0-9]

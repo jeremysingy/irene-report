@@ -218,6 +218,23 @@ The result is the precise groove bottom defined between the blue and green trace
 
 Finally, it remains to create the output \gls{wav} file from the tracked groove bottom positions. At this step, some filters can also be applied to improve the sound quality.
 
+\subsection{Architecture}
+
+The diagram in \autoref{fig:renearchi} presents the general architecture of RENE.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/rene-gen-design.1}
+\caption{General architecture of RENE.}
+\label{fig:renearchi}
+\end{figure}
+
+The program does not use object-oriented design. The business logic and processing parts are embedded in the \texttt{Form1} class which also represents the view of the application (inheriting from the .NET WinForms \gls{api}).
+
+Dependencies between the different classes are then fairly simple. Some tasks have been separated in external classes contained in the \texttt{Form1} class, as for the groove tracking or image processing which includes in fact routines to load images into bitmaps. The \texttt{DB} class handles connection and communication with a database, used to automatically store information and statistics on the processing results in a centralized database.
+
+Some common processing tasks are separated in different utility classes, e.g. \gls{fft} algorithm or \gls{wav} processing to output the sound file.
+
 \section{3D Probe}
 
 \subsection{Acquisition}
@@ -278,6 +295,22 @@ The parameters and algorithms can be set on the top panel. In the middle and the
 The processing part is performed through the same steps as with \gls{rene} (see~\autoref{sec:processing}). The main point is to take into account that a pixel value now denotes a real height and no more a brightness difference as on a photography. Likewise, the 3D acquisition suffers from bad points, that is, pixels with incorrect height value coming from the acquisition. Special algorithms are then set up to clean the scanned data and suppress these bad points.
 
 Finally, the cylinder processing algorithm is specific, as it considers of course the vertically engraved nature of these type of record (see~\autoref{sec:rectypes}). The waveform is indeed defined by the surface height in the groove bottom (the intensity in the heightmap) and not by its lateral position.
+
+\subsection{Architecture}
+\label{sec:prismarchi}
+
+The general architecture of \gls{prism} is presented in \autoref{fig:prismarchi}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/prism-gen-design.1}
+\caption{General architecture of PRISM.}
+\label{fig:prismarchi}
+\end{figure}
+
+The \gls{prism} program have a refined architecture, using more object-oriented facilities. The \gls{gui} is handled by the \texttt{frmMain} class. The big part of the business logic has been separated in its own class \texttt{Hardware}. This class represents an abstract record which is processed by the application. A inheritance hierarchy is built from it, mainly separated in \texttt{Cylinder} and \texttt{Disc} types representing vertically and laterally engraved records. This design enables to specialize the algorithms for any types of records.
+
+Other utility classes handle common processing such as \gls{wav} creation or signal cleaning algorithms.
 
 \section{Acquisition hardware}
 
@@ -356,7 +389,7 @@ The next chapters will cover the existing ways of figuring out these issues, and
 
 \chapter{Manual tracking}
 
-This chapter explains the steps that have been made in order to improve the manual tracking. Because there are a lot of different mediums and the same amount of issues coming with, it is not likely to find the best solution to solve each of them. There are some recordings to be recovered that have particular and unique issues, appearing only in a small section of the record. Likewise, some small artifacts can appear visually easy to catch and fix for the human eye, but very tricky to solve with a particular algorithm.
+This chapter explains how we improved the manual tracking. Because there are a lot of different mediums and the same amount of issues coming with, it is not likely to find the best solution to solve each of them. There are some recordings to be recovered that have particular and unique issues, appearing only in a small section of the record. Likewise, some small artifacts can appear visually easy to catch and fix for the human eye, but very tricky to solve with a particular algorithm.
 
 Therefore, for this kind of thing, falling back to a manual tracking can be the more appropriate solution.
 
@@ -380,7 +413,7 @@ The current implementation is suitable to handle some complicated cases but suff
 
 \begin{itemize}
 \item Unnatural way to draw a path over an image.
-\item Tracking only on the general image, which can be laborious to be clearly seen, especially if the scanned part is big and the record is cracked or damaged.
+\item Tracking points can be manually put only on the binned (left) image, which can lack of precise information, especially if the scanned part is big and the record is cracked or damaged.
 \item No possibility to undo parts already traced.
 \item Tracking a whole record manually is a very slow process.
 \end{itemize}
@@ -410,7 +443,7 @@ In fact, this feature could also be seen as a more entertaining way for this kin
 
 Beyond a brand new specific interface, other improvements to the user experience can be made to ease and accelerate the manual tracking.
 
-The ability to undo what was done so far to be able to correct a wrong decision is a useful feature. Likewise, it could be gainful to be able to put some annotations before actually track the grooves. \gls{rene} and \gls{prism} offer already information and statistics about the scanned record. For example, one could notice that the signal on the graph between two shifted grooves is similar. It would then be possible to click on the specific ends to indicate that they are likely to be linked together for the tracking.
+The ability to undo what was done so far to be able to correct a wrong decision is a useful feature. Likewise, it could be gainful to be able to put some annotations before actually track the grooves. \gls{rene} and \gls{prism} already offer information and statistics about the scanned record. For example, one could notice that the signal on the graph between two shifted grooves is similar. It would then be possible to click on the specific ends to indicate that they are likely to be linked together for the tracking.
 
 \subsection{Summary}
 
@@ -424,9 +457,9 @@ This section presents the interactive tracking feature as it has been integrated
 
 \subsubsection{Location and integration}
 
-As the current interface is already overflowed with all existing parameters and options, it is important to add the new feature so that it is integrated smoothly in the existing application, without make it tedious to use.
+As the current interface is already overflowed with all existing parameters and options, it is important to add the new feature so that it is integrated smoothly in the existing application, without making it tedious to use.
 
-As seen in \autoref{fig:prismgui}, the interface is already able to show a detailed part of the disc on the right panel. When the user click on this detailed part, he can visualize other information on the signal. However, it is not designed to be interactive. In fact, each time the user select a part on the right image, the corresponding part is reloaded and stored in a bitmap to be drawn on screen. The whole process is too much time-consuming for an interactive drawing though it is suitable for its purpose.
+As seen in \autoref{fig:prismgui}, the interface is already able to show a detailed part of the disc on the right panel. When the user clicks on this detailed part, he can visualize other information on the signal. However, it is not designed to be interactive. In fact, each time the user selects a part on the right image, the corresponding part is reloaded and stored in a bitmap to be drawn on screen. The whole process is too time-consuming for an interactive drawing though it is suitable for its purpose.
 
 The new feature has then to be separated from this detailed view. It has been chosen to put a tabbed panel to choose between the two configuration. As the user will not need both features at the same time, this is a suitable solution.
 
@@ -441,13 +474,13 @@ The interactive tracking panel is separated in two parts: controls and visualiza
 \label{fig:intpanelprism}
 \end{figure}
 
-The controls enable to control the tracking by changing several parameters such as the speed or the zoom level. As explained in \autoref{sec:inttrack}, the zoom can also be locked regarding to the speed, using the corresponding option.
+The controls enable to monitor the tracking by changing several parameters such as the speed or the zoom level. As explained in \autoref{sec:inttrack}, the zoom can also be locked regarding to the speed, using the corresponding option.
 
 \subsection{Principle of operation}
 
-To use the interactive tracking, the user first selects the correspond button in the tracking options. Then, when the record is loaded, the corresponding disc is visible in the interactive panel. A red triangle acts as a beacon to clearly see the current tracked position.
+To use the interactive tracking, the user first selects the corresponding button in the tracking options. Then, when the record is loaded, the corresponding disc is visible in the interactive panel. A red triangle acts as a beacon to clearly see the current tracked position.
 
-When the user click on the panel and move the cursor, the horizontal position moves accordingly. The goal is then to place the triangle tip on the center of the groove. While maintaining the mouse button pressed, the user may then increase the speed by using the mouse wheel. The record vertically while the horizontal position is still following the cursor.
+When the user clicks on the panel and moves the cursor, the horizontal position moves accordingly. The goal is then to place the triangle tip on the center of the groove. While maintaining the mouse button pressed, the user may then increase the speed by using the mouse wheel. The record scrolls vertically while the horizontal position is still following the cursor.
 
 To actually start the tracking, i.e. keep track of the points interpolated, the user must click the \emph{Play} button on the left.
 
@@ -462,29 +495,28 @@ The interactive view and the global view on the left are always synchronized. Th
 \label{fig:intsynctrack}
 \end{figure}
 
-The reverse is also true. When the left panel is clicked, the position in the interactive panel is changed accordingly. When the tracking is running (the \emph{Play} button is pushed), click on the panel has also the effect of adding an interpolation point. In fact, this acts at the same way as the original manual tracking. It is useful for some areas where the disc is in good quality and pass through the entire groove interactively would be too long. The user can easily switch between the two alternatives while tracking a record.
+The reverse is also true. When the left panel is clicked, the position in the interactive panel is changed accordingly. When the tracking is running (the \emph{Play} button is pushed), a click on the panel also has the effect of adding an interpolation point. In fact, this acts in the same way as the original manual tracking. It is useful for some areas where the disc is in good quality and passing through the entire groove interactively would be too long. The user can easily switch between the two alternatives while tracking a record.
 
 \subsubsection{Undo option}
 
-One of the problems that happens with the manual tracking is the lack of an option to undo the last actions. It appears quite frequently that the last action is improper resulting in a back tracking. The interactive tracking offers the possibility to undo the steps up to the starting point.
+One of the problems that happens with the manual tracking is the lack of an option to undo the last actions. It appears quite frequently that the last action is improper resulting in a bad tracking. The interactive tracking offers the possibility to undo the steps up to the starting point.
 
 \subsection{Design and classes organization}
 
-This part of the implementation is much about user interface and does not require a lot of processing. The main point is to find an appropriate way of integrating the new feature without blowing up the existing codebase which is already quite complex.
-%TODO design of application in chapter about systems?
+This part of the implementation is much about user interface and does not require a lot of processing. The main point is to find an appropriate way of integrating the new feature without blowing up the existing codebase which is already quite complex (see~\autoref{sec:prismarchi}).
 
 The new feature has been implemented essentially in two new classes called \texttt{InteractiveControl} and \texttt{DrawPanel} as represented in the diagram of \autoref{fig:inttrackprismdiag}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics{diagrams/int-track-prism}
+\includegraphics{diagrams/int-track-prism.1}
 \caption{Class diagram for the interactive tracking in PRISM.}
 \label{fig:inttrackprismdiag}
 \end{figure}
 
 The first one embeds the whole control with the controlling part (toolbox) and the visualization path. It is a specific control and inherits the \texttt{UserControl} class of the WinForms \gls{api}. The specific interactive part drawing the record is handled by the second class. It inherits from the WinForms \texttt{Panel} class.
 
-The interactive panel is owned by the \texttt{frmMain} class already created in PRISM. It uses the \texttt{Hardware} class for communicating with the record information, e.g. to get the original bitmap or set the points building the tracking path. The reference to \texttt{PictureBox} called \texttt{pict} and \texttt{picture} point to the same instance. It represents the left panel showing the global view. The \texttt{InteractiveControl} class needs it to force the drawing when the values are updated (e.g. while points are being added).
+The interactive panel is owned by the \texttt{frmMain} class already created in PRISM. It uses the \texttt{Hardware} class for the communication with the record information, e.g. to get the original bitmap or set the points building the tracking path. The reference to \texttt{PictureBox} called \texttt{pict} and \texttt{picture} point to the same instance. It represents the left panel showing the global view. The \texttt{InteractiveControl} class needs it to force the drawing when the values are updated (e.g. while points are being added).
 
 An utility class called \texttt{Utils} stands for common operations used specifically for the new feature.
 
@@ -498,27 +530,72 @@ At creation, the scanned record must firstly be converted to a bitmap, so that i
 
 As already explained, the raw data of the scanned record is stored as an array of floating-point values (see~\autoref{sec:captureprop}). They must then be converted and normalized to be stored as values in the range \numrange[range-phrase=--]{0}{255} to represents pixel values. The bitmap created has the \SI{8}{bpp} format, using a 256 colors palette of grayscale values, so that the memory is not wasted with other colors.
 
-\subsubsection{Draw panel}
+\subsubsection{Draw panel animation}
 
 The main implementation point is to update and draw the panel. This part is handled using \gls{gdi}, provided in Microsoft .NET through the \texttt{System.Drawing} classes.
 
 As its name implies, \emph{interactive} means to draw the objects several times per second, so that it is possible to output a smooth animation. The way WinForms are usually handled is not meant to perform animation. The panels are refreshed only when required, e.g. when a window has been hidden by another, or when it is resized to replace the components. To refresh the panel manually, it must be marked as invalid by calling the \texttt{Invalidate()} function.
 
-To perform an animation, one may then use a \texttt{Timer} (provided in the \gls{api}) and, at each tick, update the view before invalidate the panel. The interval should be set to a value giving a refresh rate high enough. For example, with an interval of \SI{40}{\milli\second}, the corresponding refresh rate is $1/0.04 = \SI{25}{fps}$.
+To perform an animation, one may then use a \texttt{Timer} (provided in the \gls{api}) and, at each tick, update the view before invalidating the panel. The interval should be set to a value giving a high enough refresh rate. For example, with an interval of \SI{40}{\milli\second}, the corresponding refresh rate is $1/0.04 = \SI{25}{fps}$.
 
-%TODO: Another consideration is the transformations. The stored information for the current position is, from an external point of view, the coordinates in the record. 
+\subsubsection{Linear transformations}
 
-\subsubsection{Miscellaneous}
+Another important consideration is the transformations. The stored information for the current position is, from an external point of view, the coordinates in the record where the red triangle is pointing. However, from the drawing area perspective, the triangle is fixed at the top center. Therefore, to draw the bitmap at the correct location, the drawing coordinates must then be inverted and shifted. When the target position is 30 pixels from the left and 200 from the top, the bitmap must in fact be translated by $(-30,-200)$. This is because they are two different coordinate systems involved, as viewed in \autoref{fig:inttracktransfo}.
 
-TODO.
+Moreover, the zoom level influences the final position as well, and the final shift depends on this factor. Therefore, to handle easily the conversion, the best way is to alter the global transformation matrix before rendering the record bitmap instead of applying manually the transformations to the point. The corresponding code is presented in \autoref{lst:inttransfo}.
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Interactive panel drawing and coordinate systems transformation.}, label={lst:inttransfo}]
+// In the painting function (g of type Graphics)a
+Point renderPos = new Point(-position.X, -position.Y);
+
+Matrix savedTransform = g.Transform;
+
+// Coordinate system transformation
+g.TranslateTransform(this.Width / 2, TRIANGLE_SIZE.Y);
+g.ScaleTransform(zoomLevel, zoomLevel);
+
+// Draw the record bitmap
+g.DrawImage(bmpRecord, renderPos);
+
+// Restore the transformation
+g.Transform = savedTranssform;
+
+// Draw the beacon triangle
+int panelCenter = Width / 2;
+g.TranslateTransform(panelCenter - TRIANGLE_SIZE.X / 2, 0);
+g.FillPolygon(Brushes.Red, TRIANGLE_POINTS);
+\end{lstlisting}
+
+The initial transformation matrix is firstly saved. Then, when the bitmap has been drawn, it is reset to the normal one to draw correctly the triangle which is not influenced by the translation and scaling transformations.
+
+One can note that the position is not inverted using a negative scale in the transformation, but is manually set by defining the \texttt{renderPos} variable. This is because if the bitmap is rendered with inversed scale, it will be drawn reversed, the bottom right coordinate becoming the top left one, which is not the desired behavior.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.6\textwidth]{images/int-track-transfo}
+\caption[Coordinate systems in the interactive tracking panel.]{Coordinate systems in the interactive tracking panel. The drawing panel system is represented in orange and the record one in green. When the record is drawn at $(30,300)$, the bitmap is translated to the left and top.}
+\label{fig:inttracktransfo}
+\end{figure}
 
 \subsection{Conclusion}
 
-TODO.
+The new interactive tracking enables to simplify the sometimes painful manual tracking. It provides a new way to track the grooves and several enhancements helping the operator to restore records.
+
+The next step will be to help finding the grooves by preprocessing the disc recording.
 
 \section{Indicating grooves}
 
-%TODO finding grooves, etc.
+%TODO
+%Another big issue, while tracking manually a record, is to 
+
+%In the current state of the program, 
+
+%TODO summary manual
+%\section{Summary}
+%
+%Though the manual tracking is not the desired solution in most cases, it could the only possible solution in extreme or singular situation, as with a lot of damage or for a particular type of record.
+%
+%The new features enable then to simplify the manual tracking. The interactive tracking TODO... The grooves indication TODO.
 
 %TODO
 %\chapter{Automatic scanning} OR

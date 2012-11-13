@@ -43,11 +43,12 @@
 % Add bibliography and lists of xx to the TOC
 \usepackage[nottoc]{tocbibind}
 
-\renewcommand{\lstlistingname}{List of Listings}
+%\renewcommand{\lstlistingname}{Listing}
+\renewcommand\lstlistlistingname{List of Listings}
 \renewcommand{\lstlistoflistings}
 {
 \begingroup
-    \tocfile{\lstlistingname}{lol}
+    \tocfile{\lstlistlistingname}{lol}
 \endgroup
 }
 

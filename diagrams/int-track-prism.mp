@@ -1,7 +1,7 @@
 input metauml;
 
 % Colors
-iClass.foreColor := (223/255, 232/255, 244/255);
+%iClass.foreColor := (223/255, 232/255, 244/255);
 iPackage.foreColor := (251/255, 249/255, 194/255);
 
 % Fonts
@@ -12,14 +12,16 @@ iClass.iAttributeStack.iPict.iFont.scale := 0.8;
 iClass.iMethodStack.iPict.iFont.name := "cs-lmss10";
 iClass.iMethodStack.iPict.iFont.scale := 0.8;
 iPackage.iNameStack.iPict.iFont.name := "cs-lmssbx10";
+iAssoc.iFont.name := "cs-lmss10";
 
 %------------------------------------------------
-% Define PRISM classes
+% Define classes
 %------------------------------------------------
 
+Class.form("Form")()();
 Class.pictbox("PictureBox")()();
 Class.userctrl("UserControl")()();
-Class.form("Form")()();
+Class.panel("Panel")()();
 
 Class.frame("frmMain")
     ()
@@ -39,49 +41,45 @@ Class.hardware("Hardware")
 
 Class.utils("Utils")
     ()
-    ("+BitmapFromData()", "+ToGraphicsCoord()", "+NormValue()", "+LinearInt()");
+    ("+BitmapFromData()", "+NormValue()", "+LinearInt()");
 
 Package.winforms("System.Windows.Forms")
-    (pictbox, userctrl, form);
+    (form, pictbox, userctrl, panel);
 
-iAssoc.iFont.name := "cs-lmss10";
-
-%------------------------------------------------
-% PRISM overview TODO
-%------------------------------------------------
-%outputtemplate := "prism-overview.mps";
-%beginfig(2);
-%
-%endfig;
+intctrl.info.foreColor := (223/255, 232/255, 244/255);
+drawpanel.info.foreColor := (223/255, 232/255, 244/255);
+utils.info.foreColor := (223/255, 232/255, 244/255);
 
 %------------------------------------------------
-% Interactive tracking
+% Draw diagram
 %------------------------------------------------
-outputtemplate := "int-track-prism.mps";
+%outputtemplate := "int-track-prism.mps";
 beginfig(1);
 
     % Positions
-    leftToRight(50)(pictbox, userctrl, form);
+    leftToRight(50)(form, pictbox, userctrl, panel);
     
     topToBottom(50)(pictbox, frame);
     topToBottom(50)(userctrl, intctrl);
-    topToBottom(50)(form, drawpanel);
+    topToBottom(50)(panel, drawpanel);
     
     topToBottom(130)(pictbox, hardware);
     
-    same.midx(form, utils);
+    same.midx(userctrl, utils);
     same.midy(hardware, utils);
     
     % Draw
-    drawObjects(pictbox, userctrl, form,
+    drawObjects(form, pictbox, userctrl, panel,
                 frame, intctrl, drawpanel,
                 hardware, utils);
     
     drawObjects(winforms);  
     
     % Links
+    %clink(inheritance)(frame, form);
+    link(inheritance)(pathManhattanX(frame.w, form.s));
     clink(inheritance)(intctrl, userctrl);
-    clink(inheritance)(drawpanel, form);
+    clink(inheritance)(drawpanel, panel);
     clink(aggregationUni)(pictbox, intctrl);
     clink(compositionUni)(pictbox, frame);
     
