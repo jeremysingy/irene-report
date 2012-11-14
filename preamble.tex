@@ -29,16 +29,32 @@
 \usepackage{numprint}
 \usepackage{siunitx} % Proper SI units handling
 
+% Fonts
+%\usepackage{lmodern} % Use latin Modern
+\usepackage{courier} % Courier for typewritter
+
 % Figures, tables and graphics
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage{graphicx}
 \usepackage{caption}
+%\usepackage[font=sf, labelfont={sf,bf}, margin=1cm]{caption}
 \usepackage{subcaption} % Subfigures / subtables
 \usepackage{floatrow} % For footnotes in figures
+%\usepackage[font=sf]{floatrow}
+
+% Enable to plot graph
+\usepackage{pgfplots}
+\usepackage{sansmath} % for sans serif math
+\pgfplotsset
+{
+    tick label style = {font=\sansmath\sffamily},
+    every axis label = {font=\sansmath\sffamily},
+    legend style = {font=\sansmath\sffamily},
+    label style = {font=\sansmath\sffamily}
+}
 
 % Listings handling
 \usepackage{listings}
-\usepackage{courier}
 
 % Add bibliography and lists of xx to the TOC
 \usepackage[nottoc]{tocbibind}
@@ -91,6 +107,9 @@
 \ifpdf
     \DeclareGraphicsRule{*}{mps}{*}{}
 \fi
+
+% To add todo notes
+\usepackage{todonotes}
 
 %------------------------------------------------
 % Custom LaTeX commands

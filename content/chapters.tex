@@ -585,31 +585,35 @@ The next step will be to help finding the grooves by preprocessing the disc reco
 
 \section{Indicating grooves}
 
-%TODO
-%Another big issue, while tracking manually a record, is to 
+Another important thing, while manually tracking a record, is to be able to clearly find the groove bottoms. This seems not to be an issue as the groove bottoms are clearly seen in a lower intensity in \gls{prism} (and a lighter brightness with \gls{rene}). In fact, this becomes relevant when the disc are heavily cracked and separated into pieces. The main point is then to correctly match the pieces together, while the tracking inside a piece itself is easy to perform. The goal is to be able to bring out the groove bottoms at the bottom and top of all pieces, or chunks.
 
-%In the current state of the program, 
+This feature is a bridge between a manual and an automatic solution. As it would be useful for the user to view this information, it will also be required for an automatic tracking system, to be able to reassemble them in a next step. The feature requires two big steps: find the groove bottoms and find the cracks.
 
-%TODO summary manual
-%\section{Summary}
-%
-%Though the manual tracking is not the desired solution in most cases, it could the only possible solution in extreme or singular situation, as with a lot of damage or for a particular type of record.
-%
-%The new features enable then to simplify the manual tracking. The interactive tracking TODO... The grooves indication TODO.
+\subsection{Finding groove bottoms}
 
-%TODO
-%\chapter{Automatic scanning} OR
-%\chapter{Automatic reassembly}
+A first step is to find the groove bottoms on a given Y-position. The usual tracking methods (see~\autoref{sec:trackprism}) do not need to find separate bottoms because once a groove is found, it can be followed until the end. This property is no more true on a damaged disc where the different parts can be shifted or even sometimes lost.
 
-%TODO.
+However, pointing out the position where the bottoms are located in an horizontal line is possible, using a adequate algorithm.
 
-%\section{Design}
+\subsubsection{Peak detection}
 
-%TODO.
+The values on an horizontal line on a record scan can be seen as a one-dimensional signal. To find the bottoms on a signal, one cannot use the simple mathematical derivative because the signal is too noisy. A lot of variation can happen between two different values, because the signal is not smooth as if given by a simple mathematical function. One must then use a peak detection algorithm.
 
-%\section{Implementation}
+Different algorithms exist. For example, one can just smooth the signal by averaging it (low-pass filter) and then use the zero-derivate method. However, a simple well-suited method that does not alter the original signal is presented in \cite{peak12}. The idea is to define peaks and valleys. In fact, a peak is a location where the values are the highest between two valleys. A delta value defines the minimum Y distance between a peak and the next valley.
 
-%TODO.
+\todo{Complete the section}
+
+\section{Existing tracking methods}
+\label{sec:trackprism}
+\todo{Find a proper location for this section}
+
+\subsection{Tracking depth}
+
+One of the currently implemented automatic tracking method in \gls{prism}, called \emph{track depth}, tries to find the deepest point in a local region of the record. Then, it follows the corresponding X-position scanning the record downward and adjusting it to the deepest value. This method fails when their is just a little crack, because the depth is obviously completely wrong at these place, and the algorithm fails to find its way to the disc.
+
+\subsection{Tracking Fourier}
+
+TODO
 
 %\chapter{Tests and extraction of the sample recordings}
 %
@@ -649,3 +653,18 @@ The next step will be to help finding the grooves by preprocessing the disc reco
 %\begin{equation} \label{eq:solve}
 %s = [a_0, (a_0 + a_1), ..., (a_0 + a_1 + ... + a_{n-1})].
 %\end{equation}
+
+%\begin{figure}[!ht]
+%\centering
+%\begin{tikzpicture}
+%\begin{axis}[xlabel=Hello 100 $x$,ylabel={$f(x) = x^2 - x + 4$},
+%%height=5.2cm, width=\textwidth,
+%]%xtick={0,0.5,...,20},]
+%%xmin=0, xmax=2]
+%%\addplot[domain=-10:10,color=blue,mark=*,mark size=1pt]{x^2 - x + 4};
+%\addplot[domain=-10:10,color=blue,mark=*,samples=21]{x^2 - x + 4};
+%\end{axis}
+%\end{tikzpicture}
+%\caption{Graph caption.}
+%\label{fig:graphname}
+%\end{figure}
