@@ -648,7 +648,50 @@ This chapter will firstly summarize the current implemented algorithms and expla
 \section{Existing tracking methods}
 \label{sec:trackmethods}
 
-%TODO
+\subsection{Tracking line}
+
+One of the currently implemented automatic tracking method, called \emph{track line}, tries to find the approximate edges of a groove. It is especially used on disc in \gls{rene}. This is achieved by finding the peaks in intensity and keeping trace of the groove edges by detecting the changing intensity (as seen in \autoref{sec:reneprocessing}). Then, it follows the corresponding X-position scanning the record downward and adjusting it to the deepest value.
+
+When the bottom of the scanned record is reached, the tracking can simply continue at the top, meaning that a full revolution has been reached. The tracking is completed when the side of the record has been reached.
+
+This method fails when their is just a little crack, because the depth is obviously completely wrong at these place, and the algorithm fails to find its way to the disc.
+
+\subsection{Tracking depth}
+
+The second method is the counterpart of the tracking line algorithm, operating in a similar way but specifically used for cylinders in \gls{prism}. The difference is that it tries to directly find the groove center instead of the edges. As the height values are expressively indicated by the 3D probe scanning, this can be done by looking for the deepest point in a local region of the record. The disc is then scanned downward the very same way as with the previous method.
+
+\subsection{Tracking Fourier}
+
+The second method uses a different approach. The binned image is scanned horizontally, giving the groove shapes for each row. Then, the Fast Fourier Transform algorithm is applied giving the frequency space of the signal. This enables to get the peak frequency and deduce the phase which gives the distance between two grooves. When the first groove as been tracked, the other ones can then be deduced by the computed phase.
+
+This method works well when the records are not distorted, as the distance between two grooves remains invariable in the same row. Therefore, it is also inapplicable for cracked records for the same reasons.
+
+\subsection{Conclusion}
+
+The existing automatic tracking methods propose different ways which has proven to be effective for a large variety of records. However, this simple approach cannot be used anymore in the case of cracked records. The biggest issue is that when a crack appears, no information is relevant in the corresponding signal. It could be avoided until the damaged part ends up, but in this case the typical problem of shifting (see \autoref{sec:issueshift}) would make it almost impossible to follow correctly the good path.
+
+Somehow, these cracks must be firstly detected in order to process the record correctly. The next sections explain ways to find cracks in the scanned records in order to distinguish the different pieces.
+
+\section{Chunks detection}
+
+As already seen in the previous sections we need a way to differentiate the pieces separated by cracks, which will now be called \emph{chunks} in the rest of this report. Rather than finding the cracks, the goal will be to find the chunks to be able to process them separately.
+
+To detect them properly, a property which differs in parts representing cracks and normal part of a record must be found. This part will be explained in the next subsection. Then, the different image processing algorithms needed will be detailed.
+
+\subsection{Property of cracks}
+
+The exact parameters will also depend on the different medium types.
+\todo{End section}
+
+\subsection{Preprocessing}
+
+\subsection{Segmentation}
+
+\subsection{Cleaning}
+
+\subsection{Contours extraction}
+
+\subsection{Implementation and results}
 
 \section{Finding grooves}
 \label{sec:groovebot}
