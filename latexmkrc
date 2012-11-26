@@ -4,6 +4,11 @@
 
 # Select the PDF output and the generator
 $pdf_mode = 1;
+
+# Add the shell-escape option for tikzexternalize 
+$pdflatex = "pdflatex -shell-escape %O %S";
+
+# Test to use xelatex
 #$pdflatex = "xelatex %O %S";
 #$pdflatex = "xelatex -synctex=1 -interaction=nonstopmode %O %S";
 

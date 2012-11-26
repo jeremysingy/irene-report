@@ -183,7 +183,7 @@ f_s = \frac{n_{sample}}{t_{cyc}} = \frac{n_{sample}}{\frac{1}{\omega_{cyc}}} = \
 This value satisfies the sampling theorem\footnote{The Nyquist–Shannon sampling theorem states that the minimum sampling frequency should be greater than twice the maximum of the sampled signal to reconstruct it properly. As the human hearing have a range from \SIrange[range-units=single]{20}{20000}{\hertz}, the sample rate for audio signal must be at least \SI{40}{\kilo\hertz}.} as it is greater than the minimum of \SI{40}{\kilo\hertz}.
 
 \subsection{Processing}
-\label{sec:processing}
+\label{sec:reneprocessing}
 
 After the acquisition, the original record is digitized and can be archived on digital media. To extract the sound, the next step is to use the \gls{rene} program. It offers features to process the record images and output the final corresponding sound as a \gls{wav} file.
 
@@ -196,17 +196,17 @@ After the acquisition, the original record is digitized and can be archived on d
 \label{fig:irenegui}
 \end{figure}
 
-The left panel is used to specify the different parameters and algorithms for the separate steps and more generally to control the application. The upper right panel shows the processed record image. When the tracking is applied, the detected edge are directly drawn on top of the image. The panel at the bottom presents diverse information and statistics on the records.
+The left panel is used to specify the different parameters and algorithms for the separate steps and more generally to control the application. The upper right panel shows the processed record image. When the tracking is applied, the detected edges are directly drawn on top of the image. The panel at the bottom presents diverse information and statistics on the records.
 
 The whole processing is applied in several steps.
 
 \subsubsection{Tracking}
 
-The tracking is a general groove detection algorithm. The image is binned in the vertical axis by a certain factor, resulting in a general view of the record. This is actually the view seen in the upper right panel (see \autoref{fig:irenegui}).
+The tracking is the first step to process a disc. It enables to approximately find the groove positions on a record using different detection algorithms. These latter are performed on a representation of the disc which is binned in the vertical axis by a certain factor (typically around \numrange[range-phrase=--]{20}{30}). This results in a general bitmap representation of the record much smaller than the original resolution. It is actually the one seen in the upper right panel (see \autoref{fig:irenegui}).
 
-The tracking is applied on this binned image. This enables to approximately find the different groove positions, disregarding possible noise or imperfections cleared by the binning. The result of this step can be viewed on the top-panel in \autoref{fig:irenegui} as the purple and red external lines delimiting the grooves.
+Due to the small bitmap size, this processing is consequently very efficient and not subject to possible noise or imperfections which are smoothed by the binning. In the user interface, the result of this step can be viewed on the top-panel as the purple and red external lines delimiting the grooves as seen in \autoref{fig:irenegui}.
 
-Several different algorithm can be selected to track the grooves. The best one to apply depends naturally on the scanned medium. As already mentioned, there is also an option to manually define the grooves position when the other methods are not applicable. The user can directly select points that define an interpolated line, which must follow the edge of the groove. This feature will be further explained in \autoref{sec:mancurrentimpl}.
+Several different algorithms (explained in detail in \autoref{sec:trackmethods}) can be selected to track the grooves. The best one to apply depends on the scanned medium and its general condition. As already mentioned, there is also an option to manually define the groove position when automatic methods are not applicable (e.g. if the disc is too damaged). The user can directly select points that define an interpolated line, which must follow the edge of the groove. This feature will be further explained in \autoref{sec:mancurrentimpl}.
 
 \subsubsection{Image processing}
 
@@ -292,7 +292,7 @@ The parameters and algorithms can be set on the top panel. In the middle and the
 
 \subsubsection{Processing steps}
 
-The processing part is performed through the same steps as with \gls{rene} (see~\autoref{sec:processing}). The main point is to take into account that a pixel value now denotes a real height and no more a brightness difference as on a photography. Likewise, the 3D acquisition suffers from bad points, that is, pixels with incorrect height value coming from the acquisition. Special algorithms are then set up to clean the scanned data and suppress these bad points.
+The processing part is performed through the same steps as with \gls{rene} (see~\autoref{sec:reneprocessing}). The main point is to take into account that a pixel value now denotes a real height and no more a brightness difference as on a photography. Likewise, the 3D acquisition suffers from bad points, that is, pixels with incorrect height value coming from the acquisition. Special algorithms are then set up to clean the scanned data and suppress these bad points.
 
 Finally, the cylinder processing algorithm is specific, as it considers of course the vertically engraved nature of these type of record (see~\autoref{sec:rectypes}). The waveform is indeed defined by the surface height in the groove bottom (the intensity in the heightmap) and not by its lateral position.
 
@@ -486,7 +486,7 @@ To actually start the tracking, i.e. keep track of the points interpolated, the 
 
 \subsubsection{Synchronization between views}
 
-The interactive view and the global view on the left are always synchronized. The current tracked position is visualized on the left panel of the application as a small red square and moves accordingly. When the tracking is performing, the corresponding polyline is drawn on the left part, as seen in \autoref{fig:intsynctrack}
+The interactive view and the global view on the left are always synchronized. The current tracked position is visualized on the left panel of the application as a small red square and moves accordingly. When the tracking is performing, the corresponding polyline is drawn on the left part, as seen in \autoref{fig:intsynctrack}. The path is also represented in the right panel, so that the user is able to see which was the previous tracked groove before starting the next one.
 
 \begin{figure}[!ht]
 \centering
@@ -495,11 +495,17 @@ The interactive view and the global view on the left are always synchronized. Th
 \label{fig:intsynctrack}
 \end{figure}
 
-The reverse is also true. When the left panel is clicked, the position in the interactive panel is changed accordingly. When the tracking is running (the \emph{Play} button is pushed), a click on the panel also has the effect of adding an interpolation point. In fact, this acts in the same way as the original manual tracking. It is useful for some areas where the disc is in good quality and passing through the entire groove interactively would be too long. The user can easily switch between the two alternatives while tracking a record.
+When the left panel is clicked, the position in the interactive panel is also changed accordingly. When the tracking is running (the \emph{Play} button is pushed), a click on the panel also has the effect of adding an interpolation point. In fact, this acts in the same way as the original manual tracking. It is useful for some areas where the disc is in good quality and passing through the entire groove interactively would be too long. The user can easily switch between the two alternatives while tracking a record.
 
 \subsubsection{Undo option}
 
 One of the problems that happens with the manual tracking is the lack of an option to undo the last actions. It appears quite frequently that the last action is improper resulting in a bad tracking. The interactive tracking offers the possibility to undo the steps up to the starting point.
+
+\subsubsection{Groove center correction}
+
+Another feature which has been added is the correction of the actual position to match the very center of the groove. In fact, the system is able to precisely find the groove center once the it is known which one is the current one to track. The user involvement is then more a way for helping the system to choose the correct groove from an approximated position.
+
+The user will then see two triangles. A red one which is fixed and represents the position that the user points out, and the blue one which shifts to the deepest position in the surrounding area.
 
 \subsection{Design and classes organization}
 
@@ -514,7 +520,7 @@ The new feature has been implemented essentially in two new classes called \text
 \label{fig:inttrackprismdiag}
 \end{figure}
 
-The first one embeds the whole control with the controlling part (toolbox) and the visualization path. It is a specific control and inherits the \texttt{UserControl} class of the WinForms \gls{api}. The specific interactive part drawing the record is handled by the second class. It inherits from the WinForms \texttt{Panel} class.
+The first one embeds the whole control with the controlling part (toolbox) and the visualization path. It is a specific control and inherits the \texttt{UserControl} class of the WinForms \gls{api}. The specific interactive part drawing the record is handled by the second class. It inherits from the WinForms \texttt{Panel} class. Another class called \texttt{BeaconTriangle} has been created to simplify the rendering of the blue and red triangles indicating the tracked position.
 
 The interactive panel is owned by the \texttt{frmMain} class already created in PRISM. It uses the \texttt{Hardware} class for the communication with the record information, e.g. to get the original bitmap or set the points building the tracking path. The reference to \texttt{PictureBox} called \texttt{pict} and \texttt{picture} point to the same instance. It represents the left panel showing the global view. The \texttt{InteractiveControl} class needs it to force the drawing when the values are updated (e.g. while points are being added).
 
@@ -540,58 +546,120 @@ To perform an animation, one may then use a \texttt{Timer} (provided in the \gls
 
 \subsubsection{Linear transformations}
 
-Another important consideration is the transformations. The stored information for the current position is, from an external point of view, the coordinates in the record where the red triangle is pointing. However, from the drawing area perspective, the triangle is fixed at the top center. Therefore, to draw the bitmap at the correct location, the drawing coordinates must then be inverted and shifted. When the target position is 30 pixels from the left and 200 from the top, the bitmap must in fact be translated by $(-30,-200)$. This is because they are two different coordinate systems involved, as viewed in \autoref{fig:inttracktransfo}.
+Another important consideration is the transformations. Although there are not a lot of objects drawn on the panel, the correct positioning of all elements is the main point.
 
-Moreover, the zoom level influences the final position as well, and the final shift depends on this factor. Therefore, to handle easily the conversion, the best way is to alter the global transformation matrix before rendering the record bitmap instead of applying manually the transformations to the point. The corresponding code is presented in \autoref{lst:inttransfo}.
+For example, the bitmap representing the record is placed regarding the user inputs. However, the relevant position is, from an external point of view, the coordinates in the record where the red triangle is pointing. On the other hand, from the drawing area perspective, the triangle is fixed at the top center. Therefore, to draw the bitmap at the correct location, the drawing coordinates must be inverted and shifted. When the targeted position is 30 pixels from the left and 200 from the top, the bitmap must in fact be translated by $(-30,-200)$ from the triangle tip.
 
-\begin{lstlisting}[language={[Sharp]C}, caption={Interactive panel drawing and coordinate systems transformation.}, label={lst:inttransfo}]
-// In the painting function (g of type Graphics)a
-Point renderPos = new Point(-position.X, -position.Y);
-
-Matrix savedTransform = g.Transform;
-
-// Coordinate system transformation
-g.TranslateTransform(this.Width / 2, TRIANGLE_SIZE.Y);
-g.ScaleTransform(zoomLevel, zoomLevel);
-
-// Draw the record bitmap
-g.DrawImage(bmpRecord, renderPos);
-
-// Restore the transformation
-g.Transform = savedTranssform;
-
-// Draw the beacon triangle
-int panelCenter = Width / 2;
-g.TranslateTransform(panelCenter - TRIANGLE_SIZE.X / 2, 0);
-g.FillPolygon(Brushes.Red, TRIANGLE_POINTS);
-\end{lstlisting}
-
-The initial transformation matrix is firstly saved. Then, when the bitmap has been drawn, it is reset to the normal one to draw correctly the triangle which is not influenced by the translation and scaling transformations.
-
-One can note that the position is not inverted using a negative scale in the transformation, but is manually set by defining the \texttt{renderPos} variable. This is because if the bitmap is rendered with inversed scale, it will be drawn reversed, the bottom right coordinate becoming the top left one, which is not the desired behavior.
+There are different coordinate systems, as viewed in \autoref{fig:inttracktransfo}. Likewise, the zoom level influences the final position as well, and the final shift also depends on this factor.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.6\textwidth]{images/int-track-transfo}
-\caption[Coordinate systems in the interactive tracking panel.]{Coordinate systems in the interactive tracking panel. The drawing panel system is represented in orange and the record one in green. When the record is drawn at $(30,300)$, the bitmap is translated to the left and top.}
+\caption[Panel and record coordinate systems in the interactive tracking panel.]{Panel and record coordinate systems in the interactive tracking panel. The first one is represented in orange and the second in green. When the record is drawn at $(30,300)$, the bitmap is translated to the left and top.}
 \label{fig:inttracktransfo}
 \end{figure}
 
-\subsection{Conclusion}
+In fact, each object has its own properties. To be properly drawn on screen, their position expressed naturally must be converted to the panel coordinate system. The needed transformations for each element are summarized in \autoref{tab:transforms}.
 
-The new interactive tracking enables to simplify the sometimes painful manual tracking. It provides a new way to track the grooves and several enhancements helping the operator to restore records.
+The most effective and flexible way to easily handle these conversions is to alter the global transformation matrix before rendering each object, instead of applying manually the transformations to the point. This enables to keep the position in their natural logical coordinates. The corresponding conceptual code is presented in \autoref{lst:inttransfo}.
 
-The next step will be to help finding the grooves by preprocessing the disc recording.
+\begin{lstlisting}[language={[Sharp]C}, caption={Interactive panel drawing and coordinate systems transformation.}, label={lst:inttransfo}]
+// Start all drawing at the panel center and tip of the red triangle
+g.TranslateTransform(this.Width / 2, trianglePos.Size.Height);
 
-\section{Indicating grooves}
+// Save this base system
+Matrix savedTransform = g.Transform;
 
-Another important thing, while manually tracking a record, is to be able to clearly find the groove bottoms. This seems not to be an issue as the groove bottoms are clearly seen in a lower intensity in \gls{prism} (and a lighter brightness with \gls{rene}). In fact, this becomes relevant when the disc are heavily cracked and separated into pieces. The main point is then to correctly match the pieces together, while the tracking inside a piece itself is easy to perform. The goal is to be able to bring out the groove bottoms at the bottom and top of all pieces, or chunks.
+// Coordinate system transformation
+g.TranslateTransform(this.Width / 2, trianglePos.Size.Height);
+g.ScaleTransform(zoomLevel, zoomLevel);
+
+// Draw the record bitmap
+Point renderPos = new Point(-position.X, -position.Y);
+g.DrawImage(bmpRecord, renderPos);
+
+// Set the translation transformation for the tracked points
+g.TranslateTransform(-position.X, -position.Y);
+
+// Draw tracked points...
+
+g.Transform = savedTransform;
+
+// Draw red triangle (no transformation needed)
+trianglePos.Draw(g);
+
+// Transformation for the blue triangle position
+Matrix m = new Matrix();
+m.Translate(this.Width / 2, 0);
+m.Scale(zoomLevel, zoomLevel);
+m.Translate(-position.X, 0);
+
+Point[] trackPos = new Point[]{new Point(TrackedGrooveX, 0)};
+m.TransformPoints(trackPos);
+
+// Draw the blue triangle at right position
+triangleTrack.TargetPosition = trackPos[0];
+triangleTrack.Draw(g);
+g.Transform = savedTransform;
+\end{lstlisting}
+
+\begin{table}[h!]
+\begin{center}
+\tabulinesep=3pt
+\begin{tabu} to 0.9\textwidth {| X[-1m] | X[m] | X[m] |} %{>{\bfseries}lX}
+    \everyrow{\hline}
+    \hline
+    \rowfont[c] \bfseries
+    Object & Coordinates relative to & Necessary transformations \\
+    Record bitmap & position in the record where the user is pointing  & Inverse translation of the position \newline Scaling of the current zoom level \\
+    Tracking path & position in the record of the points building the line & Idem as the bitmap \\
+    Red triangle & top center in panel coordinates & Translation to the center of the panel \\
+    Blue triangle & X: real tracked position in record coordinates \newline Y: fixed in panel coordinates & X: idem as the bitmap \newline Y: no transformation needed \\
+\end{tabu}
+\end{center}
+\caption{Transformation of the different objects in the interactive panel.}
+\label{tab:transforms}
+\end{table}
+
+Firstly, the actual panel coordinates are translated to the center of the screen and below the red triangle. This sets the new basis for the panel coordinate system, with the origin starting at the tip of the latter. This initial transformation matrix is saved to be restored later on.
+
+The bitmap and the tracked points are drawn in the same coordinate system. One can note that for the bitmap, the inversion is not applied to the current matrix using a negative scale, but is manually set by defining the \texttt{renderPos} variable. This is to avoid that the bitmap is rendered as if it was flipped, which is not the desired behavior. We just want its starting position to be altered.
+
+The matrix is then reset to draw the red triangle. No transformation is needed as it is directly positioned at the very top center. Then, to draw the actual tracked position indicated by the blue triangle, the same transformations as for the bitmap must be applied for the X coordinates. However, we cannot just alter the current matrix. Indeed, the zoom would alter the triangle size as well. As for the record, we only want the position to be altered. The only way is then to define a new matrix and only apply the transformation to the point, before setting the position.
+
+\subsubsection{Groove center approximation}
+
+As explained in the previous section, the groove center is refined from the position indicated by the user. This is done by iterating $n$ points before and after current point in the same row, and return the deepest position. The $n$ value is determined using an approximated groove width and a tolerance factor $t$ in the range $[0,1]$. For example, if the groove width is $60$ and the tolerance $0.8$, then $n = \frac{60}{2} t = 24$.
+
+The groove width is determined by analyzing the record at the start of the record. This step will be explained in \autoref{sec:groovebot}.
+
+\section{Summary}
+
+This part of the project ended with a new feature to the current system. The new interactive tracking enables to simplify the sometimes painful manual tracking. It provides a new way of tracking the grooves and several enhancements helping the operator to restore records. This feature is however not sufficient in practice, as in most cases the difficult part is to find the correct path when the record is cracked and the grooves possibly shifted.
+
+The next chapter will present some ways to detect the cracks in a record. This will be a first step for the implementation of an automatic system to track damaged records, as well as a way of providing further information to the user for the manual tracking feature.
+
+\chapter{Cracks detection}
+
+The main problem to address in this project is that the current algorithms are unable to properly track (find) the grooves when a record is cracked.
+
+This chapter will firstly summarize the current implemented algorithms and explain why they cannot be used as such on cracked records. Then, it will explain a way of finding the cracks and distinguish the different pieces delimited by them. Finally, the remaining work will be to track the grooves in each of these parts.
+
+\section{Existing tracking methods}
+\label{sec:trackmethods}
+
+%TODO
+
+\section{Finding grooves}
+\label{sec:groovebot}
+
+Another important thing, while manually tracking a record, is to be able to clearly find the groove bottoms. This seems not to be an issue as the groove bottoms are clearly seen in a lower intensity in \gls{prism} (and a lighter brightness with \gls{rene}). In fact, this becomes relevant when the disc is heavily cracked and separated into pieces. The main point is then to correctly match the pieces together, while the tracking inside a piece itself is easy to perform. The goal is to be able to bring out the groove bottoms at the bottom and top of all pieces, or chunks.
 
 This feature is a bridge between a manual and an automatic solution. As it would be useful for the user to view this information, it will also be required for an automatic tracking system, to be able to reassemble them in a next step. The feature requires two big steps: find the groove bottoms and find the cracks.
 
 \subsection{Finding groove bottoms}
 
-A first step is to find the groove bottoms on a given Y-position. The usual tracking methods (see~\autoref{sec:trackprism}) do not need to find separate bottoms because once a groove is found, it can be followed until the end. This property is no more true on a damaged disc where the different parts can be shifted or even sometimes lost.
+A first step is to find the groove bottoms on a given Y-position. The usual tracking methods (see~\autoref{sec:trackmethods}) do not need to find separate bottoms because once a groove is found, it can be followed until the end. This property is no more true on a damaged disc where the different parts can be shifted or even sometimes lost.
 
 However, pointing out the position where the bottoms are located in an horizontal line is possible, using a adequate algorithm.
 
@@ -601,19 +669,36 @@ The values on an horizontal line on a record scan can be seen as a one-dimension
 
 Different algorithms exist. For example, one can just smooth the signal by averaging it (low-pass filter) and then use the zero-derivate method. However, a simple well-suited method that does not alter the original signal is presented in \cite{peak12}. The idea is to define peaks and valleys. In fact, a peak is a location where the values are the highest between two valleys. A delta value defines the minimum Y distance between a peak and the next valley.
 
+\autoref{fig:graphpeakdet} presents a graph with the values.
+
+\begin{figure}[!ht]
+%\tikzsetnextfilename{peak-detect-ex}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.9\textwidth,unit vector ratio*=1 1 1]
+%,xlabel=x,ylabel=value,xmin=0, xmax=2
+\addplot +[mark=none] table[x expr=\coordindex,y=y] {graphs/peak-detect-ex.dat};
+\addplot +[only marks, mark=*,forget plot, mark options={fill=red,draw=red}] table[x=xmin,y=ymin] {graphs/peak-detect-ex.dat};
+\addplot +[only marks, mark=*, mark options={fill=green,draw=green}] table[x=xmax,y=ymax] {graphs/peak-detect-ex.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Result of the peak detection algorithm.}
+\label{fig:graphpeakdet}
+\end{figure}
+
 \todo{Complete the section}
 
-\section{Existing tracking methods}
-\label{sec:trackprism}
-\todo{Find a proper location for this section}
+%\section{Current issue}
+%
+%TODO.
+%
+%\section{}
+%
+%TODO.
 
-\subsection{Tracking depth}
-
-One of the currently implemented automatic tracking method in \gls{prism}, called \emph{track depth}, tries to find the deepest point in a local region of the record. Then, it follows the corresponding X-position scanning the record downward and adjusting it to the deepest value. This method fails when their is just a little crack, because the depth is obviously completely wrong at these place, and the algorithm fails to find its way to the disc.
-
-\subsection{Tracking Fourier}
-
-TODO
+%\chapter{Reassembling}
+%
+%TODO.
 
 %\chapter{Tests and extraction of the sample recordings}
 %
@@ -641,6 +726,8 @@ TODO
 %    7 & 8 & 9 \\
 %    \hline
 %\end{center}
+%\caption{A table.}
+%\label{tab:test}
 %\end{table}
 
 %\begin{lstlisting}[language=C++, caption={Test listing}, label={lst:listingname}]

@@ -32,6 +32,12 @@
 % Fonts
 %\usepackage{lmodern} % Use latin Modern
 \usepackage{courier} % Courier for typewritter
+%\usepackage{titlesec}
+%\titleformat{\chapter}[display]{\sffamily\huge\bfseries}{}{20pt}{\Huge}
+%\titleformat*{\section}{\sffamily}
+%\usepackage{sectsty}
+%\allsectionsfont{\sffamily}
+%\sectionfont{\sffamily}
 
 % Figures, tables and graphics
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
@@ -45,8 +51,12 @@
 % Enable to plot graph
 \usepackage{pgfplots}
 \usepackage{sansmath} % for sans serif math
+%\usepgfplotslibrary{external}
+%\tikzexternalize[shell escape=-enable-write18] % needed for the MiKTeX compiler
+%\tikzsetexternalprefix{graphs/}
 \pgfplotsset
 {
+    compat = 1.6,
     tick label style = {font=\sansmath\sffamily},
     every axis label = {font=\sansmath\sffamily},
     legend style = {font=\sansmath\sffamily},
@@ -81,8 +91,7 @@
 
 % Advanced arrays features
 \usepackage{array}
-\usepackage{supertabular}
-\usepackage{multirow}
+\usepackage{tabu}
 
 % Glossary support
 %\usepackage[xindy][toc]{glossaries}

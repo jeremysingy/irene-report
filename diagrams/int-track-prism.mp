@@ -27,6 +27,10 @@ Class.frame("frmMain")
     ()
     ();
 
+Class.hardware("Hardware")
+    ("+RawImage", "+ManualTrack")
+    ();
+
 Class.intctrl("InteractiveControl")
     ()
     ("+SetPosition()");
@@ -35,9 +39,9 @@ Class.drawpanel("DrawPanel")
     ()
     ();
 
-Class.hardware("Hardware")
-    ("+RawImage", "+ManualTrack")
-    ();
+Class.triangle("BeaconTriangle")
+    ()
+    ("+Draw()");
 
 Class.utils("Utils")
     ()
@@ -48,6 +52,7 @@ Package.winforms("System.Windows.Forms")
 
 intctrl.info.foreColor := (223/255, 232/255, 244/255);
 drawpanel.info.foreColor := (223/255, 232/255, 244/255);
+triangle.info.foreColor := (223/255, 232/255, 244/255);
 utils.info.foreColor := (223/255, 232/255, 244/255);
 
 %------------------------------------------------
@@ -67,13 +72,15 @@ beginfig(1);
     
     same.midx(userctrl, utils);
     same.midy(hardware, utils);
+    same.midx(drawpanel, triangle);
+    same.midy(utils, triangle);
     
     % Draw
     drawObjects(form, pictbox, userctrl, panel,
-                frame, intctrl, drawpanel,
+                frame, intctrl, drawpanel, triangle,
                 hardware, utils);
     
-    drawObjects(winforms);  
+    drawObjects(winforms);
     
     % Links
     %clink(inheritance)(frame, form);
@@ -82,6 +89,7 @@ beginfig(1);
     clink(inheritance)(drawpanel, panel);
     clink(aggregationUni)(pictbox, intctrl);
     clink(compositionUni)(pictbox, frame);
+    clink(compositionUni)(triangle, drawpanel);
     
     clink(aggregationUni)(hardware, frame);
     clink(aggregationUni)(hardware, intctrl);
