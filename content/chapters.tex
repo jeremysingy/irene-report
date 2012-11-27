@@ -381,11 +381,109 @@ Other problems may occur because of the cracks. For example, because of the lacq
 
 The trouble is to find out what is the best interpolation scheme to match the sound between the cracks. Furthermore, these latter issues become more important when a sound has to be synced with a visual representation, as for a movie sound track for example. The sound must match the picture so that the film is properly watchable.
 
+\section{Sample recordings}
+\label{sec:samplerec}
+
+To investigate properly on the previously discussed issues, a canonical test set has been provided by the laboratory. These samples gather the typical problems that the current softwares are unable to process correctly. Their properties as well as a general analysis of the related will be detailed in the next sections.
+
+\subsection{Graham Bell disc}
+
+A collection of Graham Bell records\footnote{More information on the recovered collection can be found on this IRENE web page: \url{http://bio16p.lbl.gov/volta-release.html}.} has been recovered in the \gls{irene} laboratory. This collection come from the Volta Laboratory created by Alexander Graham Bell. One of the disc in the collection, labeled 287700, is a vertically-cut wax disc. It can be viewed in \autoref{fig:belldisc}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.7\textwidth]{images/bell-disc}
+\caption[The Graham Bell 287700 disc.]{The Graham Bell 287700 disc. The radial cracks are clearly visible on the photography.}
+\label{fig:belldisc}
+\end{figure}
+
+This record is cracked and the specific cracks are clearly visible as black traces on the support, revealing the material underneath the wax layer visible in a yellowish color. This disc has been acquired with the \gls{3dprobe} system, but the program is not able to properly process it. Indeed, one can clearly see that groove shifting can appear when a crack is reached, as in \autoref{fig:bellcrack}, making it impossible to track.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.7\textwidth]{images/bell-crack}
+\caption{A crack on the 287700 disc as it appears in PRISM (detail image).}
+\label{fig:bellcrack}
+\end{figure}
+
+On the whole record, the shifting does not seem to be very large. There is no more than one groove width of shifting in this case.
+
+\subsection{Dickson cylinder}
+
+This specific wax cylinder come from an experimental project by William Dickson and Thomas Edison. It is the recording of the soundtrack for the first film with recorded sound in addition to the motion picture. This first attempt of a sound-film is known as the \emph{Dickson Experimental Sound Film}.
+
+This cylinder is seriously damaged and has, in addition to cracks, big areas where the grooves are removed, probably due to a piece of layer that has been entirely broken. This problem can be visualized in \autoref{fig:dicksonbig}. A smaller example of a crack is presented in \autoref{fig:dicksoncrack} as it is viewed in \gls{prism} in full resolution.
+
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/dickson-damage-big}
+    \caption{A damaged area as seen in binned view.}
+    \label{fig:dicksonbig}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/dickson-crack}
+    \caption{A small crack in detailed view.}
+    \label{fig:dicksoncrack}
+    \end{subfigure}
+    \caption[Damages on the Dickson cylinder.]{Damages on the Dickson cylinder. In both images, the vertical grooves are hardly noticeable because when an irregularity occurs the depth difference is much bigger than the usual groove height (this is only a visualization issue).}
+    \label{fig:dicksondamage}
+\end{figure}
+
+However, even with these missing parts, the shifting remains once more quite small, and the right path is quite easy to spot for a human.
+
+\subsection{Cylinder 0724}
+
+TODO general explanation.
+
+As all cylinder, it is acquired with the \gls{3dprobe} system. This record suffers from a lot of cracks which separate the data in several pieces. These separated pieces can then be quite small. \autoref{fig:0724cracks} represents a portion of the disc after the acquisition
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.7\textwidth]{images/0724-cracks}
+\caption{Excerpt of the acquisition of the 0724 cylinder as seen from the binned image in PRISM.}
+\label{fig:0724cracks}
+\end{figure}
+
+The grooves are clearly visible but the right way is difficult to see visually as they are almost always shifted.
+
+\subsection{Brigance disc}
+
+TODO general explanation.
+
+This disc is the only one in the test set that has been acquired with the \gls{irene} system, as it is a laterally-cut disc. A lot of cracks appear on the scanned medium, as seen in \autoref{fig:brigdamage}.
+
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/brigance-cracks}
+    \caption{General view (binned image).}
+    \label{fig:brigcracks}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/brigance-crack-detail}
+    \caption{Detailed view of a particular crack.}
+    \label{fig:brigcrackdet}
+    \end{subfigure}
+    \caption{The Brigance disc as viewed from the RENE program).}
+    \label{fig:brigdamage}
+\end{figure}
+
+We can clearly see from the binned image in \autoref{fig:brigcracks} many irregularities due to cracks. However, the shifting is narrow and the general path obvious. The detailed view in \autoref{fig:brigcrackdet} shows however that the crack is very thin, making it difficult to detect.
+
+\subsection{Conclusion}
+
+The provided samples are all unique and show a lot of different properties between the mediums. This means that a general solution for this problem is difficult to come up with. Some parameters will then probably have to be chosen to adapt the futures solution to different types of medium. In the worst cases, the user intervention to help tracking the groove will be perhaps mandatory.
+
 \section{Summary}
 
-This chapter presented an overview of the solutions developed at \gls{lbnl}. It covered the two systems, \gls{irene} and \gls{3dprobe}, both in terms of software and hardware. It also presented the common issues appearing while processing damaged audio records.
+This chapter presented an overview of the solutions developed at \gls{lbnl}. It covered the two systems, \gls{irene} and \gls{3dprobe}, both in terms of software and hardware. It also presented the common issues appearing while processing damaged audio records, and the test set provided by the laboratory with its specific properties. These samples be used to test the new features.
 
-The next chapters will cover the existing ways of figuring out these issues, and the new implemented features during this thesis to improve it.
+The following chapters will cover the existing ways of figuring out these issues, and present new features implemented during this thesis to improve and ease the recovery of these damaged records.
 
 \chapter{Manual tracking}
 
@@ -676,12 +774,40 @@ Somehow, these cracks must be firstly detected in order to process the record co
 
 As already seen in the previous sections we need a way to differentiate the pieces separated by cracks, which will now be called \emph{chunks} in the rest of this report. Rather than finding the cracks, the goal will be to find the chunks to be able to process them separately.
 
-To detect them properly, a property which differs in parts representing cracks and normal part of a record must be found. This part will be explained in the next subsection. Then, the different image processing algorithms needed will be detailed.
+To detect them properly, a property which differs in parts representing cracks and normal part of a record must be found. Then, some image processing algorithms must be applied in order to extract the contour of the chunk. These steps are explained in the next subsections.
 
-\subsection{Property of cracks}
+\subsection{Cracked records properties}
 
-The exact parameters will also depend on the different medium types.
-\todo{End section}
+%By analyzing the cracked records scanned with the \gls{3dprobe} installation, the different
+The recording test set with specific damaged examples has already been presented in \autoref{sec:samplerec}. However, at this point, we need to investigate more deeply to find a way to clearly distinguish the cracks from the rest of a record.
+
+For the records processed with \gls{3dprobe}, an initial response to this problem is the information of the brightness intensity reflected by the probe. Lets analyze what looks like a crack in terms of brightness. This first example in \autoref{fig:crackdepthbri} comes from the Graham Bell disc.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    %\includegraphics[width=0.9\textwidth]{images/crack-ex-depth}
+    \caption{View of the heightmap.}
+    \label{fig:crackdepth}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    %\includegraphics[width=0.9\textwidth]{images/crack-ex-bri}
+    \caption{View of the brightness intensity.}
+    \label{fig:crackbri}
+    \end{subfigure}
+    \caption{A crack visualized as depth and brightness intensity.}
+    \label{fig:crackdepthbri}
+\end{figure}
+
+As it is difficult to see a clear difference in the first image, the brighness 
+
+%The final detail results depends of course on the support
+
+Of course, the intensity depends on the material of the underneath support. In all the samples from \gls{3dprobe}, however, the reflected brightness is clearly lower than the surface
+
+%Of course, the exact parameters will also depend on the different medium types.
 
 \subsection{Preprocessing}
 
