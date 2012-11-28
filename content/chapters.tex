@@ -436,7 +436,7 @@ However, even with these missing parts, the shifting remains once more quite sma
 
 \subsection{Cylinder 0724}
 
-TODO general explanation.
+\todo{add general explanation}
 
 As all cylinder, it is acquired with the \gls{3dprobe} system. This record suffers from a lot of cracks which separate the data in several pieces. These separated pieces can then be quite small. \autoref{fig:0724cracks} represents a portion of the disc after the acquisition
 
@@ -451,7 +451,7 @@ The grooves are clearly visible but the right way is difficult to see visually a
 
 \subsection{Brigance disc}
 
-TODO general explanation.
+\todo{add general explanation}
 
 This disc is the only one in the test set that has been acquired with the \gls{irene} system, as it is a laterally-cut disc. A lot of cracks appear on the scanned medium, as seen in \autoref{fig:brigdamage}.
 
@@ -774,26 +774,25 @@ Somehow, these cracks must be firstly detected in order to process the record co
 
 As already seen in the previous sections we need a way to differentiate the pieces separated by cracks, which will now be called \emph{chunks} in the rest of this report. Rather than finding the cracks, the goal will be to find the chunks to be able to process them separately.
 
-To detect them properly, a property which differs in parts representing cracks and normal part of a record must be found. Then, some image processing algorithms must be applied in order to extract the contour of the chunk. These steps are explained in the next subsections.
+To detect them properly, a characteristic which differs in parts representing cracks and normal part of a record must be found. Then, some image processing algorithms must be applied in order to extract the contour of the chunk. These steps are explained in the next subsections.
 
-\subsection{Cracked records properties}
+\subsection{Cracked records characteristics}
 
-%By analyzing the cracked records scanned with the \gls{3dprobe} installation, the different
 The recording test set with specific damaged examples has already been presented in \autoref{sec:samplerec}. However, at this point, we need to investigate more deeply to find a way to clearly distinguish the cracks from the rest of a record.
 
-For the records processed with \gls{3dprobe}, an initial response to this problem is the information of the brightness intensity reflected by the probe. Lets analyze what looks like a crack in terms of brightness. This first example in \autoref{fig:crackdepthbri} comes from the Graham Bell disc.
+For the records processed with \gls{3dprobe}, an early response to this problem is the information of the brightness intensity reflected by the probe. Lets analyze what looks like a crack in terms of brightness. This first example in \autoref{fig:crackdepthbri} comes from the Graham Bell disc.
 
 \begin{figure}[!ht]
     \centering
     \begin{subfigure}[t]{0.45\textwidth}
     \centering
-    %\includegraphics[width=0.9\textwidth]{images/crack-ex-depth}
+    \includegraphics[width=0.9\textwidth]{images/bell-crack-raw}
     \caption{View of the heightmap.}
     \label{fig:crackdepth}
     \end{subfigure}
     \begin{subfigure}[t]{0.45\textwidth}
     \centering
-    %\includegraphics[width=0.9\textwidth]{images/crack-ex-bri}
+    \includegraphics[width=0.9\textwidth]{images/bell-crack-bri}
     \caption{View of the brightness intensity.}
     \label{fig:crackbri}
     \end{subfigure}
@@ -801,15 +800,17 @@ For the records processed with \gls{3dprobe}, an initial response to this proble
     \label{fig:crackdepthbri}
 \end{figure}
 
-As it is difficult to see a clear difference in the first image, the brighness 
+Though it is difficult to see a clear difference in the first image, on the second one the pixels are much darker on the crack area. This happens in this case because the material of the underneath support reflects less brightness than the normal surface.
 
-%The final detail results depends of course on the support
+Of course, in the general case the intensity depends on the material. For example, in a metallic disc, the brightness would be much higher instead. However, in all the samples used in this project from \gls{3dprobe}, the reflected brightness is clearly lower than the surface. This property will then be used to find the chunks.
 
-Of course, the intensity depends on the material of the underneath support. In all the samples from \gls{3dprobe}, however, the reflected brightness is clearly lower than the surface
+\subsection{Filtering}
 
-%Of course, the exact parameters will also depend on the different medium types.
+When detecting a features on a digitalized image, the first task is to apply a filter to eliminate the noise present in the image. Typically, what is needed is a way of smoothing (blurring) the image.
 
-\subsection{Preprocessing}
+\todo{complete section}
+
+%Because we will use the brightness intensity, reflected as the pixel intensity in the image
 
 \subsection{Segmentation}
 
