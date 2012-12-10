@@ -881,7 +881,7 @@ All the filters in this example remove the noise in the image. The regular blur 
 
 \subsection{Segmentation}
 
-Once the noise is removed in the source image, the next step is to do segmentation of the image. This process groups the pixels with common properties that we want to keep as valuable information, and distinguishes them from the rest (commonly called background). In this case, we want to keep the information on the chunks and remove the cracks.
+Once the noise is removed in the source image, the next step is to do segmentation of the image. This process groups the pixels with common properties that we want to keep as valuable information (commonly called the object), and distinguishes them from the rest (the background). In this case, we want to keep the chunks areas and remove the cracks.
 
 \subsubsection{Histogram}
 
@@ -904,19 +904,98 @@ This histogram shows clearly different peaks on the intensity value. The first p
 
 \subsubsection{Thresholding}
 
-At this step, we have the information to separate the regular record surface from the cracks.
+With the histogram, we have the information to separate the regular record surface from the cracks. The thresholding is one of the existing methods to segment the image. It simply consists of creating a binary image from a defined threshold. If the pixel value in the source is smaller than the threshold, the destination will get the value 0. Otherwise, it will get the value 1 (in practice, often the maximum intensity value, e.g. 255 for a byte-depth bitmap), as summarized in \eqref{eq:thresh}.
 
-\todo{Complete section}
+\begin{equation}
+\label{eq:thresh}
+\dst(x, y) =
+\left\{
+\begin{array}{l l}
+    1 & \text{if } \src(x, y) > \text{thresh},\\
+    0 & \text{otherwise}.
+\end{array}
+\right.
+\end{equation}
+
+\autoref{fig:threshex} shows the result of the thresholding applied on a portion of the Bell record.
+
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/thresh-before}
+    \caption{Before the thresholding (grayscale image).}
+    \label{fig:threshbef}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/thresh-after}
+    \caption{After the thresholding (binary image).}
+    \label{fig:threshaft}
+    \end{subfigure}
+    \caption{Result of the thresholding operation on a portion of a cracked record.}
+    \label{fig:threshex}
+\end{figure}
+
+The crack is well separated from the rest of the surface, except for some small artifacts in the top right and bottom left of the binary image. The methods to get rid of the latter will be explained in the next section.
 
 \subsubsection{Brightness normalization}
 
-%TODO normalization in PRISM
+Another way to improve the cracks detection will be to normalize the brightness signal. The raw information from the probe might indeed not be constant for every 180 points in a pass. Likewise, on the histogram example of \autoref{fig:histocrack}, it seems that the the range in the intensity values is not entirely used. The maximum around 180. This explains why the brightness image looks quite dark.
+
+In fact, \gls{prism} already implements a function normalizing the brightness in the vertical direction. Each captured points on the whole record are then rescaled from their specific properties.
+
+The implemented algorithm computes an histogram for each columns of the record. Then, in each of these, it iterates downward from the last intensity and stop when $\frac{4}{10}$ of the brighter pixels are reached. The most represented intensity (peak) in this portion is stored and then all values in the corresponding column are divided by its value. This results in a loss of information for the brighter (but underrepresented) values while the whole normalized image will be brighter and better emphasize the difference from lower and middle intensities. The visual result of the algorithm is visualized in \autoref{fig:brinorm}.
+
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/bri-norm-before}
+    \caption{Without normalization.}
+    \label{fig:brinormbef}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/bri-norm-after}
+    \caption{With normalization.}
+    \label{fig:brinormaft}
+    \end{subfigure}
+    \caption{Result of the brightness normalization in PRISM.}
+    \label{fig:brinorm}
+\end{figure}
+
+The cracks is more evidently visible in the normalized image. Some artifact are now visible in the crack itself, as the range is greater. The threshold must then be adapted when working with normalized brightness.
+
+Using this feature will be interesting in cases where the threshold can hardly differentiates the object from the background.
 
 \subsection{Cleaning}
 
+%TODO
+
+\subsubsection{Morphological operations}
+
+%TODO
+
 \subsection{Contours extraction}
 
+%TODO
+
 \subsection{Implementation and results}
+
+%TODO use OpenCV, etc.
+
+\subsubsection{Bell disc}
+
+%TODO
+
+\subsection{Dickson cylinder}
+
+%TODO
+
+\subsection{Boas cylinder}
+
+%TODO
 
 \section{Finding grooves}
 \label{sec:groovebot}
