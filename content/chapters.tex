@@ -253,7 +253,7 @@ To measure the height of the scanned surface, the sensor takes advantage of the 
 Hence, the color reflecting in focus on the surface will depend on the distance from the lens. The sensor captures then the reflected wavelength and can deduce the height. The probe can also give the value of the brightness, that is, the captured light intensity for a given point.
 
 \subsubsection{Capture properties}
-\label{sec:captureprop}
+\label{sec:3dcaptureprop}
 
 In a single snapshot, the sensor is able to capture 180 points in one line of \SI{1.8}{\milli\metre} in a way similar to the 2D camera with \gls{irene}. The depth is measured in a range of \SI{400}{\micro\metre} with a resolution of \SI{0.125}{\micro\metre}.
 
@@ -291,6 +291,7 @@ The user interface (\autoref{fig:prismgui}) embeds approximately the same main p
 The parameters and algorithms can be set on the top panel. In the middle and the right, the scanned media is visualized as a 2D heightmap. The dark and bright colors emphasize the higher, respectively the lower points on the surface. The image at the left-hand side is a general view while the other one shows a full resolution portion of the record (selected with the cursor and highlighted with the red square on the left panel). The lower panel gives the same type of information as the other program.
 
 \subsubsection{Processing steps}
+\label{sec:3dprocsteps}
 
 The processing part is performed through the same steps as with \gls{rene} (see~\autoref{sec:reneprocessing}). The main point is to take into account that a pixel value now denotes a real height and no more a brightness difference as on a photography. Likewise, the 3D acquisition suffers from bad points, that is, pixels with incorrect height value coming from the acquisition. Special algorithms are then set up to clean the scanned data and suppress these bad points.
 
@@ -346,9 +347,9 @@ Small differences can cause the 2D image to be blurred or the 3D scan to be out 
 
 \section{Typical records issues}
 
-As already stated, a lot of important and historical recordings are still stored on old records without other copies. Most of them can no more be read with regular phonographs. \gls{irene} and \gls{3dprobe} systems can then be used to restore the sound. However, some of the recordings are already altered, e.g. with some cracks appearing on disc surface, or completely broken into pieces, as old cylinders. These latter can still be acquired in several steps by strapping the pieces together, resulting in the same kind of issues in the processing step.
+As already stated, a lot of important and historical recordings are still stored on old records without other copies. Many of them can no more be read with regular phonographs. \gls{irene} and \gls{3dprobe} systems can then be used to restore the sound. However, some of the recordings are already altered, e.g. with some cracks appearing on disc surface, or completely broken into pieces, as old cylinders. These latter can still be acquired in several steps by strapping the pieces together, resulting in the same kind of issues in the processing step.
 
-Depending on the degradation level, other issues can also appear with optical methods. In some cases they are still not able to perform a proper scan. The next sections depict the most common problems.
+Depending on the degradation level, other issues can also appear with optical methods. In some cases the systems are still not able to perform a proper scan. The next sections depict the most common problems.
 
 \subsection{Shifting}
 \label{sec:issueshift}
@@ -377,18 +378,18 @@ As explained in \autoref{sec:zcorr}, the acquisition needs always to stay in foc
 
 \subsection{Other issues}
 
-Other problems may occur because of the cracks. For example, because of the lacquer deformation, the pieces can sometimes expand or shrink, which results in other corrections to apply. Likewise, the gaps introduced by the cracks can sometimes be large and the resulting sound affected. Most of time, the gap is not a loss of content but rather separation due to the shrinkage. Yet the reciprocal can also happen, i.e. when a piece of lacquer coat is folded on another one.
+Other problems may occur because of the cracks. For example, because of the lacquer deformation, the pieces can sometimes expand or shrink, which results in other corrections to apply. Likewise, the gaps introduced by the cracks can sometimes be large and the resulting sound affected. Most of time, the gap is not a loss of content but rather a separation due to the shrinkage. Yet the reciprocal can also happen, i.e. when a piece of lacquer coat is folded on another one.
 
 The trouble is to find out what is the best interpolation scheme to match the sound between the cracks. Furthermore, these latter issues become more important when a sound has to be synced with a visual representation, as for a movie sound track for example. The sound must match the picture so that the film is properly watchable.
 
 \section{Sample recordings}
 \label{sec:samplerec}
 
-To investigate properly on the previously discussed issues, a canonical test set has been provided by the laboratory. These samples gather the typical problems that the current softwares are unable to process correctly. Their properties as well as a general analysis of the related will be detailed in the next sections.
+To investigate properly on the previously discussed issues, a canonical test set has been provided by the laboratory. These samples gather the typical problems that the current software components are unable to process correctly. Their properties as well as a general analysis of the related issues will be detailed in the next sections.
 
 \subsection{Graham Bell disc}
 
-A collection of Graham Bell records\footnote{More information on the recovered collection can be found on this IRENE web page: \url{http://bio16p.lbl.gov/volta-release.html}.} has been recovered in the \gls{irene} laboratory. This collection come from the Volta Laboratory created by Alexander Graham Bell. One of the disc in the collection, labeled 287700, is a vertically-cut wax disc. It can be viewed in \autoref{fig:belldisc}.
+A collection of Graham Bell records\footnote{More information on the recovered collection can be found on this IRENE web page: \url{http://bio16p.lbl.gov/volta-release.html}.} has been recovered in the \gls{irene} laboratory. This collection comes from the Volta Laboratory created by Alexander Graham Bell. One of the disc in the collection, labeled 287700, is a vertically-cut wax disc. It can be viewed in \autoref{fig:belldisc}.
 
 \begin{figure}[!ht]
 \centering
@@ -410,7 +411,7 @@ On the whole record, the shifting does not seem to be very large. There is no mo
 
 \subsection{Dickson cylinder}
 
-This specific wax cylinder come from an experimental project by William Dickson and Thomas Edison. It is the soundtrack recording for the first film with recorded sound in addition to the motion picture. It is then an early prototype of a sound-film, but without real synchronization between picture and sound. This first attempt of a sound-film is known as the \emph{Dickson Experimental Sound Film}.
+This specific wax cylinder comes from an experimental project by William Dickson and Thomas Edison. It is the soundtrack recording for the first film with recorded sound in addition to the motion picture. It is then an early prototype of a sound-film, but without real synchronization between picture and sound. This first attempt of a sound-film is known as the \emph{Dickson Experimental Sound Film}.
 
 This cylinder is seriously damaged and contains, in addition to cracks, big areas where the grooves are removed, probably due to a piece of layer that has been entirely broken. This problem can be visualized in \autoref{fig:dicksonbig}. A smaller example of a crack is presented in \autoref{fig:dicksoncrack} as it is viewed from \gls{prism} in full resolution.
 
@@ -447,7 +448,7 @@ As every cylinders, it was acquired with the \gls{3dprobe} system. This record s
 \label{fig:0724cracks}
 \end{figure}
 
-The grooves are clearly visible but when a crack appears, the right way is difficult to see, even for human yes, as they are almost always shifted. \gls{prism} currently fails to properly track the grooves on this record.
+The grooves are clearly visible but when a crack appears, the correct matching between the different parts is difficult to spot because they are almost always shifted. Even for human eyes, the right way is difficult to follow. \gls{prism} currently fails to properly track the grooves on this record.
 
 \subsection{Brigance recording}
 
@@ -469,7 +470,7 @@ This disc is the only one in the test set that has been acquired with the \gls{i
     \caption{Detailed view of a particular crack.}
     \label{fig:brigcrackdet}
     \end{subfigure}
-    \caption{The Brigance disc as viewed from the RENE program).}
+    \caption{The Brigance disc as viewed from the RENE program.}
     \label{fig:brigdamage}
 \end{figure}
 
@@ -477,7 +478,7 @@ We can clearly see from the binned image in \autoref{fig:brigcracks} many irregu
 
 \subsection{Conclusion}
 
-All provided samples are unique and show a lot of different properties according to the mediums and their condition. This means that a general solution for this problem is difficult to come up with. Some parameters will then probably have to be chosen to adapt the futures solution to different types of medium. In the worst cases, the user intervention to help tracking the grooves may be mandatory.
+All provided samples are unique and show a lot of different properties according to the mediums and their condition. This means that a general solution for this problem is difficult to come up with. Some parameters will then probably have to be chosen to adapt the future solution to different types of medium. In the worst cases, the user intervention to help tracking the grooves may be mandatory.
 
 \section{Summary}
 
@@ -632,7 +633,7 @@ An utility class called \texttt{Utils} stands for common operations used specifi
 
 At creation, the scanned record must firstly be converted to a bitmap, so that it can be drawn on the panel. Most part of the process is implemented in the \texttt{BitmapFromData()} in the utility class.
 
-As already explained, the raw data of the scanned record is stored as an array of floating-point values (see~\autoref{sec:captureprop}). They must then be converted and normalized to be stored as values in the range \numrange[range-phrase=--]{0}{255} to represents pixel values. The bitmap created has the \SI{8}{bpp} format, using a 256 colors palette of grayscale values, so that the memory is not wasted with other colors.
+As already explained, the raw data of the scanned record is stored as an array of floating-point values (see~\autoref{sec:3dcaptureprop}). They must then be converted and normalized to be stored as values in the range \numrange[range-phrase=--]{0}{255} to represents pixel values. The bitmap created has the \SI{8}{bpp} format, using a 256 colors palette of grayscale values, so that the memory is not wasted with other colors.
 
 \subsubsection{Draw panel animation}
 
@@ -748,11 +749,11 @@ This chapter will firstly summarize the current implemented algorithms and expla
 
 \subsection{Tracking line}
 
-One of the currently implemented automatic tracking method, called \emph{track line}, tries to find the approximate edges of a groove. It is especially used on disc in \gls{rene}. This is achieved by finding the peaks in intensity and keeping trace of the groove edges by detecting the changing intensity (as seen in \autoref{sec:reneprocessing}). Then, it follows the corresponding X-position scanning the record downward and adjusting it to the deepest value.
+One of the currently implemented automatic tracking method, called \emph{track line}, tries to find the approximate edges of a groove. It is especially used on disc records in \gls{rene}. This is achieved by finding the peaks in intensity and keeping track of the groove edges by detecting the changing intensity (as seen in \autoref{sec:reneprocessing}). Then, it follows the corresponding X-position scanning the record downward and adjusting it to the deepest value.
 
 When the bottom of the scanned record is reached, the tracking can simply continue at the top, meaning that a full revolution has been reached. The tracking is completed when the side of the record has been reached.
 
-This method fails when their is just a little crack, because the depth is obviously completely wrong at these place, and the algorithm fails to find its way to the disc.
+This method fails when there is just a little crack, because the depth is obviously completely wrong at these place, and the algorithm fails to find its way to the disc.
 
 \subsection{Tracking depth}
 
@@ -760,13 +761,13 @@ The second method is the counterpart of the tracking line algorithm, operating i
 
 \subsection{Tracking Fourier}
 
-The second method uses a different approach. The binned image is scanned horizontally, giving the groove shapes for each row. Then, the Fast Fourier Transform algorithm is applied giving the frequency space of the signal. This enables to get the peak frequency and deduce the phase which gives the distance between two grooves. When the first groove as been tracked, the other ones can then be deduced by the computed phase.
+The second method uses a different approach. The binned image is scanned horizontally, giving the groove shapes for each row. Then, the Fast Fourier Transform algorithm is applied giving the frequency space of the signal. This enables to get the peak frequency and deduce the phase which gives the distance between two grooves. When the first groove has been tracked, the other ones can then be deduced by the computed phase.
 
 This method works well when the records are not distorted, as the distance between two grooves remains invariable in the same row. Therefore, it is also inapplicable for cracked records for the same reasons.
 
 \subsection{Conclusion}
 
-The existing automatic tracking methods propose different ways which has proven to be effective for a large variety of records. However, this simple approach cannot be used anymore in the case of cracked records. The biggest issue is that when a crack appears, no information is relevant in the corresponding signal. It could be avoided until the damaged part ends up, but in this case the typical problem of shifting (see \autoref{sec:issueshift}) would make it almost impossible to follow correctly the good path.
+The existing automatic tracking methods propose different ways which have proven to be effective for a large variety of records. However, this simple approach cannot be used anymore in the case of cracked records. The biggest issue is that when a crack appears, no information is relevant in the corresponding signal. It could be avoided until the damaged part ends up, but in this case the typical problem of shifting (see \autoref{sec:issueshift}) would make it almost impossible to follow correctly the good path.
 
 Somehow, these cracks must be firstly detected in order to process the record correctly. The next sections explain ways to find cracks in the scanned records in order to distinguish the different pieces.
 
@@ -780,7 +781,7 @@ To detect them properly, a characteristic which differs in parts representing cr
 
 The recording test set with specific damaged examples has already been presented in \autoref{sec:samplerec}. However, at this point, we need to investigate more deeply to find a way to clearly distinguish the cracks from the rest of a record.
 
-For the records processed with \gls{3dprobe}, an early response to this problem is the information of the brightness intensity reflected by the probe. Lets analyze what looks like a crack in terms of brightness. This first example in \autoref{fig:crackdepthbri} comes from the Graham Bell disc.
+For the records processed with \gls{3dprobe}, an early response to this problem is the information of the brightness intensity reflected by the probe. Let analyze what looks like a crack in terms of brightness. This first example in \autoref{fig:crackdepthbri} comes from the Graham Bell disc.
 
 \begin{figure}[!ht]
     \centering
@@ -796,23 +797,120 @@ For the records processed with \gls{3dprobe}, an early response to this problem 
     \caption{View of the brightness intensity.}
     \label{fig:crackbri}
     \end{subfigure}
-    \caption{A crack visualized as depth and brightness intensity.}
+    \caption{A crack in the Bell record visualized as depth and brightness intensity.}
     \label{fig:crackdepthbri}
 \end{figure}
 
-Though it is difficult to see a clear difference in the first image, on the second one the pixels are much darker on the crack area. This happens in this case because the material of the underneath support reflects less brightness than the normal surface.
+On \autoref{fig:crackdepth}, it is quite difficult to spot a clear difference. It seems to be brighter but some horizontal lines cross the chunk. In fact, these peculiar values inside a chunk occur because of a feature implemented in \gls{prism}. When the acquired values of the beam are out of range, the probe return the maximum height value, appearing in white in the image. However, at loading time, the bad pixels detected as totally wrong are replaced by the weighted average of their neighbors. This results in these horizontal lines in \autoref{fig:crackdepth} making difficult to extract the cracks. This feature can be deactivated, making the cracks more visible in bright values, but also resulting in other bad points (not necessarily in cracks) not being fixed.
 
-Of course, in the general case the intensity depends on the material. For example, in a metallic disc, the brightness would be much higher instead. However, in all the samples used in this project from \gls{3dprobe}, the reflected brightness is clearly lower than the surface. This property will then be used to find the chunks.
+On the brightness image (\autoref{fig:crackbri}), the pixels appear much darker in the crack area. This happens in this case because the material of the underneath support reflects less brightness than the normal surface. Of course, in the general case the intensity depends on the material. For example, in a disc with metallic support, the brightness would be much higher instead. However, in all the samples used in this project from \gls{3dprobe}, the reflected brightness is clearly lower than the surface. This property will then be used to find the chunks.
+
+\subsubsection{Differences with VisualAudio}
+
+On the cracked discs processed by VisualAudio, the cracks are quite big and usually bigger than the actual grooves. The process to find cracks starts by decimating the image, e.g. by a factor of 16. The cracks detection can then be processed quickly.
+
+However, in our case, the cracks appearing in wax cylinders and discs can be very small, usually smaller than an actual groove. If the image is binned, two much information is lost to properly find all cracks. The processing must then be applied on the original image. The size is bigger but this is not an issue with \gls{3dprobe}. Firstly, the scan is not separated in different files and has not to be merged. The resulting image is also smaller, as the number of points per line is smaller (see \autoref{sec:3dcaptureprop}) as well as the sampling frequency detailed in \eqref{eq:samprate3d}. The multi-pass scan is not an issue, as for vertically-cut records the passes are usually averaged instead of kept as individual values. Therefore, the final image size is not multiplied.
 
 \subsection{Filtering}
 
-When detecting a features on a digitalized image, the first task is to apply a filter to eliminate the noise present in the image. Typically, what is needed is a way of smoothing (blurring) the image.
+When detecting a feature on a digitalized image, the first task is to apply a filter to eliminate the noise present in the image. What is typically needed is a way of smoothing (blurring) the image. Different filters can be applied to clean the source image.
 
-\todo{complete section}
+\subsubsection{Convolution}
 
-%Because we will use the brightness intensity, reflected as the pixel intensity in the image
+The mathematical operation for applying a filter is called a convolution (noted $\ast$). In the case of an image, the source can be viewed as matrix $A$. The new image is computed by applying a convolution matrix, also called \emph{kernel}, which contains different weights . To compute the new pixel value, the weighted sum of the current pixel and all the pixels around is calculated using the coefficients in the kernel.
+
+\begin{equation}
+\label{eq:convolsimple}
+B =
+\begin{bmatrix}
+1/9 & 1/9 & 1/9 \\
+1/9 & 1/9 & 1/9 \\
+1/9 & 1/9 & 1/9
+\end{bmatrix}
+\ast A
+\end{equation}
+
+In \eqref{eq:convolsimple}, the $3 \times 3$ kernel results in a simple blur consisting of the average of all pixel values around. The dimensions of a convolution matrix must be an odd value but it is not necessarily square.
+
+\subsubsection{Blurring types}
+
+Other blurring types can be used depending on the desired results. A well-known filter is the Gaussian blur. Instead of using the same coefficients for every pixels, they are calculated using a Gaussian distribution in two dimensions. It is computed from the product of two Gaussians parameterized by $x$ and $y$. The corresponding formula is given in \eqref{eq:gauss2d}.
+
+\begin{equation}
+\label{eq:gauss2d}
+G(x) = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
+\end{equation}
+
+An example of a $5 \times 5$ kernel applying a Gaussian blur with $\sigma = 0.8$ is approximated in \eqref{eq:convolgauss}. The result is that the current pixel is much more weighted than the distant neighbors. The visual representation of the two dimensional Gaussian is viewed in \autoref{fig:convolgauss}.
+
+\begin{equation}
+\label{eq:convolgauss}
+{\scriptsize
+\begin{bmatrix}
+0.0005 & 0.0050 & 0.0109 & 0.0050 & 0.0005 \\
+0.0050 & 0.0521 & 0.1139 & 0.0521 & 0.0050 \\
+0.0109 & 0.1139 & 0.2487 & 0.1139 & 0.0109 \\
+0.0050 & 0.0521 & 0.1139 & 0.0521 & 0.0050 \\
+0.0005 & 0.0050 & 0.0109 & 0.0050 & 0.0005 \\
+\end{bmatrix}
+}
+\end{equation}
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.6\textwidth]
+\addplot3[surf,domain=-2:2] {1 / (2 * pi * 0.8^2) * exp( -(x^2+y^2) / (2 * 0.8^2) )};
+\end{axis}
+\end{tikzpicture}
+\caption{Visualization of the two-dimensional Gaussian with $\sigma = 0.8 $ .}
+\label{fig:convolgauss}
+\end{figure}
+
+Another common filtering method is the median blur. The principle is slightly different than a convolution. Instead of computing a weighted sum, the new pixel value is computed by taking the median of the values selected by the kernel. It is no longer an averaging but a sorting operation. The selected value is thus an existing one and is less subject to degenerate pixels. The outcome is that the median filter preserves edges better than the other filters. The different filtering methods can be seen in \autoref{fig:filtermeth}.
+
+All the filters in this example remove the noise in the image. The regular blur seems to remove information on the cracks while the Gaussian filter gives a better result (the crack edges are less blurred). The crack area is even better preserved with the median filter.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/filter-methods}
+\caption[Visualization of the different filtering methods]
+{Visualization of the different filtering methods with kernels of dimension $7 \times 7$. The top left part is the source image and on the right is the simple constant blur. The two bottoms parts are respectively the Gaussian and median filters.}
+\label{fig:filtermeth}
+\end{figure}
 
 \subsection{Segmentation}
+
+Once the noise is removed in the source image, the next step is to do segmentation of the image. This process groups the pixels with common properties that we want to keep as valuable information, and distinguishes them from the rest (commonly called background). In this case, we want to keep the information on the chunks and remove the cracks.
+
+\subsubsection{Histogram}
+
+A common tool helping for the segmentation operation is the histogram. An histogram represents the statistical distribution of a variable. Therefore, computing the histogram of an image means to compute the number of occurrences of each pixel values (usually in the range \numrange[range-phrase=--]{0}{255} for a bitmap). In our case this corresponds to the brightness intensity.
+
+The histogram of a portion of the brightness image from a cracked disc can be seen in \autoref{fig:histocrack}.
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.7\textwidth,xlabel=Intensity value,ylabel=Frequency]
+\addplot +[mark=none, fill=blue] table[x expr=\coordindex,y=y] {graphs/histo-crack.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Histogram of a cracked record portion.}
+\label{fig:histocrack}
+\end{figure}
+
+This histogram shows clearly different peaks on the intensity value. The first peak represents very dark pixel values. As predicted, this is the intensity inside the crack area, which is clearly detached from the rest of the image. The cracks is approximately represented by the intensity between \numrange[range-phrase=--]{0}{10} and the rest of the image in the intensity \numrange[range-phrase=--]{11}{255}.
+
+\subsubsection{Thresholding}
+
+At this step, we have the information to separate the regular record surface from the cracks.
+
+\todo{Complete section}
+
+\subsubsection{Brightness normalization}
+
+%TODO normalization in PRISM
 
 \subsection{Cleaning}
 
