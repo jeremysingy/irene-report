@@ -971,11 +971,71 @@ Using this feature will be interesting in cases where the threshold can hardly d
 
 \subsection{Cleaning}
 
-%TODO
+The thresholding which segments the object from the background only takes in account the value of a single pixel to decide if it is part of a chunk or a crack. In practical cases, the distinction is almost never that evident. The histogram of an image shows peaks as statistical information but the final chosen threshold is a compromise to separate at best the two parts. There will then be some background pixels considered as being part of the object and vice versa. One possibility to clean these regions is to use the morphological operations.
 
 \subsubsection{Morphological operations}
 
-%TODO
+Morphological operations are a technique to clean an image based on the pixels in the neighborhood. These are then boolean masks applied on the binary image in a similar way than the filtering operations seen before.
+
+As the coefficients are 0 or 1, a mask is usually defined by its shape and is called a \emph{structured element} in this context. A typical shape is the cross, as defined in \eqref{eq:morphocross}.
+
+\begin{equation}
+\label{eq:morphocross}
+M =
+\begin{bmatrix}
+0 & 1 & 0 \\
+1 & 1 & 1 \\
+0 & 1 & 0
+\end{bmatrix}
+\end{equation}
+
+The mask $M$ is evaluated on each pixel as a common filter. The result is then the number of pixels contained in the cross shape.
+
+The two basic operations using these structuring elements are called erosion and dilatation. If $n$ is the number of pixels from the structuring elements, these operations $E$ and $D$ are defined as in \eqref{eq:morphoop}.
+
+\begin{equation}
+\label{eq:morphoop}
+\dst(E) =
+\left\{
+\begin{array}{l l}
+    1 & \text{if } n = 1,\\
+    0 & \text{otherwise}.
+\end{array}
+\right. \qquad
+\dst(D) =
+\left\{
+\begin{array}{l l}
+    1 & \text{if } n > 1,\\
+    0 & \text{otherwise}.
+\end{array}
+\right.
+\end{equation}
+
+The first one removes some pixels from the object and the second one add pixels to the object. This operations are always applied together. Performing a dilation on an erosion ($E \to D$) is called an opening and the inverse ($D \to E$) a closing.
+
+\subsubsection{Results}
+
+Which operation to use depend on the context. The opening removes small region considered as the object that are smaller than the structuring element. The closing add some small parts in the object that was considered as background, i.e. it ``closes the holes''.
+
+The example in \autoref{fig:morphoex} shows the difference after applying a closing on a segmented binary image from a cracked record. In this case, the erosion and dilatation elements are both $3 \times 3$ and each of them are applied five times (in 5 passes).
+
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/morpho-before}
+    \caption{Initial binary image.}
+    \label{fig:morphobef}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/morpho-after}
+    \caption{After the operation.}
+    \label{fig:morphoaft}
+    \end{subfigure}
+    \caption{Five passes closing to eliminate black pixels in the chunks.}
+    \label{fig:morphoex}
+\end{figure}
 
 \subsection{Contours extraction}
 
