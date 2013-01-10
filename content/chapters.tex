@@ -1045,9 +1045,39 @@ The example in \autoref{fig:morphoex} shows the difference after applying a clos
 
 Finally, when the chunks are separated from the cracks, the remaining work is to extract the contours, which will define and distinguish all the chunks in the record. The output of this step is a list of polygon (itself a list of points), describing the contours of each chunks.
 
-\todo{Continue section}
+The standard behavior is to describe every pixel of the contour in the image. However, one step further is to approximate a simple polygon from this set of points, as viewed in \autoref{fig:contourapprox}. This enables to remove small noise from the contours detection and lighten the storage.
+
+%it is better to  point To simplify the future processing and
+
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    %\includegraphics[width=0.9\textwidth]{images/approx-before}
+    TODO
+    \caption{Result from the contour detection.}
+    \label{fig:withoutapprox}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    %\includegraphics[width=0.9\textwidth]{images/approx-after}
+    TODO
+    \caption{Using polygon approximation.}
+    \label{fig:withapprox}
+    \end{subfigure}
+    \caption{Illustration of the contour detection.}
+    \label{fig:contourapprox}
+\end{figure}
 
 \subsection{Implementation and results}
+
+The previous sections explained the techniques to implement the chunks detection. As this step implies a lot of experimentation to properly find the best parameters to use, a separate application has been written enabling to easily visualize the results and change all parameters. This enables to test quickly the best parameters to use for a proper detection, without the overhead of loading a whole acquisition using \gls{prism}.
+
+\subsubsection{Cracks detection application}
+
+This application has been written in \Csh{} in order to simplify the integration into \gls{prism}. Also, for the image processing algorithm, the OpenCV library (more precisely its \Csh wrapper called Emgu CV) has been used. Almost all techniques and algorithms detailed in the sections above are implemented in an efficient way in this library.
+
+The program loads the input directly from the filesystem, 
 
 %TODO use OpenCV, etc.
 
@@ -1055,11 +1085,11 @@ Finally, when the chunks are separated from the cracks, the remaining work is to
 
 %TODO
 
-\subsection{Dickson cylinder}
+\subsubsection{Dickson cylinder}
 
 %TODO
 
-\subsection{Boas cylinder}
+\subsubsection{Boas cylinder}
 
 %TODO
 

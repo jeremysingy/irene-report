@@ -26,40 +26,46 @@
 %\renewcommand{\subsectionautorefname}{Subsection}
 %\renewcommand{\subsubsectionautorefname}{Subsection}
 
-% Title page is followed by a blank page
-\input{title}
-\pagenumbering{alph} % Avoid the problem with glossary hyperrefs
-\maketitle
-\cleardoublepageoneside
-%\cleardoublepage
+%\pagenumbering{alph} % Avoid the problem with glossary hyperrefs
+%\pagenumbering{roman} % Roman numerals
+%\setcounter{page}{1}
 
-%TODO Include the abstract
-%\input{content/abstract}
+% Title page is followed by a blank page
+\newgeometry{top=2cm, bottom=2cm, left=2cm, right=2cm}
+\input{title}
+\maketitle
+\restoregeometry
+%\cleardoublepageoneside
+\cleardoublepage
+
+% Default margins for the rest of the document
+%\newgeometry{left=3cm, right=3cm}
+%\usepackage[left=3cm, right=3cm]{geometry}
 
 % For front matter
-%\pagestyle{plain} % No headers, just page numbers
+\pagestyle{plain} % No headers, just page numbers
 \pagenumbering{roman} % Roman numerals
+
+%TODO Include the abstract
+\include{content/abstract}
+\cleardoublepage
 
 % Table of contents
 \setlength{\headheight}{44.5pt}
 \tableofcontents
 
-% Front-matter
-\input{content/acknowledgments}
-
-% List of figures, tables and listings
-\listoffigures
-\listoftables
-\lstlistoflistings
+% Front-matter (acknowledgement and lists)
+\include{content/frontmatter}
 
 % Set the fancy headers
 \input{config/headers}
-\clearpage
+
+% Include the actual report content
+%\clearpage
 \pagenumbering{arabic}
 %\setcounter{page}{1}
 
-% Include the actual report content
-\input{content/chapters}
+\include{content/chapters}
 
 % Glossary
 \printglossaries

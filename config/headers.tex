@@ -23,11 +23,13 @@
 \renewcommand{\chaptermark}[1]{\markboth{\bsc{\chaptername~\thechapter{} :} #1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection{} #1}}
 
-\fancyhead[L]{\doctitle}
-\fancyhead[R]{\rightmark}
-\fancyfoot[L]{\authorname}
+% Odd page (recto, right-hand) and even page (verso, left-hand)
+\fancyhead[RE,LO]{\doctitle}
+\fancyhead[LE,RO]{\rightmark}
+\fancyfoot[RE,LO]{\authorname}
+\fancyfoot[LE,RO]{\thepage{} of \pageref*{LastPage}}
+
 %\fancyfoot[C]{\leftmark}
-\fancyfoot[R]{\thepage{} of \pageref*{LastPage}}
 
 % Display header of the TOC to lowercase
 \fancyhead[RO]{\nouppercase\rightmark}
