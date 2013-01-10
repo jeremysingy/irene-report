@@ -738,11 +738,15 @@ This part of the project ended with a new feature to the current system. The new
 
 The next chapter will present some ways to detect the cracks in a record. This will be a first step for the implementation of an automatic system to track damaged records, as well as a way of providing further information to the user for the manual tracking feature.
 
-\chapter{Cracks detection}
+
+%\chapter{Automatic processing}
+
+\chapter{Chunk and groove detection}
 
 The main problem to address in this project is that the current algorithms are unable to properly track (find) the grooves when a record is cracked.
 
-This chapter will firstly summarize the current implemented algorithms and explain why they cannot be used as such on cracked records. Then, it will explain a way of finding the cracks and distinguish the different pieces delimited by them. Finally, the remaining work will be to track the grooves in each of these parts.
+This chapter will firstly summarize the current implemented algorithms and explain why they cannot be used as such on cracked records. Then, it will explain a way of finding the cracks and distinguish the different pieces delimited by them. Finally, the remaining work will be to find the grooves inside these chunks, in order to be able to track them later.
+%will be to track the grooves in each of these parts.
 
 \section{Existing tracking methods}
 \label{sec:trackmethods}
@@ -1039,7 +1043,7 @@ The example in \autoref{fig:morphoex} shows the difference after applying a clos
 
 \subsection{Contours extraction}
 
-Finally, when the chunks are separated from the cracks, the remaining work is the extract the contours, which will define and distinguish all the chunks in the record. The output of this step is a list of polygon (itself a list of points), describing the contours of each chunks.
+Finally, when the chunks are separated from the cracks, the remaining work is to extract the contours, which will define and distinguish all the chunks in the record. The output of this step is a list of polygon (itself a list of points), describing the contours of each chunks.
 
 \todo{Continue section}
 
@@ -1058,6 +1062,29 @@ Finally, when the chunks are separated from the cracks, the remaining work is th
 \subsection{Boas cylinder}
 
 %TODO
+
+\section{Establishing frontiers}
+
+At this stage of the processing, a collection of objects describing a physical chunk has been computed. It consists of a list of points describing a simple polygon (without intersecting lines). However, this polygon can still be non-convex. In the general case, it could be a non-trivial shape.
+
+This section explains how to separated a chunk into several \emph{frontiers} which will be the starting point for the groove detection and the tracking.
+
+\subsection{Difference from VisualAudio}
+
+At this point, the choice has been not to directly follow the idea of VisualAudio. In the latter, the next step after the chunks detection is directly the tracking (or even processing, as there is no previous tracking step as with \gls{irene}). The portion inside the chunk is isolated by applying a mask, and the grooves are found and tracked by a method using histograms (see Chapter~6 in \cite{seydoux08}). Only after this step, the chunks (now defined by a set of traces, or grooves) are separated in frontiers to continue towards the linking step.
+
+This choice was made after analyzing the VisualAudio code and documentation. This part was quite complex and it required some algorithm that did not look relevant in the case of \gls{prism}. Instead, it was decided to separated the chunk \emph{geometry} into frontiers, before finding and tracking the groove.
+%The particular used algorithms 
+
+\subsubsection{Goal of this step}
+
+\todo{general explanation and image}
+
+To link correctly the trace, it is mandatory that the different pieces to link are convex or, more precisely, at least monotone in respect to the horizontal axis\footnote{A polygon monotone in respect to a line $L$ means that every line parallel to $L$ intersects the polygon no more than twice, in this case the x-axis (horizontal)}. %As the grooves are scanned vertically on the bitmap, 
+
+\subsubsection{Frontier extraction}
+
+In fact, the real problem %whether a chunk 
 
 \section{Finding grooves}
 \label{sec:groovebot}
@@ -1096,6 +1123,14 @@ Different algorithms exist. For example, one can just smooth the signal by avera
 \end{figure}
 
 \todo{Complete the section}
+
+\chapter{Groove tracking}
+
+TODO.
+
+\chapter{Linking and building tracks}
+
+TODO.
 
 %\section{Current issue}
 %
