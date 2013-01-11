@@ -11,7 +11,7 @@
 \setauthor{Jérémy}{Singy}
 
 % Import external configurations
-%\input{config/headers}
+\input{config/headers}
 \input{config/hyperref}
 \input{config/listings}
 
@@ -27,8 +27,6 @@
 %\renewcommand{\subsubsectionautorefname}{Subsection}
 
 %\pagenumbering{alph} % Avoid the problem with glossary hyperrefs
-%\pagenumbering{roman} % Roman numerals
-%\setcounter{page}{1}
 
 % Title page is followed by a blank page
 \newgeometry{top=2cm, bottom=2cm, left=2cm, right=2cm}
@@ -38,15 +36,8 @@
 %\cleardoublepageoneside
 \cleardoublepage
 
-% Default margins for the rest of the document
-%\newgeometry{left=3cm, right=3cm}
-%\usepackage[left=3cm, right=3cm]{geometry}
-
-% For front matter
-\pagestyle{plain} % No headers, just page numbers
-\pagenumbering{roman} % Roman numerals
-
-%TODO Include the abstract
+% Include the abstract
+\frontmatterstyle
 \include{content/abstract}
 \cleardoublepage
 
@@ -57,14 +48,8 @@
 % Front-matter (acknowledgement and lists)
 \include{content/frontmatter}
 
-% Set the fancy headers
-\input{config/headers}
-
 % Include the actual report content
-%\clearpage
-\pagenumbering{arabic}
-%\setcounter{page}{1}
-
+\maindocstyle
 \include{content/chapters}
 
 % Glossary

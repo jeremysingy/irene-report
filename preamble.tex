@@ -50,7 +50,8 @@
 % Captions setup
 \floatsetup[table]{capposition=top}
 \captionsetup%[table]
-{labelfont={sf,bf},textfont={sf,it}} %{format=listing,labelfont=white,textfont=white}
+{labelfont={sf,bf},textfont={sf,it},labelsep=space} %{format=listing,labelfont=white,textfont=white}
+\captionsetup[subfigure]{textfont={sf}}
 
 % Enable to plot graph
 \usepackage{pgfplots}
@@ -137,9 +138,11 @@
 
 % Set the author name
 \newcommand{\authorname}{noname}
+\newcommand{\authornamesf}{noname}
 \newcommand{\setauthor}[2]
 {
     \renewcommand{\authorname}{#1~\textsc{#2}}
+    \renewcommand{\authornamesf}{#1~#2}
 }
 
 % Clear double page working in one-sided mode
