@@ -692,13 +692,11 @@ The bitmap and the tracked points are drawn in the same coordinate system. One c
 The matrix is then reset to draw the red triangle. No transformation is needed as it is directly positioned at the very top center. Then, to draw the actual tracked position indicated by the blue triangle, the same transformations as for the bitmap must be applied for the X coordinates. However, we cannot just alter the current matrix. Indeed, the zoom would alter the triangle size as well. As for the record, we only want the position to be altered. The only way is then to define a new matrix and only apply the transformation to the point, before setting the position.
 
 \subsubsection{Groove center approximation}
+\label{sec:centerapprox}
 
-As explained in the previous section, the groove center is refined from the position indicated by the user. This is done by iterating $n$ points before and after current point in the same row, and returning the deepest position. The $n$ value is determined using an approximated groove width and a tolerance factor $t$ in the range $[0,1]$. For example, if the groove width is $60$ and the tolerance $0.8$, then $n = \frac{60}{2} t = 24$.
+As explained in the previous section, the groove center is refined from the position indicated by the user. This is done by iterating $n$ points before and after the current point in the same row, and returning the deepest position. The $n$ value is determined using an approximated groove width and a tolerance factor $t$ in the range $[0,1]$. For example, if the groove width is $60$ and the tolerance $0.8$, then $n = \frac{60}{2} t = 24$.
 
-The groove width can be fixed or determined by analyzing the record at the start. An example of how to automatically find the groove width will be explained in the next section.
-
-\todo{link section}
-%\autoref{sec:groovebot}.
+The groove width can be fixed or determined by analyzing the record. This step will be explained in \autoref{sec:groovefilter}.
 
 \section{Finding grooves}
 \label{sec:groovebot}
@@ -775,13 +773,20 @@ caption={Pseudocode of the row normalization function},
 label={lst:normrow}]
 {listings/normalize-row.cs}
 
-\subsubsection{Fix bad points}
+\subsubsection{Fix bad fiber}
 
-TODO. %TODO
+Another problem that came in the first place was about bad fiber detection. The probe may have a manufacturing defect affecting one or two points (that remain the same) from all the 180 ones on the probe. Because the corresponding pixels will have the maximum possible value (as for bad points), they are always seen as whitish vertical lines on the image. In \gls{prism}, there is already a feature to remove a bad fiber. The user can enter a value from \numrange{1}{179} and the value is fixed by computing the mean from the two adjacent values.
+
+However, the Bell disc has been acquired by the Library of Congress which possesses their own installation. It seems that it has two bad points at the border of the scan. This results in white lines at each scan borders, as seen in previous screenshots of this record from \gls{prism} (e.g. in \autoref{fig:intsynctrack} on the binned image).
+
+The current implementation has two limitations: it cannot handle multiple bad fibers and cannot fix points from the border, as the mean of both values is used (at this time, only the 180~points of the current scan are known). An option has then been added to remove bad borders. The user can enter the number of bad fibers from the start or the end of the scan. Then, it simply overwrites the values from their neighbors inside the scan.
 
 \subsubsection{Filtering results}
+\label{sec:groovefilter}
 
-TODO. %TODO
+Even with all the previous steps, there may still be some wrong values that come out from the peak detection. For example, in some situations with bad values, a groove may be detected twice. To avoid this, the filtering method analyzes the common distance groove size and ensures that the it is not too short, giving a tolerance factor.
+
+The common distance is evaluated by the median of all distances between two consecutive points. This gives a pretty good estimation. Using the average would be badly influenced by uncommon distance, as seen for example in the middle of the scan in \autoref{fig:groovehighlight}. This value is also used for the interactive tracking, as viewed in \ref{sec:centerapprox}.
 
 \section{Summary}
 
@@ -1104,19 +1109,17 @@ The standard behavior is to describe every pixel of the contour in the image. Ho
 \centering
     \begin{subfigure}[t]{0.45\textwidth}
     \centering
-    %\includegraphics[width=0.9\textwidth]{images/approx-before}
-    TODO
-    \caption{Result from the contour detection.}
+    \includegraphics[width=0.9\textwidth]{images/approx-without}
+    \caption{Without polygon approximation.}
     \label{fig:withoutapprox}
     \end{subfigure}
     \begin{subfigure}[t]{0.45\textwidth}
     \centering
-    %\includegraphics[width=0.9\textwidth]{images/approx-after}
-    TODO
+    \includegraphics[width=0.9\textwidth]{images/approx-with}
     \caption{Using polygon approximation.}
     \label{fig:withapprox}
     \end{subfigure}
-    \caption{Illustration of the contour detection.}
+    \caption{Illustration of the contour detection and approximation.}
     \label{fig:contourapprox}
 \end{figure}
 
@@ -1128,13 +1131,32 @@ The previous sections explained the techniques to implement the chunks detection
 
 This application has been written in \Csh{} in order to simplify the integration into \gls{prism}. Also, for the image processing algorithm, the OpenCV library (more precisely its \Csh wrapper called Emgu CV) has been used. Almost all techniques and algorithms detailed in the sections above are implemented in an efficient way in this library.
 
-The program loads the input directly from the filesystem, 
+The program loads directly pictures from the filesystem. For the early tests, some parts of records have been loaded into \gls{prism} and saved as pictures. A screenshot of this program is presented in \autoref{fig:crackdetprog}.
 
-%TODO use OpenCV, etc.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/crack-test-prog}
+\caption{Screenshot of the cracks detection test program.}
+\label{fig:crackdetprog}
+\end{figure}
+
+The four steps explained in the previous section or visualized in the program. This enables to clearly see the results for each steps separately and decide how to change parameters to improve the final detection. The four images scroll together be able to easily compare the results.
+
+At the beginning, several edge detection algorithms have been tested, e.g. the well-known Sobel and Canny filters. In the end, they were not suitable for our purpose. The thresholding detailed above is the only algorithm that has been implemented in \gls{prism}.
 
 \subsubsection{Bell disc}
 
-%TODO
+On the bell disc, some cracks are easily detected while others are really hard to detected. Fortunately, when the cracks are very tight, there is logically no shift. This means that at some point, some cracks can be avoided. As the system is quite different from VisualAudio, this will not cause a problem on the tracking. If the image is binned by a factor of 30, any crack being smaller than around 10 pixels is not even spotted by the tracking algorithm.
+
+The main issue will be when a crack is not entirely detected. The frontier of the chunk can stop anywhere, as seen in \autoref{fig:crackbellprob} causing future linking problem. In VisualAudio, even if the cracks are much bigger, this issue can also happen. The workaround is to manually edit the exported image to ``draw'' the missing part. In the case of \gls{prism}, we will try to avoid it.
+%TODO continue and image
+\begin{figure}[!ht]
+\centering
+%\includegraphics[width=0.9\textwidth]{images/crack-bell-prob}
+TODO %TODO
+\caption{A very thin crack not entirely detected on the bell disc.}
+\label{fig:crackbellprob}
+\end{figure}
 
 \subsubsection{Dickson cylinder}
 
