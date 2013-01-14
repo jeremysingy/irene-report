@@ -1233,44 +1233,61 @@ Regarding all the issues from this particular record, it seems that it will be a
 \section{Establishing frontiers}
 \label{sec:findfrontiers}
 
-At this stage of the processing, a collection of objects describing a physical chunk has been computed. It consists of a list of points describing a simple polygon (without intersecting lines). However, this polygon can still be non-convex. In the general case, it could be a non-trivial shape.
+At this stage of the processing, a collection of objects describing a physical chunk has been computed. It consists of a list of points describing a simple polygon (a polygon without intersecting lines). However, this polygon can still be non-convex. In the general case, it could be a non-trivial shape.
 
 This section explains how to separated a chunk into several \emph{frontiers} which will be the starting point for the groove detection and the tracking.
 
 \subsection{Difference from VisualAudio}
 
-At this point, the choice has been not to directly follow the idea of VisualAudio. In the latter, the next step after the chunks detection is directly the tracking (or even processing, as there is no previous tracking step as with \gls{irene}). The portion inside the chunk is isolated by applying a mask, and the grooves are found and tracked by a method using histograms (see Chapter~6 in \cite{seydoux08}). Only after this step, the chunks (now defined by a set of traces, or grooves) are separated in frontiers to continue towards the linking step.
+At this point, the choice has been made not to directly follow the idea of VisualAudio. In the latter, the next step after the chunks detection is directly the tracking (or even processing, as there is no previous tracking step as with \gls{irene}). The portion inside the chunk is isolated by applying a mask, and the grooves are found and tracked by a method using histograms (see Chapter~6 in \cite{seydoux08}). It is only after this step that the chunks (now defined by a set of traces, or grooves) are separated in frontiers to continue towards the linking step.
 
 This choice was made after analyzing the VisualAudio code and documentation. This part was quite complex and it required some algorithms that did not look relevant in the case of \gls{prism}. Instead, it was decided to previously geometrically separate the chunk into frontiers, before finding and tracking the groove from the detected frontiers.
 
-\subsubsection{Goal of this step}
+\subsection{Goal of this step}
 \label{chap:linking}
 
-\todo{general explanation and image}
-
-To correctly link the trace, it is mandatory that the different pieces to link are convex or, more precisely, at least monotone in respect to the horizontal axis\footnote{A polygon monotone in respect to a line $L$ means that every line parallel to $L$, in this case the x-axis (horizontal), intersects the polygon no more than twice.}. As the grooves are scanned vertically from the acquisition, it is not a problem if the concavity appears on the horizontal direction. However, in the case of a chunk as illustrated in \autoref{fig:chunkconcave}, it looks obviously that the grooves on the left part are split by the frontier. The missing parts of the grooves are located in another part of the record.
+To correctly link the trace, it is mandatory that the different pieces to link are convex or, more precisely, at least monotone in respect to the horizontal axis\footnote{A polygon monotone in respect to a line $L$ means that every line parallel to $L$, in this case the x-axis (horizontal), intersects the polygon no more than twice.}. As the grooves are scanned vertically from the acquisition, it is not a problem if the concavity appears on the horizontal direction. However, in the case of a chunk as illustrated in \autoref{fig:chunkdef}, it looks obvious that the grooves on the left part are split by the frontier. A missing part of these grooves are located in another part of the record.
 
 \begin{figure}[!ht]
 \centering
-%\includegraphics{diagrams/non-convex-chunk}
-TODO
-\caption[An example of non-convex chunk.]
-{An example of non-convex chunk. The blue lines represent the grooves inside the chunk.}
-\label{fig:chunkconcave}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/chunk-concave}
+    \caption{The initial chunk.}
+    \label{fig:chunkdef}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/chunk-zones}
+    \caption{The same chunk separated into zones.}
+    \label{fig:chunkzones}
+    \end{subfigure}
+    \caption[Visualization of a non-convex chunk.]
+    {Visualization of a non-convex chunk. The blue lines represent the grooves inside the chunk.}
+    \label{fig:chunkconcave}
 \end{figure}
 
-\subsubsection{Frontier extraction}
+In fact, the problem can be solved by splitting the chunks into well-defined parts. In VisualAudio, these parts are called \emph{zones}. The corresponding zones from the previous example can be seen in \autoref{fig:chunkzones}. With this separation into zones, the tracking of grooves inside each zone is no more problematic.
 
-In fact, the problem can be solved by splitting the chunks into well-defined parts. In VisualAudio, these parts are called \emph{zone}. The corresponding zones from the previous example can be seen in \autoref{fig:chunkconcavezones}.
+This separation looks evident for the human eyes, but the exact definition is more difficult to spot. We must firstly define what is a frontier.
+
+\subsubsection{Frontier definition}
+
+A frontier is either at the top or the bottom of a chunk. A top frontier has only some content of a chunk below line, while a bottom frontier has only some content above. A convex-shaped chunk has then only one top frontier and one bottom frontier. \autoref{fig:chunkfrontiers} visualizes the frontiers of the previous non-convex chunk.
 
 \begin{figure}[!ht]
 \centering
-%\includegraphics{diagrams/rene-gen-design.1}
-TODO
-\caption%[An example of non-convex chunk.]
-{A chunk splitted in three different zones.}
-\label{fig:chunkconcavezones}
+\includegraphics[width=0.6\textwidth]{images/chunk-frontiers}
+\caption{The chunk splitted in three different zones.}
+\label{fig:chunkfrontiers}
 \end{figure}
+
+The zones are then defined by a common top and bottom frontier of a chunk. Of course, one of the two may be smaller but a single zone is always only between the mingled part of these frontiers. The next step is to find an algorithm to extract the frontiers
+
+\subsection{Frontier extraction}
+
+%TODO
+\todo{describe algorithm}
 
 \chapter{Groove tracking}
 
