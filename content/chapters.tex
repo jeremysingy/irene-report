@@ -1000,6 +1000,7 @@ With the histogram, we have the information to separate the regular record surfa
 The crack is well separated from the rest of the surface, except for some small artifacts in the top right and bottom left of the binary image. The methods to get rid of the latter will be explained in the next section.
 
 \subsubsection{Brightness normalization}
+\label{sec:brinorm}
 
 Another way to improve the cracks detection will be to normalize the brightness signal. The raw information from the probe might indeed not be constant for every 180 points in a pass. Likewise, on the histogram example of \autoref{fig:histocrack}, it seems that the the range in the intensity values is not entirely used. The maximum around 180. This explains why the brightness image looks quite dark.
 
@@ -1144,29 +1145,59 @@ The four steps explained in the previous section or visualized in the program. T
 
 At the beginning, several edge detection algorithms have been tested, e.g. the well-known Sobel and Canny filters. In the end, they were not suitable for our purpose. The thresholding detailed above is the only algorithm that has been implemented in \gls{prism}.
 
-\subsubsection{Bell disc}
+\subsubsection{General results}
 
-On the bell disc, some cracks are easily detected while others are really hard to detected. Fortunately, when the cracks are very tight, there is logically no shift. This means that at some point, some cracks can be avoided. As the system is quite different from VisualAudio, this will not cause a problem on the tracking. If the image is binned by a factor of 30, any crack being smaller than around 10 pixels is not even spotted by the tracking algorithm.
+In general, the majority cracks are easily detected by correctly adapting the different parameters. However, others are really hard to detect, when they are very tight. Fortunately, when it is the case there is normally no groove shifting. This means that some cracks can be avoided. As the system is quite different from VisualAudio, this will not cause a problem on the tracking. If the image is binned by a factor of 30, any crack being smaller than around 10 pixels is not even spotted by the tracking algorithm.
 
-The main issue will be when a crack is not entirely detected. The frontier of the chunk can stop anywhere, as seen in \autoref{fig:crackbellprob} causing future linking problem. In VisualAudio, even if the cracks are much bigger, this issue can also happen. The workaround is to manually edit the exported image to ``draw'' the missing part. In the case of \gls{prism}, we will try to avoid it.
-%TODO continue and image
+The main issue will be when a crack is not entirely detected. The frontier of the chunk can stop anywhere, as seen in \autoref{fig:crackbellprob} causing future linking problems.
+
 \begin{figure}[!ht]
 \centering
-%\includegraphics[width=0.9\textwidth]{images/crack-bell-prob}
-TODO %TODO
+\includegraphics[width=0.8\textwidth]{images/crack-bell-prob}
 \caption{A very thin crack not entirely detected on the bell disc.}
 \label{fig:crackbellprob}
 \end{figure}
 
+In VisualAudio, even if the cracks are much bigger, this issue can also happen. The workaround is to manually edit the exported image to ``draw'' the missing part. In the case of \gls{prism}, we will try to avoid it, and the frontier detection as explained in \autoref{sec:findfrontiers} should not be affected by this issue.
+
+\subsubsection{Bell disc}
+
+On the bell disc, some cracks are easily detected while others are really hard to spot. The following parameters gave good results.
+
+\begin{itemize}
+\item Not using brightness normalization
+\item Using $3 \times 3$ median blur
+\item Threshold of 20
+\item 5 passes opening morphology (TODO kernels)
+\item Bad fibers: two bad fibers at the start of each capture
+\end{itemize}
+
+Using the brightness normalization as seen in \autoref{sec:brinorm} does not really change the results with an adapted threshold.
+
 \subsubsection{Dickson cylinder}
 
-%TODO
+As described in \autoref{sec:samplerec}, this record contains also some parts where the wax layer is broken and no groove is visible. Apart from this. A single radial crack crosses the whole record. This crack is easy to detect as it is wide. At some point the crack is getting tighter and difficult to distinguish from the rest of the record. It is however in a very damaged part where the grooves are very difficult to distinguish as well, even for a human.
+
+The parameters does not influence a lot the detection and will then remain the same as for the Bell disc above. It would be possible to extract it in several part, but probably not entirely in a single pass.
 
 \subsubsection{Boas cylinder}
 
-%TODO
+For this record, the brightness normalization must be used, because the range of intensity is far bigger than with other records, making the cracks almost invisible if not used. The final threshold to use is then greater than for the other records.
+
+On this particular acquisition the height between different chunks varies a lot. This should however not interfere the detection and tracking of grooves as it will be done separately between the different chunks. A more troublesome issue is that with these parameters, some small regions are detected as chunks. The code will handle this by removing too small areas, but the final tracking and linking steps will be probably very difficult on some parts.
+
+\begin{itemize}
+\item Using brightness normalization
+\item Using $3 \times 3$ median blur
+\item Threshold of 80
+\item 5 passes opening morphology with $3 \times 2$ for erosion and $2 \times 2$ for dilatation
+\item Bad fibers: one bad fiber at the end of each capture
+\end{itemize}
+
+Regarding all the issues from this particular record, it seems that it will be a better candidate for the manual and interactive tracking features, at least for some parts of the record.
 
 \section{Establishing frontiers}
+\label{sec:findfrontiers}
 
 At this stage of the processing, a collection of objects describing a physical chunk has been computed. It consists of a list of points describing a simple polygon (without intersecting lines). However, this polygon can still be non-convex. In the general case, it could be a non-trivial shape.
 
