@@ -38,11 +38,16 @@ The aim of this Master's thesis is to find ways to read correctly these kinds of
 
 Then, the next step will be to design and implement a tracking feature able to process cracked records and link their traces automatically. VisualAudio already implements a feature enabling to track cracked discs in an automatic or semi-automatic way. It can then be taken as an example, though it will obviously not be possible to directly adopt its implementation, as the systems are quite different.
 
-%\section{Report structure}
+\section{Report structure}
 
-%TODO This report is separated in...
+This report is separated into three main sections. The first one corresponds to the analysis performed in order to have a good understanding of the subject before starting on the actual project. \ref{chap:phonorecords} details the important points to know about phonograph records, history as well as main techniques implemented between the 19th and the 20th century. Then, \ref{chap:acqprocsys} will presents the current solutions developed at \gls{lbnl}. Both the 2D and 3D acquisition systems will be presented, as well as the processing part involving the different softwares.
+
+The second part will present the main work realized during the thesis. \ref{chap:mantrack} will detail the improvements to help the user for the restoration of profoundly damaged records, using a manual solution. Then, a proposition able to automatically process damaged records in certain circumstances while be presented. The implementation of the different parts is separated from Chapters~\ref{chap:groovedetect} through \ref{chap:linking}.
+
+%TODO end the structure
 
 \chapter{Phonograph cylinders and records}
+\label{chap:phonorecords}
 
 This chapter will give a quick historical overview of the different mechanical phonograph technologies and the types of mediums encountered. It will also explain the main principles behind the analog recording
 
@@ -487,6 +492,7 @@ This chapter presented an overview of the solutions developed at \gls{lbnl}. It 
 The following chapters will cover the existing ways of figuring out these issues, and present new features implemented during this thesis to improve and ease the recovery of these damaged records.
 
 \chapter{Manual tracking}
+\label{chap:mantrack}
 
 This chapter explains how we improved the manual tracking. Because there are a lot of different mediums and the same amount of issues coming with, it is not likely to find the best solution to solve each of them. There are some recordings to be recovered that have particular and unique issues, appearing only in a small section of the record. Likewise, some small artifacts can appear visually easy to catch and fix for the human eye, but very tricky to solve with a particular algorithm.
 
@@ -825,6 +831,7 @@ The next chapter will present some ways to detect the cracks in a record. This w
 %\chapter{Automatic processing}
 
 \chapter{Chunk and groove detection}
+\label{chap:groovedetect}
 
 The main problem to address in this project is that the current algorithms are unable to properly track (find) the grooves when a record is cracked.
 
@@ -1237,6 +1244,7 @@ At this point, the choice has been not to directly follow the idea of VisualAudi
 This choice was made after analyzing the VisualAudio code and documentation. This part was quite complex and it required some algorithms that did not look relevant in the case of \gls{prism}. Instead, it was decided to previously geometrically separate the chunk into frontiers, before finding and tracking the groove from the detected frontiers.
 
 \subsubsection{Goal of this step}
+\label{chap:linking}
 
 \todo{general explanation and image}
 
