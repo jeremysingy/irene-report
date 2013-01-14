@@ -627,8 +627,6 @@ An utility class called \texttt{Utils} stands for common operations used specifi
 
 \subsection{Implementation details}
 
-%Though the this feature does not use a lot of processing code, different
-
 \subsubsection{Bitmap creation}
 
 At creation, the scanned record must firstly be converted to a bitmap, so that it can be drawn on the panel. Most part of the process is implemented in the \texttt{BitmapFromData()} in the utility class.
@@ -697,6 +695,35 @@ The matrix is then reset to draw the red triangle. No transformation is needed a
 As explained in the previous section, the groove center is refined from the position indicated by the user. This is done by iterating $n$ points before and after the current point in the same row, and returning the deepest position. The $n$ value is determined using an approximated groove width and a tolerance factor $t$ in the range $[0,1]$. For example, if the groove width is $60$ and the tolerance $0.8$, then $n = \frac{60}{2} t = 24$.
 
 The groove width can be fixed or determined by analyzing the record. This step will be explained in \autoref{sec:groovefilter}.
+
+\subsection{Adaptation for RENE}
+
+Although all the analysis was done in the \gls{prism} program, this feature is also useful for \gls{rene}, to recover very damaged discs acquired with the \gls{irene} 2D system. Most of the code implementing \gls{gui} was fairly quickly adapted for the program, as the custom controls deriving from the Windows Forms \gls{api} are directly reusable.
+
+\subsubsection{Integration in the application}
+
+In terms of user interface, the new interactive panel was added as a new tab on the left part, as viewed in \autoref{fig:irenegui}). The feature with the cursor following in the binned image as also been added. As almost all business logic is implemented directly in the \texttt{Form1} class, which also contains the sources of the main \gls{gui}, the code has been directly added in this class.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/int-tracking-rene}
+\caption{Screenshot of the interactive tracking working in RENE.}
+\label{fig:irenegui}
+\end{figure}
+
+\subsubsection{Groove center approximation}
+
+The tracking step in \gls{rene} differs from the \gls{prism} implementation. In this case, the groove center is not already sought at this step, but instead the top edges delimiting a groove (the intervals as represented in \autoref{fig:irenegroove}). Then, in the processing part, the center is precisely found by looking inside the whole groove. However, while manually tracking a groove, the user does not trace both edges. Instead, he just highlights the approximate center, and the edges or computed by adding/subtracting a value conform to the groove width from this center. As the interactive tracking is based on the manual feature, the user will also follow the center.
+
+Therefore, the main difference between \gls{rene} and \gls{prism} is how to approximate this center. In \gls{prism}, the real height can be used and it is straightforward to keep track of it by finding the lowest point in the neighborhood. In our case, to keep the real center, an optimal solution would be to detect the edge sides and find the center, in a way similar to what is already done for the processing step.
+
+However, at this point, the tracking is just a rough approximation, and the real useful values are the top edges delimiting the groove. It will then be sufficient to keep track the brightest point in the neighborhood of the part pointed by the user to improve the tracking.
+
+\subsubsection{Original image resizing}
+
+An issue that appeared in \gls{rene} is that a single scanned ring loaded in the program has a huge resolution of \SI[product-units=single]{4096x80000}{px}. It appeared that handling the dynamic drawing of such a big bitmap, though feasible, was quite slow and made the tracking uncomfortable for the user.
+
+The solution was to resize the original image before drawing it by a certain factor. After several tests, a factor of 8, resulting in a \SI[product-units=single]{512x10000}{px} image was sufficient.
 
 \section{Finding grooves}
 \label{sec:groovebot}
