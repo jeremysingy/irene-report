@@ -756,6 +756,7 @@ The work is to find the groove bottoms on a given Y-position. The usual tracking
 However, pointing out the position where the bottoms are located in an horizontal line is possible, using a adequate algorithm.
 
 \subsubsection{Peak detection}
+\label{sec:peakdetect}
 
 The values on an horizontal line on a record scan can be seen as a one-dimensional signal. To find the bottoms on a signal, one cannot use the simple mathematical derivative because the signal is too noisy. A lot of variation can happen between two different values, because the signal is not smooth as if given by a simple mathematical function. One must then use a peak detection algorithm.
 
@@ -827,7 +828,6 @@ This part of the project ended with a new feature to the current system. The new
 
 The next chapter will present some ways to detect the cracks in a record. This will be a first step for the implementation of an automatic system to track damaged records, as well as a way of providing further information to the user for the manual tracking feature.
 
-
 %\chapter{Automatic processing}
 
 \chapter{Chunk and groove detection}
@@ -836,7 +836,6 @@ The next chapter will present some ways to detect the cracks in a record. This w
 The main problem to address in this project is that the current algorithms are unable to properly track (find) the grooves when a record is cracked.
 
 This chapter will firstly summarize the current implemented algorithms and explain why they cannot be used as such on cracked records. Then, it will explain a way of finding the cracks and distinguish the different pieces delimited by them. Finally, the remaining work will be to find the grooves inside these chunks, in order to be able to track them later.
-%will be to track the grooves in each of these parts.
 
 \section{Existing tracking methods}
 \label{sec:trackmethods}
@@ -1133,6 +1132,7 @@ The example in \autoref{fig:morphoex} shows the difference after applying a clos
 \end{figure}
 
 \subsection{Contours extraction}
+\label{sec:contextract}
 
 Finally, when the chunks are separated from the cracks, the remaining work is to extract the contours, which will define and distinguish all the chunks in the record. The output of this step is a list of polygon (itself a list of points), describing the contours of each chunks.
 
@@ -1214,6 +1214,9 @@ As described in \autoref{sec:samplerec}, this record contains also some parts wh
 
 The parameters does not influence a lot the detection and will then remain the same as for the Bell disc above. It would be possible to extract it in several part, but probably not entirely in a single pass.
 
+%TODO parameters
+%bad fiber: two bad fibers at the start of each capture
+
 \subsubsection{Boas cylinder}
 
 For this record, the brightness normalization must be used, because the range of intensity is far bigger than with other records, making the cracks almost invisible if not used. The final threshold to use is then greater than for the other records.
@@ -1282,12 +1285,87 @@ A frontier is either at the top or the bottom of a chunk. A top frontier has onl
 \label{fig:chunkfrontiers}
 \end{figure}
 
-The zones are then defined by a common top and bottom frontier of a chunk. Of course, one of the two may be smaller but a single zone is always only between the mingled part of these frontiers. The next step is to find an algorithm to extract the frontiers
+A property is that if there is $n$ top frontiers in a chunk, there is also $n$ bottom frontiers. The zones are then defined by a common top and bottom frontier of a chunk. Of course, one of the two may be smaller but a single zone is always only between the mingled part of these frontiers. The next step is to find an algorithm to extract the frontiers.
 
 \subsection{Frontier extraction}
 
-%TODO
-\todo{describe algorithm}
+\subsubsection{Detection}
+
+%From what has been found interesting point to separate them 
+To extract the frontiers, an analysis of the horizontal variation of the shape must be done. Indeed, as explained at the beginning of this section, we are looking for pieces monotones in respect to the x-axis. A simple algorithm is then to iterate through all the points of the shape and detect the changes in direction. If the points are listed in a counterclockwise rotation, the X coordinates for bottom frontiers are increasing, respectively decreasing for top frontiers.
+
+Whenever the X direction changes, a new frontier is detected. This method is visualized in \autoref{fig:frontierdet}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.6\textwidth]{images/frontier-detect}
+\caption{Frontier detection based on horizontal variation.}
+\label{fig:frontierdet}
+\end{figure}
+
+The corresponding algorithm is pretty simple to implement. To avoid that a single frontier is detected separately, the iteration must start at either the leftmost or rightmost point of the shape.
+
+\subsubsection{Amelioration}
+
+The solution explained above is not sufficient in practical cases. A chunk is not necessarily smooth-shaped, but may comport several local modifications that mean not a real change of direction. This problem can be minimized with the polygon approximation (already implemented as part of the chunk detection, see \autoref{sec:contextract}), but even in this case some wrong results are possible.
+
+In fact, we want to define a new frontier that is a defined minimum length, i.e. when the delta (in X coordinate) between the current position and the local extremum of the current frontier is large enough. Then, the previous frontier stops at the last extremum and the current one starts at the same location.
+
+Actually, this algorithm has already been discussed and is the peak detection algorithm (see \autoref{sec:peakdetect}). \autoref{fig:frontierdetalgo} demonstrates the relation between the peak and frontier detection on an example. In \autoref{fig:frontierdet2}, the graph corresponds to the X coordinates of the polygon points plotted from the leftmost one.
+
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/chunk-peaks}
+    \caption{Chunk with frontiers extremities.}
+    \label{fig:frontierdet1}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{tikzpicture}[scale=0.9, baseline]
+    \begin{axis} [every node near coord/.style={font=\sf,text=black},
+    %[width=0.9\textwidth,
+    %unit vector ratio*=1 0.3 1
+    ]
+    %,xlabel=x,ylabel=value,xmin=0, xmax=2
+    \addplot +[mark=none] table[x expr=\coordindex,y=y] {graphs/frontier-detect.dat};
+    
+    \addplot +[only marks, mark=*,forget plot, mark options={fill=red,draw=red},
+    nodes near coords, point meta=explicit symbolic
+    ] table[x=xmin,y=ymin,meta=valuemin] {graphs/frontier-detect.dat};
+    
+    \addplot +[only marks, mark=*, mark options={fill=green,draw=green},
+    nodes near coords, point meta=explicit symbolic
+    ] table[x=xmax,y=ymax,meta=valuemax] {graphs/frontier-detect.dat};
+    \end{axis}
+    \end{tikzpicture}
+    \caption{Plot of the chunk X-coordinates.}
+    \label{fig:frontierdet2}
+    \end{subfigure}
+    \caption[Relation between peak and and frontier .]
+    {Relation between peak and and frontier detection inside a chunk. The extremities of each frontiers are numbered in both cases and correspond to the extremums on the resulting signal (right side).}
+    \label{fig:frontierdetalgo}
+\end{figure}
+
+It is clear that the frontier extremities are defined by the peaks and valleys in the corresponding signal. Bottom frontiers are located between a peak and a valley in this order and top ones between a valley and a peak.
+
+One can note that the chunk is previously polygon approximated (the whole shape is described with 28 points).
+
+\subsubsection{Final algorithm}
+
+The peak detection algorithm does the main work of finding the extremities. From these values, it remains to extract the different frontiers. In the easiest case, when the chunk is convex, the detection will return one maximum and no minimum. The unique bottom frontier is then located between the left-most point to the maximum, and the top one from the maximum to the end.
+
+The pseudocode in \autoref{lst:frontierex} presents the final algorithm.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Pseudo for the frontier extraction, using the peak detection algorithm.},
+label={lst:frontierex}]
+{listings/frontier-extract.cs}
+
+The \texttt{FindFrontiers()} function firstly finds the left-most point and store its index. Then it copies the X coordinates of all points starting by this index in \texttt{pointsX}. The peak detection is applied on this array. Finally, the corresponding frontiers are created from the found extremities. In the for loop are found the possible mid frontiers.
+
+The \texttt{AddNewFrontier()} function simplifies the storage of the results, separating the top frontiers from the bottom ones. It also verifies that the frontier has a minimal size before adding it to the corresponding collection.
 
 \chapter{Groove tracking}
 
