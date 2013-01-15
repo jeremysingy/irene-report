@@ -4,7 +4,7 @@ function FindPeaks(float[] data, double deltaY) {
     minList = {}; maxList = {}
     isFindingMax = true
 
-    for (i = 1 to data.lenth - 1) {
+    for (i = 1 to data.Len - 1) {
         if (data[i] > max) {
             max = data[i]
             maxPos = i

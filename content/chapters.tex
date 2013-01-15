@@ -479,7 +479,7 @@ This disc is the only one in the test set that has been acquired with the \gls{i
     \label{fig:brigdamage}
 \end{figure}
 
-We can clearly see from the binned image in \autoref{fig:brigcracks} many irregularities due to the cracks. However, the shifting is narrow and the general path to fellow seems obvious. The detailed view in \autoref{fig:brigcrackdet} shows however that the crack is very thin, making it difficult to detect.
+We can clearly see from the binned image in \autoref{fig:brigcracks} many irregularities due to the cracks. However, the shifting is narrow and the general path to follow seems obvious. The detailed view in \autoref{fig:brigcrackdet} shows however that the crack is very thin, making it difficult to detect.
 
 \subsection{Conclusion}
 
@@ -753,7 +753,7 @@ The techniques used to implement this feature will also be useful to detect groo
 
 The work is to find the groove bottoms on a given Y-position. The usual tracking methods (see~\autoref{sec:trackmethods}) do not need to find separate bottoms because once a groove is found, it can be followed until the end. This property is no more true on a damaged disc where the different parts can be shifted or even sometimes lost.
 
-However, pointing out the position where the bottoms are located in an horizontal line is possible, using a adequate algorithm.
+However, pointing out the position where the bottoms are located in a horizontal line is possible, using an adequate algorithm.
 
 \subsubsection{Peak detection}
 \label{sec:peakdetect}
@@ -779,7 +779,7 @@ Different algorithms exist. For example, one can just smooth the signal by avera
 \label{fig:graphpeakdet}
 \end{figure}
 
-The algorithm first defines if it is looking for a maximum (peak) or minimum (valley). Then, by iterating through the data, it keeps track of the local minimums and maximums. If at some point the height difference from the current point to the second one exceeds the defined delta, it means that a new extremum has been found. The point is then added and the state changed, before continuing the iteration.
+The algorithm first defines if it is looking for a maximum (peak) or minimum (valley). Then, by iterating through the data, it keeps track of the local minima and maxima. If at some point the height difference from the current point to the second one exceeds the defined delta, it means that a new extremum has been found. The point is then added and the state changed, before continuing the iteration.
 
 The pseudocode of the algorithm is presented in \autoref{lst:peakdet}.
 
@@ -796,7 +796,7 @@ This algorithm works very well on test data set, but in practice the acquired da
 
 The data range retrieved by the acquisition is not normalized. Given the record type, the acquisition parameters or other smoothing options in \gls{prism}, these values and their relative distance may vary a lot. Before finding the peaks on the data, the raw values must then be normalized so that the behavior remains the same regardless the situation. It was decided to normalize the values in the range $[\numrange[range-phrase=..]{0}{100}]$. This way, the minimum Y-delta chosen from the peak detection algorithm can be viewed as a percentage of the maximum delta between all values.
 
-Also, as explained in \autoref{sec:3dcaptureprop}, the 3D sensor takes 180~points in a snapshot. This is also known as the number of fibers on the probe. Sometimes, it may happen that the beam is not exactly orthogonal to the record surface. This results in big differences between two snapshot that influence a lot the final shape. \gls{prism} implements already a feature known as Slope Correction. The user must enter manually a value representing the difference between the start and the end of a capture and the corresponding slope is subtracted from the original signal.
+Also, as explained in \autoref{sec:3dcaptureprop}, the 3D sensor takes 180~points in a snapshot. This is also known as the number of fibers on the probe. Sometimes, it may happen that the beam is not exactly orthogonal to the record surface. This results in big differences between two snapshots that influence a lot the final shape. \gls{prism} already implements a feature known as Slope Correction. The user must enter manually a value representing the difference between the start and the end of a capture and the corresponding slope is subtracted from the original signal.
 
 However, sometimes this correction is not sufficient. The slope is almost removed but the signal has not the same height between two snapshots and results in a ``staircase-shaped'' signal. The normalization is then not directly performed on the whole row, but in portions of the scan (180~points). This enables to smooth the signal and minimize the height differences.
 
@@ -846,7 +846,7 @@ One of the currently implemented automatic tracking method, called \emph{track l
 
 When the bottom of the scanned record is reached, the tracking can simply continue at the top, meaning that a full revolution has been reached. The tracking is completed when the side of the record has been reached.
 
-This method fails when there is just a little crack, because the depth is obviously completely wrong at these place, and the algorithm fails to find its way to the disc.
+This method fails when there is just a little crack, because the depth is obviously completely wrong at this place, and the algorithm fails to find its way on the disc.
 
 \subsection{Tracking depth}
 
@@ -874,7 +874,7 @@ To detect them properly, a characteristic which differs in parts representing cr
 
 The recording test set with specific damaged examples has already been presented in \autoref{sec:samplerec}. However, at this point, we need to investigate more deeply to find a way to clearly distinguish the cracks from the rest of a record.
 
-For the records processed with \gls{3dprobe}, an early response to this problem is the information of the brightness intensity reflected by the probe. Let analyze what looks like a crack in terms of brightness. This first example in \autoref{fig:crackdepthbri} comes from the Graham Bell disc.
+For the records processed with \gls{3dprobe}, an early response to this problem is the information of the brightness intensity reflected by the probe, in order to see what looks like a crack in terms of brightness. This first example in \autoref{fig:crackdepthbri} comes from the Graham Bell disc.
 
 \begin{figure}[!ht]
     \centering
@@ -931,7 +931,7 @@ Other blurring types can be used depending on the desired results. A well-known 
 
 \begin{equation}
 \label{eq:gauss2d}
-G(x) = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
+G(x,y) = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
 \end{equation}
 
 An example of a $5 \times 5$ kernel applying a Gaussian blur with $\sigma = 0.8$ is approximated in \eqref{eq:convolgauss}. The result is that the current pixel is much more weighted than the distant neighbors. The visual representation of the two dimensional Gaussian is viewed in \autoref{fig:convolgauss}.
@@ -974,11 +974,11 @@ All the filters in this example remove the noise in the image. The regular blur 
 
 \subsection{Segmentation}
 
-Once the noise is removed in the source image, the next step is to do segmentation of the image. This process groups the pixels with common properties that we want to keep as valuable information (commonly called the object), and distinguishes them from the rest (the background). In this case, we want to keep the chunks areas and remove the cracks.
+Once the noise is removed in the source image, the next step is to segment the image. This process groups the pixels with common properties that we want to keep as valuable information (commonly called the object), and distinguishes them from the rest (the background). In this case, we want to keep the chunks areas and remove the cracks.
 
 \subsubsection{Histogram}
 
-A common tool helping for the segmentation operation is the histogram. An histogram represents the statistical distribution of a variable. Therefore, computing the histogram of an image means to compute the number of occurrences of each pixel values (usually in the range \numrange[range-phrase=--]{0}{255} for a bitmap). In our case this corresponds to the brightness intensity.
+A common tool helping for the segmentation operation is the histogram. A histogram represents the statistical distribution of a variable. Therefore, computing the histogram of an image means to compute the number of occurrences of each pixel values (usually in the range \numrange[range-phrase=--]{0}{255} for a bitmap). In our case this corresponds to the brightness intensity.
 
 The histogram of a portion of the brightness image from a cracked disc can be seen in \autoref{fig:histocrack}.
 
@@ -1039,7 +1039,7 @@ Another way to improve the cracks detection will be to normalize the brightness 
 
 In fact, \gls{prism} already implements a function normalizing the brightness in the vertical direction. Each captured points on the whole record are then rescaled from their specific properties.
 
-The implemented algorithm computes an histogram for each columns of the record. Then, in each of these, it iterates downward from the last intensity and stop when $\frac{4}{10}$ of the brighter pixels are reached. The most represented intensity (peak) in this portion is stored and then all values in the corresponding column are divided by its value. This results in a loss of information for the brighter (but underrepresented) values while the whole normalized image will be brighter and better emphasize the difference from lower and middle intensities. The visual result of the algorithm is visualized in \autoref{fig:brinorm}.
+The implemented algorithm computes a histogram for each column of the record. Then, in each of these, it iterates downward from the last intensity and stops when $\frac{4}{10}$ of the brighter pixels are reached. The most represented intensity (peak) in this portion is stored and then all values in the corresponding column are divided by its value. This results in a loss of information for the brighter (but underrepresented) values while the whole normalized image will be brighter and better emphasize the difference from lower and middle intensities. The visual result of the algorithm is visualized in \autoref{fig:brinorm}.
 
 \begin{figure}[!ht]
 \centering
@@ -1065,11 +1065,11 @@ Using this feature will be interesting in cases where the threshold can hardly d
 
 \subsection{Cleaning}
 
-The thresholding which segments the object from the background only takes in account the value of a single pixel to decide if it is part of a chunk or a crack. In practical cases, the distinction is almost never that evident. The histogram of an image shows peaks as statistical information but the final chosen threshold is a compromise to separate at best the two parts. There will then be some background pixels considered as being part of the object and vice versa. One possibility to clean these regions is to use the morphological operations.
+The thresholding which segments the object from the background only takes into account the value of a single pixel to decide if it is part of a chunk or a crack. In practical cases, the distinction is almost never that evident. The histogram of an image shows peaks as statistical information but the final chosen threshold is a compromise to separate at best the two parts. There will then be some background pixels considered as being part of the object and vice versa. One possibility to clean these regions is to use the morphological operations.
 
 \subsubsection{Morphological operations}
 
-Morphological operations are a technique to clean an image based on the pixels in the neighborhood. These are then boolean masks applied on the binary image in a similar way than the filtering operations seen before.
+Morphological operations are a technique to clean an image based on the pixels in the neighborhood. These are then boolean masks applied on the binary image in a way similar to the filtering operations seen before.
 
 As the coefficients are 0 or 1, a mask is usually defined by its shape and is called a \emph{structured element} in this context. A typical shape is the cross, as defined in \eqref{eq:morphocross}.
 
@@ -1085,7 +1085,7 @@ M =
 
 The mask $M$ is evaluated on each pixel as a common filter. The result is then the number of pixels contained in the cross shape.
 
-The two basic operations using these structuring elements are called erosion and dilatation. If $n$ is the number of pixels from the structuring elements, these operations $E$ and $D$ are defined as in \eqref{eq:morphoop}.
+The two basic operations using these structuring elements are called erosion and dilation. If $n$ is the number of pixels from the structuring elements, these operations $E$ and $D$ are defined as in \eqref{eq:morphoop}.
 
 \begin{equation}
 \label{eq:morphoop}
@@ -1105,13 +1105,13 @@ The two basic operations using these structuring elements are called erosion and
 \right.
 \end{equation}
 
-The first one removes some pixels from the object and the second one add pixels to the object. This operations are always applied together. Performing a dilation on an erosion ($E \to D$) is called an opening and the inverse ($D \to E$) a closing.
+The first one removes some pixels from the object and the second one add pixels to the object. These operations are most often applied together. Performing a dilation on an erosion ($E \to D$) is called an opening and the inverse ($D \to E$) a closing.
 
 \subsubsection{Results}
 
-Which operation to use depend on the context. The opening removes small region considered as the object that are smaller than the structuring element. The closing add some small parts in the object that was considered as background, i.e. it ``closes the holes''.
+Which operation to use depends on the context. The opening removes small regions considered as the object that are smaller than the structuring element. Closing adds small parts in the object that were considered as background, i.e. it ``closes the holes''.
 
-The example in \autoref{fig:morphoex} shows the difference after applying a closing on a segmented binary image from a cracked record. In this case, the erosion and dilatation elements are both $3 \times 3$ and each of them are applied five times (in 5 passes).
+The example in \autoref{fig:morphoex} shows the difference after applying a closing on a segmented binary image from a cracked record. In this case, the erosion and dilation elements are both $3 \times 3$ and each of them is applied five times (in 5 passes).
 
 \begin{figure}[!ht]
 \centering
@@ -1134,11 +1134,9 @@ The example in \autoref{fig:morphoex} shows the difference after applying a clos
 \subsection{Contours extraction}
 \label{sec:contextract}
 
-Finally, when the chunks are separated from the cracks, the remaining work is to extract the contours, which will define and distinguish all the chunks in the record. The output of this step is a list of polygon (itself a list of points), describing the contours of each chunks.
+Finally, when the chunks are separated from the cracks, the remaining work is to extract the contours, which will define and distinguish all the chunks in the record. The output of this step is a list of polygons (itself a list of points), describing the contours of each chunks.
 
 The standard behavior is to describe every pixel of the contour in the image. However, one step further is to approximate a simple polygon from this set of points, as viewed in \autoref{fig:contourapprox}. This enables to remove small noise from the contours detection and lighten the storage.
-
-%it is better to  point To simplify the future processing and
 
 \begin{figure}[!ht]
 \centering
@@ -1175,13 +1173,13 @@ The program loads directly pictures from the filesystem. For the early tests, so
 \label{fig:crackdetprog}
 \end{figure}
 
-The four steps explained in the previous section or visualized in the program. This enables to clearly see the results for each steps separately and decide how to change parameters to improve the final detection. The four images scroll together be able to easily compare the results.
+The four steps explained in the previous section are visualized in the program. This enables to clearly see the results for each steps separately and decide how to change parameters to improve the final detection. The four images scroll together be able to easily compare the results.
 
 At the beginning, several edge detection algorithms have been tested, e.g. the well-known Sobel and Canny filters. In the end, they were not suitable for our purpose. The thresholding detailed above is the only algorithm that has been implemented in \gls{prism}.
 
 \subsubsection{General results}
 
-In general, the majority cracks are easily detected by correctly adapting the different parameters. However, others are really hard to detect, when they are very tight. Fortunately, when it is the case there is normally no groove shifting. This means that some cracks can be avoided. As the system is quite different from VisualAudio, this will not cause a problem on the tracking. If the image is binned by a factor of 30, any crack being smaller than around 10 pixels is not even spotted by the tracking algorithm.
+In general, most of the cracks are easily detected by correctly adapting the different parameters. However, others are really hard to detect, when they are very tight. Fortunately, when it is the case there is normally no groove shifting. This means that some cracks can be avoided. As the system is quite different from VisualAudio, this will not cause a problem on the tracking. If the image is binned by a factor of 30, any crack being smaller than around 10 pixels is not even spotted by the tracking algorithm.
 
 The main issue will be when a crack is not entirely detected. The frontier of the chunk can stop anywhere, as seen in \autoref{fig:crackbellprob} causing future linking problems.
 
@@ -1210,7 +1208,7 @@ Using the brightness normalization as seen in \autoref{sec:brinorm} does not rea
 
 \subsubsection{Dickson cylinder}
 
-As described in \autoref{sec:samplerec}, this record contains also some parts where the wax layer is broken and no groove is visible. Apart from this. A single radial crack crosses the whole record. This crack is easy to detect as it is wide. At some point the crack is getting tighter and difficult to distinguish from the rest of the record. It is however in a very damaged part where the grooves are very difficult to distinguish as well, even for a human.
+As described in \autoref{sec:samplerec}, this record contains also some parts where the wax layer is broken and no groove is visible. Apart from this, a single radial crack crosses the whole record at the beginning. This crack is easy to detect as it is wide. At some point the crack is getting tighter and difficult to distinguish from the rest of the record. It is however in a very damaged part where the grooves are very difficult to distinguish as well, even for a human.
 
 The parameters does not influence a lot the detection and will then remain the same as for the Bell disc above. It would be possible to extract it in several part, but probably not entirely in a single pass.
 
@@ -1221,13 +1219,13 @@ The parameters does not influence a lot the detection and will then remain the s
 
 For this record, the brightness normalization must be used, because the range of intensity is far bigger than with other records, making the cracks almost invisible if not used. The final threshold to use is then greater than for the other records.
 
-On this particular acquisition the height between different chunks varies a lot. This should however not interfere the detection and tracking of grooves as it will be done separately between the different chunks. A more troublesome issue is that with these parameters, some small regions are detected as chunks. The code will handle this by removing too small areas, but the final tracking and linking steps will be probably very difficult on some parts.
+On this particular acquisition the height between different chunks varies also a lot. This should however not interfere with the detection and tracking of grooves as it will be done separately between the different chunks. A more troublesome issue is that with these parameters, some small regions are detected as chunks. The code will handle this by removing too small areas, but the final tracking and linking steps will be probably very difficult on some parts.
 
 \begin{itemize}
 \item Using brightness normalization
 \item Using $3 \times 3$ median blur
 \item Threshold of 80
-\item 5 passes opening morphology with $3 \times 2$ for erosion and $2 \times 2$ for dilatation
+\item 5 passes opening morphology with $3 \times 2$ for erosion and $2 \times 2$ for dilation
 \item Bad fibers: one bad fiber at the end of each capture
 \end{itemize}
 
@@ -1238,13 +1236,13 @@ Regarding all the issues from this particular record, it seems that it will be a
 
 At this stage of the processing, a collection of objects describing a physical chunk has been computed. It consists of a list of points describing a simple polygon (a polygon without intersecting lines). However, this polygon can still be non-convex. In the general case, it could be a non-trivial shape.
 
-This section explains how to separated a chunk into several \emph{frontiers} which will be the starting point for the groove detection and the tracking.
+This section explains how to separate a chunk into several \emph{frontiers} which will be the starting point for the groove detection and the tracking.
 
-\subsection{Difference from VisualAudio}
+\subsection{Difference with VisualAudio}
 
 At this point, the choice has been made not to directly follow the idea of VisualAudio. In the latter, the next step after the chunks detection is directly the tracking (or even processing, as there is no previous tracking step as with \gls{irene}). The portion inside the chunk is isolated by applying a mask, and the grooves are found and tracked by a method using histograms (see Chapter~6 in \cite{seydoux08}). It is only after this step that the chunks (now defined by a set of traces, or grooves) are separated in frontiers to continue towards the linking step.
 
-This choice was made after analyzing the VisualAudio code and documentation. This part was quite complex and it required some algorithms that did not look relevant in the case of \gls{prism}. Instead, it was decided to previously geometrically separate the chunk into frontiers, before finding and tracking the groove from the detected frontiers.
+This choice was made after analyzing the VisualAudio code and documentation. This part was quite complex and it required some algorithms that did not look relevant in the case of \gls{prism}. Instead, it was decided to geometrically separate the chunk into frontiers, before finding and tracking the groove from the detected frontiers.
 
 \subsection{Goal of this step}
 \label{chap:linking}
@@ -1281,7 +1279,8 @@ A frontier is either at the top or the bottom of a chunk. A top frontier has onl
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.6\textwidth]{images/chunk-frontiers}
-\caption{The chunk splitted in three different zones.}
+\caption[The chunk with highlighted frontiers.]
+{The chunk with highlighted frontiers. The three zones are defined by the common top and bottom frontiers.}
 \label{fig:chunkfrontiers}
 \end{figure}
 

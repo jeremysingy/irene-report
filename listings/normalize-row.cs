@@ -5,9 +5,12 @@ function NormalizedRow(float[,] binImage, int row, float maxMagnitude) {
     for(int i = 0; i < width; ++i)
         res[i] = binImage[row, i];
 
-    float[] maxs, mins;
+    float maxs[width];
+    float[] mins;
 
-    // Find min and max every 180 points
+    // Populate mins and maxs with the extremums for
+    // each scan (every 180 points)
+    // for(...) {...}
     
     for (int i = 0; i < width; ++i)
     {
