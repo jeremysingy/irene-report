@@ -1504,7 +1504,7 @@ caption={Basic linear interpolation algorithm.},
 label={lst:lininterpol}]
 {listings/lin-interpolation.cs}
 
-The main formula is between lines xx and yy, where the point is created. The X coordinate is directly the consecutive one and the Y is computed by interpolating the two out points. This algorithm is simple but not sufficient. As already said, it is possible that two points have the same value. This algorithm crashes when it happens because of line xx. A test must be added between lines x and y. If the horizontal distance between two points is null, there is no need to interpolate between these ones.
+The main formula is on lines 15 and 16, where the point is created. The X coordinate is directly the consecutive one and the Y is computed by interpolating the two out points. This algorithm is simple but not sufficient. As already said, it is possible that two points have the same value. This algorithm crashes when it happens because of a division by zero on line 16 (\texttt{x2 - x1}). A condition must be added between before the inner loop to ensure that \texttt{x1} is different than \texttt{x2}. If the horizontal distance between two points is null, there is no need to interpolate between these ones.
 
 Moreover, the strict order is not implied and two non-consecutive points may appear on the same vertical line. This would give wrong results for the interpolation. A solution to ensure the correct result is to use a proper data structure, as a sorted dictionary with the key corresponding the X position. This ensures the two properties, order and uniqueness.
 
