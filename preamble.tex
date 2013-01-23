@@ -26,6 +26,7 @@
 % Math and numerical support
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{numprint}
+\usepackage{xfrac} % Nice inline fractions
 \usepackage{siunitx} % Proper SI units handling
 
 % Fonts
@@ -157,3 +158,6 @@
 % Add mathetmatical operators
 \DeclareMathOperator{\src}{src}
 \DeclareMathOperator{\dst}{dst}
+
+% To use inline fractions with siunitx
+\newcommand{\tsfrac}[2]{\text{\sfrac{#1}{#2}}}
