@@ -1489,6 +1489,40 @@ The \texttt{FindFrontiers()} function firstly finds the left-most point and stor
 
 The \texttt{AddNewFrontier()} function simplifies the storage of the results, separating the top frontiers from the bottom ones. It also verifies that the frontier has a minimal size before adding it to the corresponding collection.
 
+\subsection{Interpolation}
+
+At this point, we have a list of frontiers per each chunk. Before actually finding the groove, another step is required: the interpolation of the frontiers. For the moment, the list of points defining the frontier border has only the property of being defined from the left-most point to the right-most point of the frontier. However, following the definition of a frontier, a small change of direction may still occur within the frontier, possibly resulting in several points with the same X coordinate in different values. Moreover, as the border may have been approximated (see \autoref{sec:contextract}), the distance between two points is not defined.
+
+More theoretically, we need a mathematical function that is defined from the left to the right point, with the standard definition that for each input X, only one output Y is defined. The first step in then to interpolate the list of point in the horizontal direction.
+
+\subsubsection{Linear interpolation}
+
+As the list of points should define a well-approximated polygon, we can use directly use a linear interpolation. The basic algorithm is given in \autoref{lst:lininterpol}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Basic linear interpolation algorithm.},
+label={lst:lininterpol}]
+{listings/lin-interpolation.cs}
+
+The main formula is between lines xx and yy, where the point is created. The X coordinate is directly the consecutive one and the Y is computed by interpolating the two out points. This algorithm is simple but not sufficient. As already said, it is possible that two points have the same value. This algorithm crashes when it happens because of line xx. A test must be added between lines x and y. If the horizontal distance between two points is null, there is no need to interpolate between these ones.
+
+Moreover, the strict order is not implied and two non-consecutive points may appear on the same vertical line. This would give wrong results for the interpolation. A solution to ensure the correct result is to use a proper data structure, as a sorted dictionary with the key corresponding the X position. This ensures the two properties, order and uniqueness.
+
+\subsubsection{Final algorithm}
+
+With the last additional changes, the algorithm is functional but may still be improved. In an extreme example, e.g. as the one previously seen in \autoref{fig:crackbellprob}, the values from two vertical points can vary significantly. The question is to find one is the best one to choose. Using directly a Dictionary would for example just add the last computed point as the final point.
+
+A better way is to be able to choose if we want the highest or the lowest points. Indeed, for the future groove detection, we want to avoid wrong values as much as possible. From a frontier at the top of a chunk, the values will be better at the lowest points, as the highest ones are more likely to cross the crack and give bad values. We can add a parameter and perform a test if a point already exists at this horizontal position. The final \Csh{} algorithm including all tests is presented in \autoref{lst:lininterpolimpl}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Linear interpolation of points as implemented into PRISM.},
+label={lst:lininterpolimpl}]
+{listings/lin-interpolation-impl.cs}
+
+%\subsection{Results}
+%
+%This algorithm works particularly well. The only parameter to be correctly adjust is the X-delta. Of %course, when a frontier is vertical it could be seen as a 
+
 \chapter{Groove tracking}
 
 TODO.
