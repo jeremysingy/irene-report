@@ -194,7 +194,7 @@ Before explaining the specificities of each system, it is noteworthy to explain 
 
 \subsection{Disc mapping}
 
-As previously seen in \autoref{fig:labirene}, the setup for flat discs acquisition looks similar to an ordinary phonograph. The disc is placed on the turntable and rotates while the sensor take a single line of capture at regular intervals.
+As previously seen in \autoref{fig:labirene}, the setup for flat discs acquisition looks similar to an ordinary phonograph. The disc is placed on the turntable and rotates while the sensor takes a single line of capture at regular intervals.
 
 The first main difference is that an entire revolution may acquire more than a single groove (as it would be played by a phonograph needle). The line width and other properties depend on the sensor and will be detailed in the next sections.
 
@@ -262,7 +262,7 @@ This time, the mapped representation corresponds to an unrolled cylinder strip. 
 \section{Binned representation}
 \label{sec:binrepr}
 
-A record complete acquisition gives an image in very high resolution, so that the sample rate is big enough \footnote{The complete discussion about sample rate is given in the corresponding next sections for \gls{irene} and \gls{3dprobe}.}. It is often useful to have a more general view of the record. Particularly, to view an entire revolution, all points in the vertical axis are not useful. Both systems create then a \emph{binned} image, which corresponds to the acquired image with the height divided by a certain factor $d$, typically around \numrange[range-phrase=--]{20}{100} that can be changed according the original resolution. It is created by averaging the value of the actual pixel values every $d$ lines. The result is an image such as the one already viewed in \autoref{fig:offaxise}.
+A record complete acquisition gives an image in very high resolution, so that the sample rate is big enough \footnote{The complete discussion about sample rate is given in the corresponding next sections for \gls{irene} and \gls{3dprobe}.}. It is often useful to have a more general view of the record. Particularly, to view an entire revolution, all points in the vertical axis are not useful. Both systems create then a \emph{binned} image, which corresponds to the acquired image with the height divided by a certain factor $d$, typically around \numrange[range-phrase=--]{20}{100} that can be changed according to the original resolution. It is created by averaging the value of the actual pixel values every $d$ lines. The result is an image such as the one already viewed in \autoref{fig:offaxise}.
 
 In addition to the visualization, this representation will be very useful for a step of the processing algorithm, which will be explained in the next sections.
 
@@ -303,7 +303,7 @@ A single groove can be seen as two black strips with a thin bright line in betwe
 
 \subsubsection{Coaxial illumination}
 
-The system uses coaxial illumination. Every light beams are parallel and orthogonal to the record surface. Therefore, the intensity of the resulting pixels will finally depend on the slope of the surface, as visualized in \autoref{fig:irenecoaxlum}.
+The system uses coaxial illumination. Every light beam is parallel and orthogonal to the record surface. Therefore, the intensity of the resulting pixels will finally depend on the slope of the surface, as visualized in \autoref{fig:irenecoaxlum}.
 
 \begin{figure}[!ht]
 \centering
@@ -324,7 +324,7 @@ The system uses coaxial illumination. Every light beams are parallel and orthogo
     \label{fig:irenecoaxlum}
 \end{figure}
 
-On the exact groove bottom, the slope is null and then the light is orthogonally reflected. This is also valid for the interval between two grooves, as the surface is almost flat. On the other hand, the groove edges are very slopping and the light is not reflected directly to the source. The corresponding pixels will then appear black.
+On the exact groove bottom, the slope is null and then the light is orthogonally reflected. This is also valid for the interval between two grooves, as the surface is almost flat. On the other hand, the groove edges are very sloping and the light is not reflected directly to the source. The corresponding pixels will then appear black.
 
 \subsubsection{Capture properties}
 
@@ -1450,11 +1450,11 @@ Whenever the X direction changes, a new frontier is detected. This method is vis
 
 The corresponding algorithm is pretty simple to implement. To avoid that a single frontier is detected separately, the iteration must start at either the leftmost or rightmost point of the shape.
 
-\subsubsection{Amelioration}
+\subsubsection{Improvement}
 
-The solution explained above is not sufficient in practical cases. A chunk is not necessarily smooth-shaped, but may comport several local modifications that mean not a real change of direction. This problem can be minimized with the polygon approximation (already implemented as part of the chunk detection, see \autoref{sec:contextract}), but even in this case some wrong results are possible.
+The solution explained above is not sufficient in practical cases. A chunk is not necessarily smooth-shaped, but may comport several local modifications that mean no real change of direction. This problem can be minimized with the polygon approximation (already implemented as part of the chunk detection, see \autoref{sec:contextract}), but even in this case some wrong results are possible.
 
-In fact, we want to define a new frontier that is a defined minimum length, i.e. when the delta (in X coordinate) between the current position and the local extremum of the current frontier is large enough. Then, the previous frontier stops at the last extremum and the current one starts at the same location.
+In fact, we want to define a new frontier that has a defined minimum length, i.e. when the delta (in X coordinate) between the current position and the local extremum of the current frontier is large enough. Then, the previous frontier stops at the last extremum and the current one starts at the same location.
 
 Actually, this algorithm has already been discussed and is the peak detection algorithm (see \autoref{sec:peakdetect}). \autoref{fig:frontierdetalgo} demonstrates the relation between the peak and frontier detection on an example. In \autoref{fig:frontierdet2}, the graph corresponds to the X coordinates of the polygon points plotted from the leftmost one.
 
@@ -1509,7 +1509,7 @@ caption={Pseudo for the frontier extraction, using the peak detection algorithm.
 label={lst:frontierex}]
 {listings/frontier-extract.cs}
 
-The \texttt{FindFrontiers()} function firstly finds the left-most point and store its index. Then it copies the X coordinates of all points starting by this index in \texttt{pointsX}. The peak detection is applied on this array. Finally, the corresponding frontiers are created from the found extremities. In the for loop are found the possible mid frontiers.
+The \texttt{FindFrontiers()} function firstly finds the left-most point and stores its index. Then it copies the X coordinates of all points starting by this index in \texttt{pointsX}. The peak detection is applied on this array. Finally, the corresponding frontiers are created from the found extremities. In the for loop are found the possible mid frontiers.
 
 The \texttt{AddNewFrontier()} function simplifies the storage of the results, separating the top frontiers from the bottom ones. It also verifies that the frontier has a minimal size before adding it to the corresponding collection.
 
@@ -1535,7 +1535,7 @@ Moreover, the strict order is not implied and two non-consecutive points may app
 
 \subsubsection{Final algorithm}
 
-With the last additional changes, the algorithm is functional but may still be improved. In an extreme example, e.g. as the one previously seen in \autoref{fig:crackbellprob}, the values from two vertical points can vary significantly. The question is to find one is the best one to choose. Using directly a Dictionary would for example just add the last computed point as the final point.
+With the last additional changes, the algorithm is functional but may still be improved. In an extreme example, e.g. as the one previously seen in \autoref{fig:crackbellprob}, the values from two vertical points can vary significantly. The question is to find which one is the most appropriate to choose. Using directly a dictionary would for example just add the last computed point as the final point.
 
 A better way is to be able to choose if we want the highest or the lowest points. Indeed, for the future groove detection, we want to avoid wrong values as much as possible. From a frontier at the top of a chunk, the values will be better at the lowest points, as the highest ones are more likely to cross the crack and give bad values. We can add a parameter and perform a test if a point already exists at this horizontal position. The final \Csh{} algorithm including all tests is presented in \autoref{lst:lininterpolimpl}.
 
@@ -1670,7 +1670,7 @@ anchor=west,
 \legend{Old bottom, New bottom};
 \end{axis}
 \end{tikzpicture}
-\caption[Example of tracking using minimal deptha.]
+\caption[Example of tracking using minimal depth.]
 {Example of tracking using minimal depth. The gray point is the approximation from which the other points have been measured. The red point is the new deepest value.}
 \label{fig:mindepthtrack}
 \end{figure}
