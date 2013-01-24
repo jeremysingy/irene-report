@@ -7,6 +7,7 @@ REPORT := report
 MAINFILE := main
 BUILDFOLDER := build
 DIAGFOLDER := diagrams
+GRAPHSFOLDER := graphs
 REDDROPFOLDER := ../../Jeremy/Dropbox/Reddrop/cracked-records-3d-irene/Report
 
 # Output is phony because we want latexmk to always run
@@ -35,8 +36,10 @@ clean_fls:
 clean: clean_fls
 	latexmk -c
 	@(cd ./$(DIAGFOLDER) && $(MAKE) $@)
+	@(cd ./$(GRAPHSFOLDER) && $(MAKE) $@)
 
 clean_all: clean_fls
 	latexmk -C
 	rm -f $(REPORT).pdf
 	@(cd ./$(DIAGFOLDER) && $(MAKE) $@)
+	@(cd ./$(GRAPHSFOLDER) && $(MAKE) $@)

@@ -1,6 +1,6 @@
 public static List<Point> Interpolate(List<Point> points, bool keepPointUp)
 {
-    // Key: X-coordinate, Value: Point
+    // Key: x-coordinate, value: point
     SortedDictionary<int, Point> interpolated = new SortedDictionary<int, Point>();
 
     for (int i = 1; i < points.Count; ++i)

@@ -56,10 +56,10 @@
 
 % Enable to plot graph
 \usepackage{pgfplots}
+\usepgfplotslibrary{external}
+\tikzexternalize[shell escape=-enable-write18] % needed for the MiKTeX compiler
+\tikzsetexternalprefix{graphs/}
 \usepackage{sansmath} % for sans serif math
-%\usepgfplotslibrary{external}
-%\tikzexternalize[shell escape=-enable-write18] % needed for the MiKTeX compiler
-%\tikzsetexternalprefix{graphs/}
 \pgfplotsset
 {
     compat = 1.6,

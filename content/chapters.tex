@@ -887,7 +887,7 @@ Different algorithms exist. For example, one can just smooth the signal by avera
 \autoref{fig:graphpeakdet} presents a graph with examples values taken from the Bell disc and the points found by the algorithm.
 
 \begin{figure}[!ht]
-%\tikzsetnextfilename{peak-detect-ex}
+\tikzsetnextfilename{peak-detect-ex}
 \centering
 \begin{tikzpicture}
 \begin{axis}[width=0.9\textwidth,unit vector ratio*=1 1 1]
@@ -911,6 +911,7 @@ label={lst:peakdet}]
 {listings/peak-detection.cs}
 
 \subsection{Preparing data and filtering results}
+\label{sec:groovepreparefilter}
 
 This algorithm works very well on test data set, but in practice the acquired data is sometimes not clean enough. The previous algorithm enables to get rid of small noise but may still give false positives in some cases.
 
@@ -952,12 +953,14 @@ The next chapter will present some ways to detect the cracks in a record. This w
 
 %\chapter{Automatic processing}
 
-\chapter{Chunk and groove detection}
+%\chapter{Chunk and groove detection}
+\chapter{Towards an automated processing}
 \label{chap:groovedetect}
 
 The main problem to address in this project is that the current algorithms are unable to properly track (find) the grooves when a record is cracked.
 
-This chapter will firstly summarize the current implemented algorithms and explain why they cannot be used as such on cracked records. Then, it will explain a way of finding the cracks and distinguish the different pieces delimited by them. Finally, the remaining work will be to find the grooves inside these chunks, in order to be able to track them later.
+This chapter will firstly summarize the current implemented tracking algorithms and explain why they cannot be used as such on cracked records. Then, it will explain a way of finding the cracks and distinguish the different pieces delimited by them. %Finally, the remaining work will be to find the grooves inside these chunks, in order to be able to track them later.
+Finally, the remaining work will be to find the grooves inside these chunk, to track them and finally to reassemble all the pieces and construct the final track to be processed by the program.
 
 \section{Existing tracking methods}
 \label{sec:trackmethods}
@@ -993,6 +996,7 @@ As already seen in the previous sections we need a way to differentiate the piec
 To detect them properly, a characteristic which differs in parts representing cracks and normal part of a record must be found. Then, some image processing algorithms must be applied in order to extract the contour of the chunk. These steps are explained in the next subsections.
 
 \subsection{Cracked records characteristics}
+\label{sec:crackrecchar}
 
 The recording test set with specific damaged examples has already been presented in \autoref{sec:samplerec}. However, at this point, we need to investigate more deeply to find a way to clearly distinguish the cracks from the rest of a record.
 
@@ -1072,6 +1076,7 @@ An example of a $5 \times 5$ kernel applying a Gaussian blur with $\sigma = 0.8$
 \end{equation}
 
 \begin{figure}[!ht]
+\tikzsetnextfilename{gaussian-2d}
 \centering
 \begin{tikzpicture}
 \begin{axis}[width=0.6\textwidth]
@@ -1106,6 +1111,7 @@ A common tool helping for the segmentation operation is the histogram. A histogr
 The histogram of a portion of the brightness image from a cracked disc can be seen in \autoref{fig:histocrack}.
 
 \begin{figure}[!ht]
+\tikzsetnextfilename{histo-crack}
 \centering
 \begin{tikzpicture}
 \begin{axis}[width=0.7\textwidth,xlabel=Intensity value,ylabel=Frequency]
@@ -1279,7 +1285,7 @@ The standard behavior is to describe every pixel of the contour in the image. Ho
     \label{fig:contourapprox}
 \end{figure}
 
-\subsection{Implementation and results}
+\subsection{Tests and results}
 
 The previous sections explained the techniques to implement the chunks detection. As this step implies a lot of experimentation to properly find the best parameters to use, a separate application has been written enabling to easily visualize the results and change all parameters. This enables to test quickly the best parameters to use for a proper detection, without the overhead of loading a whole acquisition using \gls{prism}.
 
@@ -1353,6 +1359,23 @@ On this particular acquisition the height between different chunks varies also a
 \end{itemize}
 
 Regarding all the issues from this particular record, it seems that it will be a better candidate for the manual and interactive tracking features, at least for some parts of the record.
+
+\subsection{Design and integration into PRISM}
+
+Almost all the implementation of the automatic tracking feature has been done in the namespace and folder \texttt{prism.CracksProcessing}. This way the specific code is easily localizable. The schema with the new added objects is represented in \autoref{fig:chunksdetectdiag}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/chunks-detection.1}
+\caption{Class diagram for chunk detection.}
+\label{fig:chunksdetectdiag}
+\end{figure}
+
+Firstly, the \texttt{ChunkDetector} class contains all processing code related to chunk detection. Most algorithms use Emgu CV for the specific step. From the user's point of view, the only interesting method is \texttt{Process()} which will analyze the loaded record and return a list of chunks. The constructor takes in parameters the \texttt{Hardware} object representing the record.
+
+A chunk is itself described in its own class named \texttt{CrackedChunk}. The contour of the chunk can be accessed via the property Contour. The rest of the implementation will be explained as other properties are added.
+
+The way all the parameters (thresholding, number of passes, etc.) will be explain more generally in TODO.
 
 \section{Establishing frontiers}
 \label{sec:findfrontiers}
@@ -1444,6 +1467,7 @@ Actually, this algorithm has already been discussed and is the peak detection al
     \label{fig:frontierdet1}
     \end{subfigure}
     \begin{subfigure}[b]{0.45\textwidth}
+    \tikzsetnextfilename{frontier-detect}
     \centering
     \begin{tikzpicture}[scale=0.9, baseline]
     \begin{axis} [every node near coord/.style={font=\sf,text=black},
@@ -1490,14 +1514,15 @@ The \texttt{FindFrontiers()} function firstly finds the left-most point and stor
 The \texttt{AddNewFrontier()} function simplifies the storage of the results, separating the top frontiers from the bottom ones. It also verifies that the frontier has a minimal size before adding it to the corresponding collection.
 
 \subsection{Interpolation}
+\label{sec:frontierinterp}
 
-At this point, we have a list of frontiers per each chunk. Before actually finding the groove, another step is required: the interpolation of the frontiers. For the moment, the list of points defining the frontier border has only the property of being defined from the left-most point to the right-most point of the frontier. However, following the definition of a frontier, a small change of direction may still occur within the frontier, possibly resulting in several points with the same X coordinate in different values. Moreover, as the border may have been approximated (see \autoref{sec:contextract}), the distance between two points is not defined.
+At this point, we have a collection of frontiers per each chunk. To have all information available for future steps, another task must be applied: the interpolation of the frontier border. For the moment, the list of points defining the border has only the property of being defined from the left-most point to the right-most point of the frontier. However, following the definition of a frontier and the algorithm used for its detection, a small change of direction may still occur within the frontier, possibly resulting in several points with the same X coordinate in different values. Moreover, as the border may have been approximated (see \autoref{sec:contextract}), the distance between two points is not defined.
 
-More theoretically, we need a mathematical function that is defined from the left to the right point, with the standard definition that for each input X, only one output Y is defined. The first step in then to interpolate the list of point in the horizontal direction.
+More theoretically, we need a mathematical discrete function that is defined from the left to the right point, with the standard definition that for each input X, only one output Y is defined. The border must then be interpolated in the horizontal direction.
 
 \subsubsection{Linear interpolation}
 
-As the list of points should define a well-approximated polygon, we can use directly use a linear interpolation. The basic algorithm is given in \autoref{lst:lininterpol}.
+As the list of points defines a well-approximated polygon, we can directly use a linear interpolation. The basic algorithm is given in \autoref{lst:lininterpol}.
 
 \lstinputlisting[language={[Sharp]C},
 caption={Basic linear interpolation algorithm.},
@@ -1519,22 +1544,152 @@ caption={Linear interpolation of points as implemented into PRISM.},
 label={lst:lininterpolimpl}]
 {listings/lin-interpolation-impl.cs}
 
+\subsection{Design and classes organization}
+
+This section presents the specificities in terms of class design from the last discussed features. The general involved classes are summarized in \autoref{fig:frontiersdiag}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/frontiers-detection.1}
+\caption{Class diagram for chunk detection.}
+\label{fig:frontiersdiag}
+\end{figure}
+
+The frontier extraction is handled by the \texttt{CrackedChunk} class itself and is performed automatically at the object's creation by the private method \texttt{FindFrontiers()}. The peak detection algorithm used for this purpose was already implemented previously in an external routine from the existing utility class called \texttt{Misc}.
+
+The created frontiers are stored and exposed in two separated lists, \texttt{Tops} and \texttt{Bottoms}. A single frontier is described by its own class \texttt{Frontier} which contains several information, mainly the points composing its border in the \texttt{Border} property. The interpolation is also performed directly in the constructor, using the Interpolate method previously discussed and implemented in \texttt{Utils}, which contains utilities used specifically by the cracked records processing and put in the same namespace.
+
+%TODO
 %\subsection{Results}
 %
 %This algorithm works particularly well. The only parameter to be correctly adjust is the X-delta. Of %course, when a frontier is vertical it could be seen as a 
 
-\chapter{Groove tracking}
+\section{Groove detection}
+
+The particular problem of finding grooves has already been discussed in \autoref{sec:groovebot}. Nevertheless, some necessary steps must be done before and after applying the discussed algorithm. These are explained in this section.
+
+The process detailed here is to be applied for each frontier at the top of each chunk, so that every grooves can be found over the record. The bottom frontiers do not need to be taken into account. They will rather be used at the tracking step which will be explained in \autoref{sec:groovetracking}. A simple schema representing visually the result of this step on a chunk can be seen in \autoref{fig:chunkbottoms}. Found grooves are represented as red dots.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.6\textwidth]{images/chunk-bottoms}
+\caption{Schema representing the groove detection on each frontiers of a chunk.}
+\label{fig:chunkbottoms}
+\end{figure}
+
+\subsection{Creating signal}
+
+From the list of interpolated points computed previously (see \autoref{sec:frontierinterp}), the first task is to get the corresponding signal from the line defined by these points, i.e. the surface height information. At this point, an important thing to take in account is that the tracking is performed over the binned image (see \autoref{sec:binrepr}) while the cracks detection has been done on the detailed image, for the reasons already explained in \autoref{sec:crackrecchar}. The groove finding will also be performed on the binned image. This enables to get rid of bad points values, especially around a cracked area, as the binned image is smoothed.
+%TODO where to explain binned image cleaning?
+
+The values will also be normalized in the same way as seen in \autoref{sec:groovepreparefilter} so that the height differences depend less on the record type. The main difference in the function signature is that the parameter is no more a row index, but the list of previously computed points, as it is not necessarily straight and completely horizontal.
+
+Another parameter will be added, which enables to specify the distance from the actual border from which to get the signal. Indeed, even in the binned image, the values could be altered around a crack. To ensure the location to be properly \emph{inside} the chunk for groove detection, this value will be added to the specified frontier from which to get the signal.
+
+\subsection{Finding grooves}
+
+From the signal, it remains to apply the peak detection algorithm and properly clean wrong values (see \autoref{sec:peakdetect}). Finally, the result of this step is that for each chunk, the starting point of all grooves are detected, to be tracked later on.
+
+\subsection{Design and class organization}
+
+The objects involved in this step are represented in \autoref{fig:groovedetdiag}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/groove-detection.1}
+\caption{Class diagram for groove detection.}
+\label{fig:groovedetdiag}
+\end{figure}
+
+The groove detection is handled by the \texttt{Frontier} object. The method \texttt{FindGrooves()} takes the binned image and other parameters for configuration. After this step, the groove centers are stored and exposed by the \texttt{GrooveCenters} property which give the exact points where the groove is starting on the frontier. The \texttt{CrackedChunk} class also provides a method with the same signature which will basically apply the groove detection on all its composing frontiers by calling the proper method.
+
+The method for groove finding once again uses \texttt{FindPeak()} algorithm but also \texttt{NormalizedValuesBin()} which creates the normalized signal from the interpolated points. The method \texttt{FilterGrooveBottoms()} verifies if all detected points are really groove bottoms.
+
+\section{Groove tracking}
+\label{sec:groovetracking}
+
+At this point of computing, the chunks on the record were detected, the frontiers of all chunks in the record extracted and defined whether if at the top or bottom of a chunk, and the groove bottoms are identified at the top frontiers. The next step is to track all the grooves inside each chunk.
+
+\subsection{Differences from current tracking}
+
+\gls{prism} already implements different tracking types that have been discussed in \autoref{sec:trackmethods}. However, the existing implementation cannot be directly adapted because the point of view is quite different than with non-damaged records. All tracking methods need to analyze the record in its entirety. For example, the tracking depth method follow the groove bottom until the end of a revolution and continues when it is reached until the whole disc is processed. The tracking using Fourier also needs to analyze all rows to discover a common pattern in the groove shapes.
+
+With this implementation, it is a groove \emph{section} that will be tracked, that is, a part of groove inside a chunk. The next sections will explain the used approach.
+
+\subsection{Tracking overview}
+
+Beyond finding the best track matching a groove, this algorithm must also know the limits to know when to stop. The main steps are:
+
+\begin{enumerate}
+\item Start tracking using the position of the detected groove bottom
+\item Follow the groove downwards by using an appropriate method to remain correctly at the center (groove bottom)
+\item Verify that the position is still on the chunk area. If it is not the case, stop the tracking at this point.
+\end{enumerate}
+
+All tracked groove sections are still separated after this step, and attached to a particular frontier. An example of the state while grooves inside a chunk are being tracked can be seen in \autoref{fig:groovetrack}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.6\textwidth]{images/chunk-tracking}
+\caption{Tracking being applied on a frontier of a chunk.}
+\label{fig:groovetrack}
+\end{figure}
+
+At this point, five sections have been tracked. One can notice that not all grooves end on the same frontier. The first three leave off at the same frontier and the last two at the main chunk bottom. A solution has to be found to stop the tracking accordingly.
+
+\subsection{Tracking methods}
+
+As explained, the starting point is the groove center already detected before. Then, when the groove is followed downwards at each iterations (each line), it remains to find a good way to follow the groove bottom so that the center is properly tracked.
+
+The main idea is that on the next line of the binned image, the groove center should remain very close to the previously computed one as long as there is no cracks (at this point, no crack should appear inside a chunk). Then, the actual center position is refined using a specific algorithm. The subproblem is then to find the center on a groove line from an approximation.
+
+In the general case, this is not a simple problem. Regarding all record's specific characteristics, there could be a lot of differences. The sensitivity must of course be configurable by the end-user, but there are also some algorithms more adapted depending on these characteristics.
+
+During this project, two different algorithms have been tested. They are described in the sections below.
+
+\subsubsection{Using depth}
+
+The first algorithm is based on the simple idea of tracking the deepest point at the neighborhood of the previously tracked points. At each iteration, $n$ values before and after the current point are tested. The point with the deepest value is considered at the bottom center. \autoref{fig:mindepthtrack} shows an example of result on real values. The mean point in gray is the approximated value (last bottom). The new computed point can be seen in red
+
+\begin{figure}[!ht]
+\tikzsetnextfilename{depth-finder-ex}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.6\textwidth,
+legend style={
+%cells={anchor=east},
+%legend pos=outer east,
+at={(1.1,0.5)},
+anchor=west,
+%draw=none
+}]
+%,xlabel=x,ylabel=value,xmin=0, xmax=2
+\addplot +[mark=none, forget plot] table[x expr=\coordindex,y=y] {graphs/depth-finder-ex.dat};
+\addplot +[only marks, mark=*, mark options={fill=gray,draw=gray}, restrict x to domain=15:15] table[x expr=\coordindex,y=y] {graphs/depth-finder-ex.dat};
+\addplot +[only marks, mark=*, mark options={fill=red,draw=red}, restrict x to domain=19:19] table[x expr=\coordindex,y=y] {graphs/depth-finder-ex.dat};
+\legend{Old bottom, New bottom};
+\end{axis}
+\end{tikzpicture}
+\caption[Example of tracking using minimal deptha.]
+{Example of tracking using minimal depth. The gray point is the approximation from which the other points have been measured. The red point is the new deepest value.}
+\label{fig:mindepthtrack}
+\end{figure}
+
+\subsubsection{Using curve fitting}
+
+
+
+\subsection{Tracking stopping}
 
 TODO.
 
-\chapter{Linking and building tracks}
+\section{Linking and building tracks}
 
 TODO.
 
-%
-%\chapter{Reassembling}
-%
-%TODO.
+%TODO
+%\chapter{Integration and other considerations}
+
 %
 %\chapter{Tests and extraction of the sample recordings}
 %

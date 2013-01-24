@@ -1,7 +1,11 @@
 build/
 images/orig
-/*.pdf
+*.dep
+*.dpth
 *.fls
-diagrams/*.mps
-diagrams/*.log
+*.glo
+*.ist
+*.log
+*.mps
+*.pdf
 diagrams/*.[0-9]
