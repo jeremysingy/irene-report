@@ -57,14 +57,8 @@ beginfig(1);
     drawObjects(hardware, chunkdetector, chunk);
     
     % Links
-    %link(inheritance)(pathManhattanX(frame.w, form.s));
-    %clink(inheritance)(chunkdetector, userctrl);
-    %clink(inheritance)(chunk, panel);
-    %clink(aggregationUni)(pictbox, chunkdetector);
-    %clink(compositionUni)(pictbox, frame);
-    %clink(compositionUni)(triangle, chunk);
+    item.aName(iAssoc)("RawImage")(aName.s = .5[hardware.e, chunkdetector.w]);
     
-    %clink(aggregationUni)(hardware, frame);
     clink(aggregationUni)(hardware, chunkdetector);
     clink(dependency)(chunkdetector, chunk);
     item(iStereo)("<<create>>")(obj.s = .5[chunkdetector.e, chunk.w])

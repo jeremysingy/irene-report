@@ -1544,14 +1544,14 @@ caption={Linear interpolation of points as implemented into PRISM.},
 label={lst:lininterpolimpl}]
 {listings/lin-interpolation-impl.cs}
 
-\subsection{Design and classes organization}
+\subsection{Design}
 
 This section presents the specificities in terms of class design from the last discussed features. The general involved classes are summarized in \autoref{fig:frontiersdiag}.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics{diagrams/frontiers-detection.1}
-\caption{Class diagram for chunk detection.}
+\caption{Class diagram for frontier extraction.}
 \label{fig:frontiersdiag}
 \end{figure}
 
@@ -1618,13 +1618,20 @@ With this implementation, it is a groove \emph{section} that will be tracked, th
 
 \subsection{Tracking overview}
 
-Beyond finding the best track matching a groove, this algorithm must also know the limits to know when to stop. The main steps are:
+Beyond finding the best track matching a groove, this algorithm must also know the limits to be able to properly stop. The main steps are:
 
 \begin{enumerate}
 \item Start tracking using the position of the detected groove bottom
 \item Follow the groove downwards by using an appropriate method to remain correctly at the center (groove bottom)
 \item Verify that the position is still on the chunk area. If it is not the case, stop the tracking at this point.
 \end{enumerate}
+
+The simplified main algorithm is summarized in \autoref{lst:trackingalgo}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Main algorithm for tracking.},
+label={lst:trackingalgo}]
+{listings/tracking-main-algo.cs}
 
 All tracked groove sections are still separated after this step, and attached to a particular frontier. An example of the state while grooves inside a chunk are being tracked can be seen in \autoref{fig:groovetrack}.
 
@@ -1637,9 +1644,9 @@ All tracked groove sections are still separated after this step, and attached to
 
 At this point, five sections have been tracked. One can notice that not all grooves end on the same frontier. The first three leave off at the same frontier and the last two at the main chunk bottom. A solution has to be found to stop the tracking accordingly.
 
-\subsection{Tracking methods}
+\subsection{Finding center}
 
-As explained, the starting point is the groove center already detected before. Then, when the groove is followed downwards at each iterations (each line), it remains to find a good way to follow the groove bottom so that the center is properly tracked.
+As explained, the starting point is the groove center already detected before. Then, when the groove is followed downwards at each iterations (each line), it remains to find a good way to follow the groove bottom so that the center is properly tracked (\texttt{FindCenter()} in the pseudocode).
 
 The main idea is that on the next line of the binned image, the groove center should remain very close to the previously computed one as long as there is no cracks (at this point, no crack should appear inside a chunk). Then, the actual center position is refined using a specific algorithm. The subproblem is then to find the center on a groove line from an approximation.
 
@@ -1647,45 +1654,159 @@ In the general case, this is not a simple problem. Regarding all record's specif
 
 During this project, two different algorithms have been tested. They are described in the sections below.
 
-\subsubsection{Using depth}
+\subsection{Tracking using depth}
 
-The first algorithm is based on the simple idea of tracking the deepest point at the neighborhood of the previously tracked points. At each iteration, $n$ values before and after the current point are tested. The point with the deepest value is considered at the bottom center. \autoref{fig:mindepthtrack} shows an example of result on real values. The mean point in gray is the approximated value (last bottom). The new computed point can be seen in red
+The first algorithm is based on the simple idea of tracking the deepest point at the neighborhood of the previously tracked points. At each iteration, $n$ values before and after the current point are tested. The point with the deepest value is considered at the bottom center.
+
+This tracking method works quite well in practice and rarely fails to follow the groove. However, its main flaw is that it is very prone to local variation, mainly due to the surface or measurement irregularities. An example of this problem can be seen in \autoref{fig:depthfindprob}.
 
 \begin{figure}[!ht]
-\tikzsetnextfilename{depth-finder-ex}
+\centering
+    \begin{subfigure}[t]{0.64\textwidth}
+    \centering
+    \tikzsetnextfilename{depth-finder-prob}
+    \begin{tikzpicture}
+    \begin{axis} [width=0.8\textwidth]
+    %legend style={at={(1.1,0.5)},anchor=west,draw=none}]
+    %,xlabel=x,ylabel=value,xmin=0, xmax=2
+    \addplot +[mark=none, forget plot] table[x expr=\coordindex,y=y] {graphs/depth-finder-prob.dat};
+    \addplot +[only marks, mark=*, mark options={fill=gray,draw=gray}, restrict x to domain=15:15] table[x expr=\coordindex,y=y] {graphs/depth-finder-prob.dat};
+    \addplot +[only marks, mark=*, mark options={fill=red,draw=red}, restrict x to domain=3:3] table[x expr=\coordindex,y=y] {graphs/depth-finder-prob.dat};
+    \legend{Old center, New center};
+    \end{axis}
+    \end{tikzpicture}
+    \caption{A problematic example as seen at a step.}
+    \label{fig:depthfindprobgraph}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.34\textwidth}
+    \centering
+    %\includegraphics[width=0.55\textwidth]{images/find-depth-prob-viz}
+    \includegraphics[width=0.6\textwidth]{images/find-depth-prob-viz}
+    \caption{Visualization of the result on the groove section.}
+    \label{fig:depthfindprobviz}
+    \end{subfigure}
+    \caption{Example of accuracy problem with the tracking depth method.}
+    \label{fig:depthfindprob}
+\end{figure}
+
+In this case, the groove bottom is not clear, in fact due to deviation from different scans. As the old minimum point is located at 15 while the new one is at 3. The groove will be correctly tracked, but all these irregularities along the tracking will give an inaccurate and noisy result, as seen on \autoref{fig:depthfindprobviz}.
+
+\subsection{Tracking using curve fitting}
+
+To avoid problems with these inaccuracy. A solution is to somehow smooth the values. A simple averaging would however not be a good choice. On the previous example the choice between the two values will not be improved by a simple smoothing. In fact, we know that the general groove shape is, in a lot of cases, similar to a parabola.
+
+\subsubsection{Parabola equation}
+
+Mathematically, a parabola is the result of plotting a quadratic function such as
+\begin{equation}
+y = ax^2 + bx + c
+\end{equation}
+It has the interesting property of having its only vertex at the coordinate
+\begin{equation}
+\label{eq:paravertex}
+x = -\frac{b}{2a}
+\end{equation}
+Therefore, knowing the equation of the parabola enables to easily find the center point, located at the vertex.
+
+\subsubsection{Curve fitting}
+
+To find this equation, a curve fitting method must be used. This process enables to approximate a mathematical functions that fits some discrete points. It exists different kind of curve fitting, for example polynomial interpolation which tries to exactly match the points at the discrete values. The degree then depends on the number of points.
+
+In our case, we want the general shape to be approximated by a function of the wanted degree. All points must not exactly match the curve as the wanted behavior in the and is too smooth the signal. A well-known method for fitting is for example the least-squares which enables to approximate a function by minimizing the squared error from the approximated curve to the data points. The general shape is then smoothed by a function of the wanted degree.
+
+In fact, curve fitting methods are already implemented in \gls{prism}. They are for example used by a specific algorithm to process cylinders. The \texttt{PolyInterpolation} class implements several methods as \texttt{fitP()}. By passing two arrays representing the X and Y values and the order of the fitted function, the method automatically returns the corresponding coefficients in an array. Using this method to find the center is represented in \autoref{fig:fitfindex}.
+
+\begin{figure}[!ht]
+\tikzsetnextfilename{fit-finder-ex}
 \centering
 \begin{tikzpicture}
 \begin{axis}[width=0.6\textwidth,
-legend style={
-%cells={anchor=east},
-%legend pos=outer east,
-at={(1.1,0.5)},
-anchor=west,
-%draw=none
-}]
+legend style={at={(1.1,0.5)},anchor=west}]%draw=none
 %,xlabel=x,ylabel=value,xmin=0, xmax=2
-\addplot +[mark=none, forget plot] table[x expr=\coordindex,y=y] {graphs/depth-finder-ex.dat};
-\addplot +[only marks, mark=*, mark options={fill=gray,draw=gray}, restrict x to domain=15:15] table[x expr=\coordindex,y=y] {graphs/depth-finder-ex.dat};
-\addplot +[only marks, mark=*, mark options={fill=red,draw=red}, restrict x to domain=19:19] table[x expr=\coordindex,y=y] {graphs/depth-finder-ex.dat};
-\legend{Old bottom, New bottom};
+\addplot +[mark=none] table[x expr=\coordindex,y=y] {graphs/fit-finder-ex.dat};
+\addplot +[mark=none] table[x expr=\coordindex,y=yfit] {graphs/fit-finder-ex.dat};
+\addplot +[only marks, mark=*, mark options={fill=gray,draw=gray}, restrict x to domain=15:15] table[x expr=\coordindex,y=y] {graphs/fit-finder-ex.dat};
+\addplot +[only marks, mark=*, mark options={fill=red,draw=red}, restrict x to domain=16:16] table[x expr=\coordindex,y=yfit] {graphs/fit-finder-ex.dat};
+\legend{Original signal, Fitted parabola, Old center, New center};
+%44 and 44.75
 \end{axis}
 \end{tikzpicture}
-\caption[Example of tracking using minimal depth.]
-{Example of tracking using minimal depth. The gray point is the approximation from which the other points have been measured. The red point is the new deepest value.}
-\label{fig:mindepthtrack}
+\caption[Example of tracking using curve fitting.]
+{Example of tracking using curve fitting. The gray point is the approximation from which the other points have been measured. The red point is the new center value (vertex of the parabola).}
+\label{fig:fitfindex}
 \end{figure}
 
-\subsubsection{Using curve fitting}
+\subsubsection{Final implementation}
 
+As often, the raw results cannot be directly use in some cases. Firstly, what happens if a signal is very and flat? The effective minimum found by \eqref{eq:paravertex} could be located far away the current area, even out of the record. If the shape is really bad at certain place, the fitted parabola direction could also be inverted, making the vertex a maximum instead of a minimum. \autoref{fig:fitfindprobs} present such problematic cases.
 
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \tikzsetnextfilename{fit-finder-prob-dist}
+    \begin{tikzpicture}
+    \begin{axis} [width=0.9\textwidth]
+    \addplot +[mark=none] table[x expr=\coordindex,y=y] {graphs/fit-finder-prob-dist.dat};
+    \addplot +[mark=none] table[x expr=\coordindex,y=yfit] {graphs/fit-finder-prob-dist.dat};
+    \end{axis}
+    \end{tikzpicture}
+    \caption{Shifted parabola.}
+    \label{fig:fitfinddist}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \tikzsetnextfilename{fit-finder-prob-max}
+    \begin{tikzpicture}
+    \begin{axis} [width=0.9\textwidth]
+    \addplot +[mark=none] table[x expr=\coordindex,y=y] {graphs/fit-finder-prob-max.dat};
+    \addplot +[mark=none] table[x expr=\coordindex,y=yfit] {graphs/fit-finder-prob-max.dat};
+    \end{axis}
+    \end{tikzpicture}
+    \caption{Inversed parabola.}
+    \label{fig:fitfindmax}
+    \end{subfigure}
+    \caption{Examples of problems with curve fitting method.}
+    \label{fig:fitfindprobs}
+\end{figure}
 
-\subsection{Tracking stopping}
+This eventuality has to be checked with the proper code. The simple test is to ensure that the vertex is located in the neighborhood by checking the distance from the last point. If is too long, the current center may be set to the previous value. The parabola direction can also be tested with the sign of the $a$ coefficient. If $a >= 0$, the corresponding vertex should not be taken into account.
 
-TODO.
+%TODO first setting with depth, algo, etc.
+
+\subsection{Stop condition}
+
+At this point, the groove center may be tracked with different methods. The remaining work is to find a stop condition for the algorithm, i.e. when the chunk contour has been reached (routine \texttt{FindStopPos()} in pseudocode). As seen in \autoref{fig:groovetrack}, the groove can reach any of the groove's bottom frontiers. 
+
+At each loop iteration, all frontiers at the bottom of the chunk must be tested. If the current point is in the range of the frontier and is still located above it, this frontier is a potential candidate. The next one to be reached is therefore the closest one. This procedure is better explained in \autoref{fig:frontiersstop}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.7\textwidth]{images/chunk-frontiers-stop}
+\caption{Illustration of the stop condition.}
+\label{fig:frontiersstop}
+\end{figure}
+
+The current point (blue dot) is in the range of the two red-colored frontiers. Both these frontiers are below the point are potential candidates. The closest one is the one above, so the next stopping point, represented by the horizontal line is at the height of this frontier at this position.
+
+\subsection{Design}
+
+As previously explained, the complete tracking of a chunk is quite complicated and has been decomposed in multiple steps. This is also reflected in the final design. The process involves already discussed classes as \texttt{Chunk} and \texttt{Frontier} but the processing has been separated in their own modules as viewed in \autoref{fig:groovetrackdiag}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/groove-tracking.1}
+\caption{Class diagram for groove tracking.}
+\label{fig:groovetrackdiag}
+\end{figure}
+
+Again, the starting point is the \texttt{Chunk} class with the method \texttt{TrackGroove()}. As the tracking algorithm needs all frontiers of a single chunk, the process is started by this class. The main algorithm is implemented in the \texttt{GrooveTracker} class.
+
+The two different algorithms for maintaining the groove centers are implemented in a class hierarchy inheriting from \texttt{AbstractBottomFinder}. To simplify the creation of the desired algorithm, a factory class is provided (not detailed in this diagram).
 
 \section{Linking and building tracks}
 
-TODO.
+%From this point of the computing, the last remaining big step is to reassemble the pieces of the puzzle.
 
 %TODO
 %\chapter{Integration and other considerations}

@@ -17,6 +17,10 @@ iAssoc.iFont.name := "cs-lmss10";
 % Define classes
 %------------------------------------------------
 
+Class.hardware("Hardware")
+    ("+BinImage")
+    ();
+
 Class.misc("Misc")
     ()
     ("+FindPeaks()", "+FilterGrooveBottoms()");
@@ -45,17 +49,20 @@ beginfig(1);
     % Positions
     topToBottom(40)(misc, chunk);
     topToBottom(40)(utils, frontier);
+    leftToRight(60)(hardware, misc);
     leftToRight(60)(chunk, frontier);
     
     %same.midx(userctrl, utils);
     %same.midy(hardware, utils);
     
     % Draw
-    drawObjects(misc, utils, chunk, frontier);
+    drawObjects(hardware, misc, utils, chunk, frontier);
     
     % Links
     clink(compositionUni)(frontier, chunk);
     %clink(dependency)(chunk, misc);
+    clink(dependency)(misc, hardware);
+    item.aName(iAssoc)("BinImage")(aName.s = .5[hardware.e, misc.w]);
     clink(dependency)(frontier, utils);
     clink(dependency)(frontier, misc);
 
