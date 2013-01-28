@@ -1692,6 +1692,7 @@ This tracking method works quite well in practice and rarely fails to follow the
 In this case, the groove bottom is not clear, in fact due to deviation from different scans. As the old minimum point is located at 15 while the new one is at 3. The groove will be correctly tracked, but all these irregularities along the tracking will give an inaccurate and noisy result, as seen on \autoref{fig:depthfindprobviz}.
 
 \subsection{Tracking using curve fitting}
+\label{sec:trackfit}
 
 To avoid problems with these inaccuracy. A solution is to somehow smooth the values. A simple averaging would however not be a good choice. On the previous example the choice between the two values will not be improved by a simple smoothing. In fact, we know that the general groove shape is, in a lot of cases, similar to a parabola.
 
@@ -1736,6 +1737,33 @@ legend style={at={(1.1,0.5)},anchor=west}]%draw=none
 \label{fig:fitfindex}
 \end{figure}
 
+On the general results, the curve fitting method allows to track more properly a record, with smoother lines. This difference is obvious in \autoref{fig:trackcomp}.
+
+%\begin{figure}[!ht]
+%\centering
+%\includegraphics[width=0.6\textwidth]{images/tracking-comparison}
+%\caption{Difference from depth and curve fitting tracking methods.}
+%\label{fig:bellfitting}
+%\end{figure}
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/tracking-comp-depth}
+    \caption{Using depth tracking.}
+    \label{fig:trackcompdepth}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/tracking-comp-fit}
+    \caption{Using curve fitting tracking.}
+    \label{fig:trackcompfit}
+    \end{subfigure}
+    \caption[Comparison of tracking methods.]
+    {Comparison of tracking methods, results on a portion of the Bell record.}
+    \label{fig:trackcomp}
+\end{figure}
+
 \subsubsection{Final implementation}
 
 As often, the raw results cannot be directly use in some cases. Firstly, what happens if a signal is very and flat? The effective minimum found by \eqref{eq:paravertex} could be located far away the current area, even out of the record. If the shape is really bad at certain place, the fitted parabola direction could also be inverted, making the vertex a maximum instead of a minimum. \autoref{fig:fitfindprobs} present such problematic cases.
@@ -1776,9 +1804,16 @@ This eventuality has to be checked with the proper code. The simple test is to e
 
 \subsection{Stop condition}
 
-At this point, the groove center may be tracked with different methods. The remaining work is to find a stop condition for the algorithm, i.e. when the chunk contour has been reached (routine \texttt{FindStopPos()} in pseudocode). As seen in \autoref{fig:groovetrack}, the groove can reach any of the groove's bottom frontiers. 
+At this point, the groove center may be tracked with different methods. The remaining work is to find a stop condition for the algorithm, i.e. when the chunk contour has been reached (routine \texttt{FindStopPos()} in the previous pseudocode). As seen in \autoref{fig:groovetrack}, the groove can reach any of the groove's bottom frontiers. 
 
 At each loop iteration, all frontiers at the bottom of the chunk must be tested. If the current point is in the range of the frontier and is still located above it, this frontier is a potential candidate. The next one to be reached is therefore the closest one. This procedure is better explained in \autoref{fig:frontiersstop}.
+
+The current point (blue dot) is in the range of the two red-colored frontiers. Both these frontiers are below the point are potential candidates. The closest one is the one above so that the next stopping point, represented by the horizontal line, is at the height of this frontier at this position. The algorithm to find the bottom position is summarized in \autoref{lst:trackingstop}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Pseudocode representing localization ofo the end position and frontier.},
+label={lst:trackingstop}]
+{listings/tracking-stop.cs}
 
 \begin{figure}[!ht]
 \centering
@@ -1787,7 +1822,7 @@ At each loop iteration, all frontiers at the bottom of the chunk must be tested.
 \label{fig:frontiersstop}
 \end{figure}
 
-The current point (blue dot) is in the range of the two red-colored frontiers. Both these frontiers are below the point are potential candidates. The closest one is the one above, so the next stopping point, represented by the horizontal line is at the height of this frontier at this position.
+The routine \texttt{HeightFromX()} enables to get the height (or Y position) on the frontier at the current X coordinate. If the coordinate is not in the frontier's range, it returns a negative number. From this height of frontiers, the closest one is stored which corresponds to the stop position and frontier.
 
 \subsection{Design}
 
@@ -1800,13 +1835,225 @@ As previously explained, the complete tracking of a chunk is quite complicated a
 \label{fig:groovetrackdiag}
 \end{figure}
 
-Again, the starting point is the \texttt{Chunk} class with the method \texttt{TrackGroove()}. As the tracking algorithm needs all frontiers of a single chunk, the process is started by this class. The main algorithm is implemented in the \texttt{GrooveTracker} class.
+Again, the starting point is the \texttt{Chunk} class with the method \texttt{TrackGroove()}. As the tracking algorithm needs all frontiers of a single chunk, the process is started by this class. The main algorithm is implemented in the \texttt{GrooveTracker} class. It creates the final groove stored in an object of type \texttt{GrooveSection} which contains all useful information such as the tracking points and a reference to frontier on which the groove is ending. A list of tracked groove sections is finally stored by the frontier where it starts, but also where it ends (whether the type of frontier it is).
 
 The two different algorithms for maintaining the groove centers are implemented in a class hierarchy inheriting from \texttt{AbstractBottomFinder}. To simplify the creation of the desired algorithm, a factory class is provided (not detailed in this diagram).
 
 \section{Linking and building tracks}
 
-%From this point of the computing, the last remaining big step is to reassemble the pieces of the puzzle.
+At this point of the processing, the last remaining big step is to reassemble the pieces of the puzzle. The list of grooves is known per each frontier where it starts, and the end frontier is also linked to the groove section.
+
+The main linking takes part in three big steps:
+
+\begin{description}
+\item[Frontier linking] Link two frontiers of two different chunks together
+\item[Groove linking] From the common frontier established in the first point, actually link the grooves together (find corresponding match) by performing an analysis of the signal to find which linkage is more likely.
+\item[Track building] Once the linking is performed, put all the sections together to build the final track which will be processed by \gls{prism} with the usual algorithms.
+\end{description}
+
+These main steps are described in the sections below.
+
+\subsection{Frontier linking}
+
+Before actually links all groove sections together, a previous step must be performed. The common frontiers must be identified. At this point, the missing piece is a link between the chunks, as all grooves should be entirely tracked. This connection will be done on the frontier basis. The current known information is a groove, which starts on a frontier at the top of a chunk and ends to another frontier at the bottom of the same chunk. Somehow, to eventually link the groove sections together, a association between a \emph{bottom} frontier and a \emph{top} frontier has to be done. An example of correct frontier linking can be visualized in \autoref{fig:frontlink}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.7\textwidth]{images/frontiers-linking}
+\caption{Schema representing frontiers linking.}
+\label{fig:frontlink}
+\end{figure}
+
+The first observation is that a single frontier can be linked to several different other ones, for example when two chunks are located beside the same frontier. Another important result is that it is possible that two frontiers of the same chunk have to be linked. This can happen for example in the case of thin crack not entirely detected, as already seen in \autoref{fig:crackbellprob}.
+
+%TODO link with final implementation description
+This step must be seen as a general problem over the record: at this point it is assumed that we have two collections containing all bottom and top frontiers of all chunks in the record. The algorithm iterates over all bottom frontiers and tries to assign their corresponding linked frontiers.
+
+\subsubsection{Frontier section}
+
+For this process, an new object type has to be defined: a frontier section. A frontier section defines a range of a frontier that has been linked with another one. This range is important as we saw that several frontiers may be linked to a single one. A section stores the following information:
+
+\begin{itemize}
+\item Reference to the linked frontier
+\item Index of the first linked groove in the linked frontier
+\item Size, i.e. number of grooves in the section
+\end{itemize}
+
+A class \texttt{FrontierSection} containing the corresponding attributes is defined for the following algorithms. It will also be useful for the next processing step (actual groove linking).
+
+\subsubsection{General algorithm}
+
+At least one frontier section is created per bottom frontier. Then, the iteration is performed on each groove of the current computed frontier. For each groove ending position, the closest frontier is found. If there is no frontier below this position, this means that the end of a revolution has been reached. It is located at the bottom of the mapped record and no other chunk is present below.
+
+Additionally, when a new section starts, the index of the closest groove index in the linked frontier is sought. The index reflects the position on the frontier where the groove is located. This will temporarily be the groove section that will be linked the current one. The section is then stored in a collection.
+
+Finally, the process repeats for every grooves in the frontier. As long as the closest frontier remains the same, the section is conceptually enlarged by adding a groove. If the closest frontier changes, it means that a new section must be defined. The process then continues similarly. An full example showing the result of this processing is presented in \autoref{fig:frontlinkex}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/frontiers-linking-ex}
+\caption[Example of the result after frontier linking.]
+{Example of the result after frontier linking. The sections of the same frontier are represented by the same color. The section sizes and linked groove indices are also indicated.}
+\label{fig:frontlinkex}
+\end{figure}
+
+The parameters stored by a section are more easily visualized in the corresponding rectangles. This example also shows different situations that may happen. If, as explained above, a chunk is followed by several others, the frontier is split as for the two orange sections in the example. However, for the green and purple sections, the linked frontier remains the same for all grooves. The purple one also shows that the first linked groove is not the first one (index 7).
+
+Following these definitions and explanation, the whole algorithm is summarized in \autoref{lst:frontierlink}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={General algorithm for frontier linking.},
+label={lst:frontierlink}]
+{listings/frontier-linking.cs}
+
+\subsubsection{Closest frontier}
+
+From this main algorithm, the first subproblem is to find the closest frontier from a given groove. For this purpose, the only choice is to do it geometrically, as there is still no connection between different chunks or frontiers. Basically, the goal is to find the minimum Y distance between all frontiers and the groove's last point, whereas the frontiers are \emph{below} the point.
+
+In specific situations, e.g. when the crack is almost vertical (see \autoref{fig:crackbellprob}), it is possible that the next frontier is slightly above the end groove position. A small negative number is then allowed. The typical value is for example 5 pixels, so that it would not be possible for a wrong frontier to be detected (the chunk should have an height less or equal to 5 pixels). The algorithm is described in \autoref{lst:frontierclosest}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Algorithm for finding closest end frontier from a given groove.},
+label={lst:frontierclosest}]
+{listings/frontier-closest.cs}
+
+\subsubsection{Closest groove}
+
+When the closest frontier has been found, it remains to find groove in this frontier that is the nearest to the current one. This algorithm consists simply to run through the grooves in the linked frontier, compute the horizontal distance from the current groove and return the one with the smallest distance. It is presented in \autoref{lst:frontierclosestgroove}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Algorithm for finding the closest groove.},
+label={lst:frontierclosestgroove}]
+{listings/frontier-closest-groove.cs}
+
+\subsection{Groove matching}
+
+From the previous step, all frontiers are now logically linked to another when possible (if not, the frontier is considered as being at the end of a revolution) using a frontier section. The final track could already be linked with the current information if there was no shifting between the chunks (see \autoref{sec:issueshift}). However, the best match is not necessarily from the \texttt{closest} groove as it has been computed. In fact, this specific solution would correspond to a match with no shift (or a null shift) between all frontier sections.
+
+Finding the real match is not a trivial task as well. In some cases, the correct link is pretty obvious and can be easily confirmed by the user. Sometimes, it is more difficult to spot. A way of finding the right match is to analyze and compare the actual audio signal from a section before -- and after -- the crack. \gls{visualaudio} uses such an implementation for the linking and the same kind of analysis will be done for \gls{prism}.
+
+Before the comparison, the actual audio signal must first be extracted. Even if the groove is already tracked, in the binned image, the audio must be analyzed from the detailed acquisition. It can be seen as the final processing on a small section of the record. For this purpose, it has been difficult to find a very suitable method. Finally, a comparison method must be used to be able to give the matching likeliness between two audio signals.  The general process followed during implementation is explained in the following sections, before detailing the final implementation.
+
+\subsubsection{Audio analysis}
+
+In the first implementation, the idea was to simply look at the tracked horizontal position and follows vertically the approximated groove center. This early approach suffered from different flows. Firstly, it is a bad idea to only rely on the tracked position to follow the exact center. The binned image can be decimated at a high factor (e.g. 100), resulting in inaccurate measures. Also, especially on the detailed raw image, some outliers may appear (e.g. because of bad points) distorting the original audio signal.
+
+In a first attempt, the outliers was removed by cleaning the signal afterwards. The method to do so is to compute the signal mean, and then keep track of all $\Delta s_i$ (absolute difference between a value $i$ and the mean). Then, the average $\overline{\Delta S}$ of all deltas is itself computed. Finally, based on a tolerance factor $t$, the outliers are fixed in $i$ if $\Delta s_i > t \overline{\Delta S}$. The corresponding algorithm is presented in \autoref{lst:removeout}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Algorithm to remove outliers.},
+label={lst:removeout}]
+{listings/remove-outliers.cs}
+
+Bad values are replaced with a interpolated from the neighbors. The result of this algorithm can be visualized in \autoref{fig:removeout}. In this case, especially one big outlier is visible that is removed after the cleaning.
+
+\begin{figure}[!ht]
+\tikzsetnextfilename{remove-outliers}
+\centering
+\begin{tikzpicture}
+\begin{axis} [width=0.7\textwidth, unit vector ratio*=1 0.6 1, xticklabels={,,},
+legend style={at={(1.05,0.5)},anchor=west}]
+\addplot +[mark=none, restrict x to domain=50:130, color=gray, style=dashed] table[x expr=\coordindex,y=yraw] {graphs/remove-outliers.dat};
+\addplot +[mark=none, restrict x to domain=50:130, color=blue] table[x expr=\coordindex,y=ycleaned] {graphs/remove-outliers.dat};
+\legend{Raw signal, Cleaned signal};
+\end{axis}
+\end{tikzpicture}
+\caption{Illustration of outliers removing on a sample signal (one big outlier).}
+\label{fig:removeout}
+\end{figure}
+
+\subsubsection{Adding curve fitting}
+
+Even with outliers correction, the result is not perfect and could be noisy. Another better way to get the audio signal is to use curve fitting, as explained for tracking in \autoref{sec:trackfit}. Thi time, the vertex of the parabola is used for the signal value. However, unlike tracking, the center position is not corrected. Indeed, it varies not much and taking the vertex is sufficient to get a proper value. This method also has the benefit of smoothing noisy values. The difference with both methods is visualized in \autoref{fig:simplefitcomp}.
+
+\begin{figure}[!ht]
+\tikzsetnextfilename{analysis-fitting-comp}
+\centering
+\begin{tikzpicture}
+\begin{axis} [width=0.7\textwidth, unit vector ratio*=1 1 1, xticklabels={,,},
+legend style={at={(1.05,0.5)},anchor=west}]
+\addplot +[mark=none, restrict x to domain=50:130] table[x expr=\coordindex,y=ynorm] {graphs/analysis-fitting-comp.dat};
+\addplot +[mark=none, restrict x to domain=50:130] table[x expr=\coordindex,y=yfit] {graphs/analysis-fitting-comp.dat};
+\legend{First method, Fitting method};
+\end{axis}
+\end{tikzpicture}
+\caption{Comparison of audio analysis methods.}
+\label{fig:simplefitcomp}
+\end{figure}
+
+As for the tracking, the eventuality of a degenerated parabola must be tested. If it is inversed or the vertex is away from the tracked position, the signal value is computed from the tracked position. The corresponding algorithm is presented in \autoref{lst:analysisfit}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Audio analysis using curve fitting.},
+label={lst:analysisfit}]
+{listings/analysis-fitting.cs}
+
+The removing of outliers is still relevant with this method and may also be used to help cleaning the resulting signal. For example, if the parabola is ill-formed and the value from the tracked position is indeed an outlier, it must be fixed.
+
+The next sections will explain the different characteristics that will be computed over this audio signal. Some of the implemented techniques are derived from the work in \gls{visualaudio}, from \cite{seydoux08} and \cite{benningerchunk12}.
+
+\subsubsection{Standard deviation}
+
+The first used characteristic is the standard deviation of the signal. This is the parameter used in \gls{visualaudio} for comparison. The standard deviation $\sigma$ over a discrete set of data is computed with
+\begin{equation}
+\label{eq:stddev}
+\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N}} \left(x_i - \overline{x} \right)^2 \; .
+\end{equation}
+
+It is a well-known parameter informing on the dispersion of the values around the mean of the signal energy. The main advantage of using this parameter is that it gives a single value which is then easy to compare. However, a important issue appeared in the first tests. In fact, the surface of the record is sometimes distorted because of a crack. This height difference may result in very big signal modification. Therefore, the standard deviation is influenced a lot and become very large even if the signal remains silent.
+
+The way to solve this issue is to apply a high-pass filter over the signal. This surface variation is at very low frequency and it does not come from the audio itself, it can then be removed without any loss on the audio.
+
+TODO: continue, explain high-pass filtering
+
+\subsubsection{FFT}
+
+TODO.
+
+\subsubsection{Audio comparison}
+
+Comparing the audio cannot give an exact result. In the general case. We cannot say that two grooves match together just because their audio signal is similar. The following list presents different cases that can happen.
+
+\begin{description}
+\item[Audio variation] Firstly, it is quite possible than the audio changes entirely just where the crack happens. In this case, there could be almost on similarity between the two signals.
+\item[Silent parts] On a part where there is a lot of silence, the only audio signal is noise, and there is no real audio properties to be compared between two groove sections.
+\item[Similar audio] If the recorded sound remains similar for a long time (e.g. a repetitive musical section), the differentiation between grooves becomes difficult.
+\end{description}
+
+These facts show that it is almost impossible to match only two grooves by a simple comparison. However, in most cases, there will be multiple groove sections to test between each other. Then, not only the precision is better (because more data can be compared), but there is also a greater probability of changing sound in a larger area.
+
+\subsubsection{Shifting}
+
+In fact, the final result of this step will be the shifting corresponding to the best match between all tested grooves. Different shifting examples are given in \autoref{fig:matchshiftingex}.
+
+\begin{figure}[!ht]
+\centering
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/matching-shift-ex-1}
+    \caption{An example of path.}
+    \label{fig:shiftingex1}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/matching-shift-ex-2}
+    \caption{Another example.}
+    \label{fig:shiftingex2}
+    \end{subfigure}
+    \caption{Different examples of shifting leading in different paths.}
+    \label{fig:matchshiftingex}
+\end{figure}
+
+In the chosen convention, the shift is relative to the displacement of the first frontier (upper part of the crack) against the other. 
+
+TODO: end section.
+%TODO Then, different shifting values 
+
+\subsection{Track building}
+
+%\begin{enumerate}
+%\item 
+%\end{enumerate}
 
 %TODO
 %\chapter{Integration and other considerations}

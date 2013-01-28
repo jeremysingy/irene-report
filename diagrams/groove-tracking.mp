@@ -30,7 +30,7 @@ Class.chunk("Chunk")
     ("+TrackGrooves()");
 
 Class.frontier("Frontier")
-    ()
+    ("+Grooves")
     ();
 
 Class.tracker("GrooveTracker")
@@ -60,9 +60,10 @@ beginfig(1);
 
     % Positions
     %topToBottom(40)(misc, chunk);
-    topToBottom(40)(groove, chunk);
+    topToBottom(40)(groove, tracker);
+    topToBottom(40)(frontier, chunk);
     %leftToRight(60)(chunk, frontier, tracker);
-    leftToRight(40)(finder, tracker, chunk, frontier);
+    leftToRight(40)(finder, tracker, chunk);
     %topToBottom(40)(tracker, finder);
     %depthfinder.w = finder.e + (50, -30);
     %fitfinder.w = finder.e + (50, 30);
