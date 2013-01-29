@@ -1926,11 +1926,13 @@ caption={Algorithm for finding the closest groove.},
 label={lst:frontierclosestgroove}]
 {listings/frontier-closest-groove.cs}
 
-\subsection{Groove matching}
+%\subsection{Groove matching}
+\subsection{Audio characteristics}
+\label{sec:audiochar}
 
 From the previous step, all frontiers are now logically linked to another when possible (if not, the frontier is considered as being at the end of a revolution) using a frontier section. The final track could already be linked with the current information if there was no shifting between the chunks (see \autoref{sec:issueshift}). However, the best match is not necessarily from the \texttt{closest} groove as it has been computed. In fact, this specific solution would correspond to a match with no shift (or a null shift) between all frontier sections.
 
-Finding the real match is not a trivial task as well. In some cases, the correct link is pretty obvious and can be easily confirmed by the user. Sometimes, it is more difficult to spot. A way of finding the right match is to analyze and compare the actual audio signal from a section before -- and after -- the crack. \gls{visualaudio} uses such an implementation for the linking and the same kind of analysis will be done for \gls{prism}.
+Finding the real match is not a trivial task as well. In some cases, the correct link is pretty obvious and can be easily confirmed by the user. Sometimes, it is more difficult to spot. A way of finding the right match is to analyze and compare characteristics of the actual audio signal from a section before -- and after -- the crack. \gls{visualaudio} uses such an implementation for the linking and the same kind of analysis will be done for \gls{prism}.
 
 Before the comparison, the actual audio signal must first be extracted. Even if the groove is already tracked, in the binned image, the audio must be analyzed from the detailed acquisition. It can be seen as the final processing on a small section of the record. For this purpose, it has been difficult to find a very suitable method. Finally, a comparison method must be used to be able to give the matching likeliness between two audio signals.  The general process followed during implementation is explained in the following sections, before detailing the final implementation.
 
@@ -1938,7 +1940,7 @@ Before the comparison, the actual audio signal must first be extracted. Even if 
 
 In the first implementation, the idea was to simply look at the tracked horizontal position and follows vertically the approximated groove center. This early approach suffered from different flows. Firstly, it is a bad idea to only rely on the tracked position to follow the exact center. The binned image can be decimated at a high factor (e.g. 100), resulting in inaccurate measures. Also, especially on the detailed raw image, some outliers may appear (e.g. because of bad points) distorting the original audio signal.
 
-In a first attempt, the outliers was removed by cleaning the signal afterwards. The method to do so is to compute the signal mean, and then keep track of all $\Delta s_i$ (absolute difference between a value $i$ and the mean). Then, the average $\overline{\Delta S}$ of all deltas is itself computed. Finally, based on a tolerance factor $t$, the outliers are fixed in $i$ if $\Delta s_i > t \overline{\Delta S}$. The corresponding algorithm is presented in \autoref{lst:removeout}.
+In a first attempt, the outliers were removed by cleaning the signal afterwards. The method to do so is to compute the signal mean, and then keep track of all $\Delta s_i$ (absolute difference between a value $i$ and the mean). Then, the average $\overline{\Delta S}$ of all deltas is itself computed. Finally, based on a tolerance factor $t$, the outliers are fixed in $i$ if $\Delta s_i > t \overline{\Delta S}$. The corresponding algorithm is presented in \autoref{lst:removeout}.
 
 \lstinputlisting[language={[Sharp]C},
 caption={Algorithm to remove outliers.},
@@ -2002,17 +2004,84 @@ The first used characteristic is the standard deviation of the signal. This is t
 
 It is a well-known parameter informing on the dispersion of the values around the mean of the signal energy. The main advantage of using this parameter is that it gives a single value which is then easy to compare. However, a important issue appeared in the first tests. In fact, the surface of the record is sometimes distorted because of a crack. This height difference may result in very big signal modification. Therefore, the standard deviation is influenced a lot and become very large even if the signal remains silent.
 
-The way to solve this issue is to apply a high-pass filter over the signal. This surface variation is at very low frequency and it does not come from the audio itself, it can then be removed without any loss on the audio.
+The way to solve this issue is to apply a high-pass filter over the signal. This surface variation is at very low frequency and it does not come from the audio itself, it can then be removed without any loss on the audio. It has been chosen to use the \gls{fft} to apply the filter. Transforming the signal into the frequency domain enables to place the cutoff at a specified frequency. Then, the original signal is converted back using the inverse transform. A visualization on a audio sample is presented in \autoref{fig:fftfilterex}.
 
-TODO: continue, explain high-pass filtering
+\begin{figure}[!ht]
+\tikzsetnextfilename{fft-filter-ex}
+\centering
+\begin{tikzpicture}
+\begin{axis} [width=0.7\textwidth, unit vector ratio*=1 0.7 1, xticklabels={,,},
+legend style={at={(1.05,0.5)},anchor=west}]
+\addplot +[mark=none] table[x expr=\coordindex,y expr=\thisrow{yraw}-271] {graphs/fft-filter-ex.dat};
+\addplot +[mark=none] table[x expr=\coordindex,y=yfiltered] {graphs/fft-filter-ex.dat};
+\legend{Without filter, With high-pass filter};
+\end{axis}
+\end{tikzpicture}
+\caption[Example of high-pass filter applied on a distorted surface.]
+{Example of high-pass filter applied on a distorted surface. The cutoff frequency is 120~Hz. The original signal has been translated to 0 for a better view.}
+\label{fig:fftfilterex}
+\end{figure}
+
+This example is applied on an almost silent section resulting in very small signal energy. However, the standard deviation on the raw signal would be very high because of the general surface shape. The high-pass filter cleans it using a cutoff frequency and removing values below it.
+
+One can note that the signal is altered at the beginning and the end. This is due to the transformation, particularly to the window function. The details about applying \gls{fft} and windowing is explained in the next subsection. The algorithm using implemented routines can be summarized in the following steps:
+
+\begin{enumerate}
+\item Apply the \gls{fft} on the original signal by previously using a proper window function (see next subsection).
+\item Remove low frequencies corresponding to the cutoff
+\item Convert back the signal using the inverse \gls{fft}
+\end{enumerate}
+
+From this filtered signal, the standard deviation as developed in \eqref{eq:stddev} is applied and stored.
 
 \subsubsection{FFT}
 
-TODO.
+During the project, different solutions have been tried to get a proper characteristic enabling to compare audio signal. With all issues such as surface distortion or outliers, using the \gls{fft} has been also implemented. Indeed, the frequency analysis is almost not influenced by these problems.
 
-\subsubsection{Audio comparison}
+A \texttt{fft()} function is already implemented in \gls{prism} in the \texttt{Misc} class, enabling to compute \gls{fft} coefficients of data. However, this routine is low-level and requires some preprocessing before using it. Firstly, the parameter is an array of size $2(n+1)$ representing the complex coefficients. The real parts are indexed at $i+1$ and the imaginary at $i+2$. Moreover, a precondition of the \gls{fft} is that the data size must be a power of two. The function then returns an array of the same size containing the complex coefficients in the frequency domain. In this case, we just need the frequency magnitudes, i.e. the modules of the complex numbers, which is sufficient to know the distribution of frequencies.
 
-Comparing the audio cannot give an exact result. In the general case. We cannot say that two grooves match together just because their audio signal is similar. The following list presents different cases that can happen.
+Also, another common practice is to use a specific window function to improve the results. A signal is multiplied by a window function to specify an interval of values. These functions have values in the interval $[0,1]$ In fact, the signal corresponds itself to an observation and can be viewed as windowed from the first and last sample by a rectangular function (1 from 0 to $n$, zero otherwise).
+
+The Fourier transform causes what is called \emph{spectral leakage}. A simple periodic function such as $\sin(\omega t)$ results in frequencies other than $\omega$ to be viewed in the spectrum. To soften this effect, other windowing functions must be used. In this case, the Hann window have been used, as defined in \eqref{eq:hannwin}.
+
+\begin{equation}
+\label{eq:hannwin}
+w(i) = 0.5 - 0.5 \cos\left(\frac{2 \pi i}{N - 1}\right)
+\end{equation}
+
+Multiplying the signal by this window smooths the result. The difference with or without the Hann window can be seen in \autoref{fig:windowcomp}.
+
+\begin{figure}[!ht]
+\tikzsetnextfilename{windows-comp}
+\centering
+\begin{tikzpicture}
+\begin{axis} [width=0.8\textwidth, ymax=3000, xlabel=Frequency,ylabel=Magitude %, unit vector ratio*=1 0.7 1, xticklabels={,,} %,
+%legend style={at={(1.05,0.5)},anchor=west}]
+]
+\addplot +[mark=none] table[x=freq,y=yrect] {graphs/windows-comp.dat};
+\addplot +[mark=none] table[x=freq,y=yhann] {graphs/windows-comp.dat};
+\legend{No (rectangular) window, Hann window};
+\end{axis}
+\end{tikzpicture}
+\caption{Comparison of FFT with the use of different window functions.}
+\label{fig:windowcomp}
+\end{figure}
+
+The resulting spectrum, using a Hann window suffers much less from the spectral leakage. If the low frequencies were removed and the graph properly rescaled, three harmonics would be more clearly identified between \SIrange[range-phrase=--,range-units=single]{500}{1000}{\hertz}.
+
+To simplify the use of Fourier transforms, some utilities have been added to a class \texttt{SignalUtils}. The function \texttt{FftAmplitudes()} automatically computes the amplitudes of frequency coefficients from a real signal and applying a Hann window. The \gls{fft} size can be defined or it is determined as the smallest power of two greater than the signal length. When the \gls{fft} has been computed, the modules are directly calculated and returned.
+
+To properly compare the spectra, a frequency range must be defined, to compare only the valuable frequencies from the source audio. The \texttt{fft()} routine does not return results mapped to an actual frequencies. In fact, on a discrete signal, the frequencies depend of the size of the \gls{fft} $N$ and the sample frequency $f_s$. Thus, the corresponding frequency at position $i$ is
+\begin{equation}
+\label{eq:freq}
+f = \frac{i f_s}{N} \; .
+\end{equation}
+
+Given parameter values, only frequencies between the defined range are then stored as characteristic.
+
+\subsection{Audio comparison}
+
+Now that different properties have been computed at the beginning and end of every groove section, we must find a way to compare them together and get a value indicating the likeness of a match. Comparing the audio cannot give an exact result in the general case. We cannot say that two grooves match together just because their audio signal is similar. The following list presents different cases that can happen.
 
 \begin{description}
 \item[Audio variation] Firstly, it is quite possible than the audio changes entirely just where the crack happens. In this case, there could be almost on similarity between the two signals.
@@ -2020,7 +2089,7 @@ Comparing the audio cannot give an exact result. In the general case. We cannot 
 \item[Similar audio] If the recorded sound remains similar for a long time (e.g. a repetitive musical section), the differentiation between grooves becomes difficult.
 \end{description}
 
-These facts show that it is almost impossible to match only two grooves by a simple comparison. However, in most cases, there will be multiple groove sections to test between each other. Then, not only the precision is better (because more data can be compared), but there is also a greater probability of changing sound in a larger area.
+These facts show that it is almost impossible to match only two grooves by a simple comparison. However we need to match entire frontiers and not single grooves. In most cases, there will be multiple groove sections to test between each other. Then, not only the precision is better (because more data can be compared), but the sound is also more likely to vary when area is larger.
 
 \subsubsection{Shifting}
 
@@ -2044,22 +2113,76 @@ In fact, the final result of this step will be the shifting corresponding to the
     \label{fig:matchshiftingex}
 \end{figure}
 
-In the chosen convention, the shift is relative to the displacement of the first frontier (upper part of the crack) against the other. 
+In the chosen convention, the shift is relative to the displacement of the first frontier (upper part of the crack) against the other. The class \texttt{FrontierSection} already discussed enables to easily change shift and compare values. The two methods \texttt{IncrementShift()} and \texttt{DecrementShift()} logically change the shift from the current position. \texttt{LinkedGroovesCount()} gives the number of linked groove corresponding to the current shift.
 
-TODO: end section.
-%TODO Then, different shifting values 
+To match the frontiers from the computed characteristics, the method \texttt{BestMatching()} takes the maximum allowed shift (e.g. if 3, looks from \numrange{-3}{3}), tries all positions and set the shift to the best match. The likeness is computed on the maximum number of possible groove sections and averaged before being compared. The comparison ratio between two grooves regarding the different used characteristics is explained in the following sections.
+
+\subsubsection{Using standard deviation}
+
+Comparing two standard deviation is quite easy. The implementation is based on what is done in \gls{visualaudio}, especially from the results in \cite{benningerchunk12}. A ratio $\sigma i_{rat}$ is computed between the standard deviations of two groove sections $\sigma 1$ and $\sigma 2$ with:
+\begin{equation}
+\label{eq:stddevratio}
+\sigma i_{rat} = \min\left(\frac{\sigma 1}{\sigma 2}, \frac{\sigma 2}{\sigma 1}\right) \; .
+\end{equation}
+
+This results in a ratio in the range $[0,1]$. To improve the results, this ratio is multiplied by the mean $\overline{\sigma}$ between the two sections. This helps to favor traces with more energy and distinguish between silent and noisy parts. Finally, the likeness $l$ for a complete match with $N$ groove sections is then computed as in \eqref{eq:stddevlikeness}.
+
+\begin{equation}
+\label{eq:stddevlikeness}
+l = \frac{1}{N} \sum_{i=1}^{N} \sigma i_{rat} \overline{\sigma}
+\end{equation}
+
+\subsubsection{Using FFT}
+
+Using \gls{fft} to compare signal is more problematic. In the first tests, an idea was to find the $n$ greatest peaks in the spectrum representing the most represented frequencies and compare the distance between frequency and/or magnitude. After several tries, it did not give better results and was difficult to implement properly in the general case.
+
+An \gls{fft} comparison has however been implemented, which basically compares the overall difference between the two results. As explained in \autoref{sec:audiochar}, the stored .spectrum is already filtered to remove very low and high frequencies, so the size is also the same for every sections. A formula to get the normalized distance between two signals $\mathbf{s_1}$ and $\mathbf{s_2}$ is then
+\begin{equation}
+\label{eq:fftcomp}
+\mathbf{s_{dist}} = \frac{\left| \mathbf{s_1} - \mathbf{s_2} \right|}{\mathbf{s_1} + \mathbf{s_2}}
+\end{equation}
+with the division as an element-wise operation. This results in a distance vector in the range $[0,1]$. The value tends to 0 when values at the same frequency are very close, and to 1 when they are distant. From this, the likeness ratio between the two signals can finally be approximated by computing the average and take the opposite $1 - \overline{\mathbf{s_{dist}}}$.
 
 \subsection{Track building}
 
-%\begin{enumerate}
-%\item 
-%\end{enumerate}
+At this point, the linking is almost done. Before starting the regular processing from the tracked data, it remains to create this data. The final tracked points are defined as tracks. A single record may have more than one track. For example, it may happen that the groove cannot continue at a defined point if it is not linked. In this case, the current track is stopped and a new one is started from the next scanned revolution. This enables to track records in several steps even if some parts were not entirely well detected.
+%TODO stop beyond frontiers?
 
-%TODO
-%\chapter{Integration and other considerations}
+\subsubsection{Overview}
+
+Firstly, the sections in a same revolution are linked together. The class \texttt{FrontierSection} embeds a function named \texttt{LinkGrooves()}, which iterates through all grooves in it and, following the appropriate shift, links them together by setting the  \texttt{NextGroove} property. At this point every groove section forming revolution is linked.
+
+Then, the grooves section known as \emph{starting} sections must be detected. This is done by keeping track of all frontiers sections that are not linked to other ones, meaning that they are located at the start of a revolution, i.e. at the top of the capture. At that time, they are also sorted by their X-coordinate to ensure the continuous tracking.
+
+The very final step is the iteration over the starting sections. For each of them, the tracked points are added and the next groove followed until a revolution is reached. Then, it continues to the next starting sections until the whole record is scanned. The corresponding algorithm is summarized in \autoref{lst:trackbuild}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Audio analysis using curve fitting.},
+label={lst:trackbuild}]
+{listings/track-building.cs}
+
+One can note that this algorithm continues to link from the starting grooves without actually verifying if the end of the revolution match correctly. In fact, this is a willing behavior. As with other tracking methods, the result will be shown to the end-user. This enables to clearly identify if the match is correct, i.e. if the links between the bottom to the top are vertical (they should have approximately the same horizontal position). Otherwise, the user can use the interface to easily correct the matches (see Appendix~TODO).
+
+Even with an incorrect match, the processing is still possible. This can be useful, in the case of imprecise crack or groove detection, if it is not possible to get a correct result even manually. An example of a correctly tracked record can be seen in \autoref{fig:finaltrackex}, as it is viewed in \gls{prism} on the binned image.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.8\textwidth]{images/final-track-ex}
+\caption[An example of cracked record tracked.]
+{An example of cracked record correctly tracked, with final correct matches. The links from bottom to top are then vertical.}
+\label{fig:finaltrackex}
+\end{figure}
+
+\subsection{Design}
+
+TODO.
+
+\section{Integration and other considerations}
+
+TODO.
 
 %
-%\chapter{Tests and extraction of the sample recordings}
+%\chapter{Extraction of the sample recordings}
 %
 %TODO.
 
@@ -2074,6 +2197,7 @@ TODO: end section.
 %
 %
 %\section{Future work and improvements}
+%TODO One can note that this filter has been implemented from scratch and enables to solve the problem but it is not perfect. Particularly, it sets all coefficients to zero until the cutoff frequency is reached. A better
 %
 %
 %
