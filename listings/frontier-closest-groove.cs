@@ -1,6 +1,6 @@
-// Get the index of the closest groove to be linked to the next one with with a shift of 0
+// Get the index of the closest groove to be linked to the next one
 function ClosestGrooveIndex(Frontier frontier, GrooveSection groove) {
-    int minDist = int.MaxValue;
+    int minDist = Infinity;
     int minIndex = 0;
 
     if (frontier == null)

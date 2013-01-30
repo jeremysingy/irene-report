@@ -1,5 +1,5 @@
 function ClosestFrontier(GrooveSection groove) {
-    int minDistY = int.MaxValue;
+    int minDistY = Infinity;
     Frontier found = null;
     
     foreach (Frontier t in topFrontiers) {

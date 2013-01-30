@@ -675,6 +675,7 @@ The ability to undo what was done so far to be able to correct a wrong decision 
 The current user interface for manual tracking is functional but can still be improved in many ways. The concept for a touchscreen interface is interesting but not easily applicable in the current state of the system. Therefore, the interactive method seems to be a good idea and its design and implementation is detailed in the next sections.
 
 \section{Interactive tracking}
+\label{sec:inttracking}
 
 This section presents the interactive tracking feature as it has been integrated into the \gls{prism} program. The next subsections present it in terms of graphical interface, explain its utilization and detail its implementation.
 
@@ -752,6 +753,7 @@ The interactive panel is owned by the \texttt{frmMain} class already created in 
 An utility class called \texttt{Utils} stands for common operations used specifically for the new feature.
 
 \subsection{Implementation details}
+\label{sec:intimpldet}
 
 \subsubsection{Bitmap creation}
 
@@ -1926,7 +1928,19 @@ caption={Algorithm for finding the closest groove.},
 label={lst:frontierclosestgroove}]
 {listings/frontier-closest-groove.cs}
 
-%\subsection{Groove matching}
+\subsubsection{Design}
+
+The classes involved in this step are listed in \autoref{fig:frontlinkdiag}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/frontier-linking.1}
+\caption{Class diagram for frontier linking.}
+\label{fig:frontlinkdiag}
+\end{figure}
+
+The \texttt{FrontierLinker} class contains the algorithms previously explained and will link all frontiers together. The \texttt{Link()} method takes all frontiers in parameters and build a list of \texttt{FrontierSection} objects that is directly returned.
+
 \subsection{Audio characteristics}
 \label{sec:audiochar}
 
@@ -2143,6 +2157,21 @@ An \gls{fft} comparison has however been implemented, which basically compares t
 \end{equation}
 with the division as an element-wise operation. This results in a distance vector in the range $[0,1]$. The value tends to 0 when values at the same frequency are very close, and to 1 when they are distant. From this, the likeness ratio between the two signals can finally be approximated by computing the average and take the opposite $1 - \overline{\mathbf{s_{dist}}}$.
 
+\subsubsection{Design}
+
+The classes organization about signal comparison is quite simple and detailed in \autoref{fig:audiochardiag}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/audio-characteristics.1}
+\caption{Class diagram for audio characteristics computing and comparison.}
+\label{fig:audiochardiag}
+\end{figure}
+
+The characteristics for the beginning or the end of a groove section are stored in a class called \texttt{GrooveProperties}. The corresponding methods \texttt{ComputeStdDev()} or \texttt{ComputeFft()} compute the corresponding characteristics. Each groove section holds two instances of this class representing the characteristic at the start and the end. These are constructed upon the call of \texttt{CreateProperties()}.
+
+The method \texttt{BestMatching()} in \texttt{FrontierSection} will then try different shifting values, compute the likeness by comparing the characteristics and set the shift according to the best result.
+
 \subsection{Track building}
 
 At this point, the linking is almost done. Before starting the regular processing from the tracked data, it remains to create this data. The final tracked points are defined as tracks. A single record may have more than one track. For example, it may happen that the groove cannot continue at a defined point if it is not linked. In this case, the current track is stopped and a new one is started from the next scanned revolution. This enables to track records in several steps even if some parts were not entirely well detected.
@@ -2157,11 +2186,12 @@ Then, the grooves section known as \emph{starting} sections must be detected. Th
 The very final step is the iteration over the starting sections. For each of them, the tracked points are added and the next groove followed until a revolution is reached. Then, it continues to the next starting sections until the whole record is scanned. The corresponding algorithm is summarized in \autoref{lst:trackbuild}.
 
 \lstinputlisting[language={[Sharp]C},
-caption={Audio analysis using curve fitting.},
+caption={Algorithm for final track building.},
 label={lst:trackbuild}]
 {listings/track-building.cs}
 
 One can note that this algorithm continues to link from the starting grooves without actually verifying if the end of the revolution match correctly. In fact, this is a willing behavior. As with other tracking methods, the result will be shown to the end-user. This enables to clearly identify if the match is correct, i.e. if the links between the bottom to the top are vertical (they should have approximately the same horizontal position). Otherwise, the user can use the interface to easily correct the matches (see Appendix~TODO).
+%TODO
 
 Even with an incorrect match, the processing is still possible. This can be useful, in the case of imprecise crack or groove detection, if it is not possible to get a correct result even manually. An example of a correctly tracked record can be seen in \autoref{fig:finaltrackex}, as it is viewed in \gls{prism} on the binned image.
 
@@ -2173,13 +2203,52 @@ Even with an incorrect match, the processing is still possible. This can be usef
 \label{fig:finaltrackex}
 \end{figure}
 
-\subsection{Design}
+\subsubsection{Design}
 
-TODO.
+This section presents an overview in terms of classes organization. The design with involved classes is summarized in \autoref{fig:linktrackdiag}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/groove-linking.1}
+\caption{Class diagram for groove linking.}
+\label{fig:linktrackdiag}
+\end{figure}
+
+The main point is the \texttt{GrooveLinker()} class which implements the operations detailed above. For the best matching, it indirectly uses the properties of the grooves attached to the corresponding frontiers, through the \texttt{FrontierSection} class. Then, the \texttt{BuildTrack()} method returns the result as a list of \texttt{LinkedTrack} objects.
 
 \section{Integration and other considerations}
 
-TODO.
+As seen in the previous sections, the whole procedure to automatically build an appropriate tracking on a cracked records requires a lot of different steps, and thus the final architecture becomes rapidly complicated.
+
+To simplify the integration and use within the current \gls{prism} implementation and avoid bloating the existing code base, a class named \texttt{CracksProcessor} has been added. This latter acts as a facade between and the classes described in the sections above and representing business objects. It simplifies the whole process by providing simple functions and using the appropriate submodules. Moreover, it is useful to make the link between all parameters that are configurable by the end-user. A summary of the main classes composing the new module and their integration in the rest of the program is presented in \autoref{fig:crackintegrdiag}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/crack-proc-integration.1}
+\caption[Class diagram representing the automated processing integration.]
+{Class diagram representing the automated processing integration into the existing PRISM program. The links are simplified to the main compositions between the principal objects.}
+\label{fig:crackintegrdiag}
+\end{figure}
+
+\subsection{User configuration}
+
+\texttt{CracksConfig} is a user interface control. This control is embedded in the main form (class \texttt{frmMain}) and displays all configurable parameters related to the processing of cracked records. In the \gls{gui}, this is displayed in a new tab right next to the interactive panel tab already added before (see \autoref{sec:inttracking}). The description of the parameters is explained in detail in the User Manual (see Appendix~TODO). The \texttt{CracksProcessor} class uses it to get the current user configuration.
+
+\subsection{Drawing result}
+
+The \texttt{ObjectDrawer} class is an utility to draw all results, as the actual tracking on the record, the position of the chunks or the grooves on the existing panels in \gls{prism}. An example is shown in \autoref{fig:prismdrawex}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/prism-draw-ex}
+\caption[Tracking, cracks and groove bottoms as drawn in PRISM.]
+{Tracking, cracks and groove bottoms as drawn in PRISM. The left panel shows the crack borders and the tracking in the binned view. The right panel shows the links between two chunks.}
+\label{fig:prismdrawex}
+\end{figure}
+
+The existing drawing methods, \texttt{ pict\_paint()} and \texttt{snd\_paint()} are already implemented in the \texttt{frmMain} class. To draw these new objects, they call the \texttt{DrawObjects()} method to the facade which then dispatches the drawing properly. The exact same code is used to draw the objects on the binned or the detailed image. The corresponding matrix transforms are computed priorly in the paint methods (this technique is described in \autoref{sec:intimpldet}).
+
+%TODO add general information/considerations
 
 %
 %\chapter{Extraction of the sample recordings}
@@ -2198,6 +2267,8 @@ TODO.
 %
 %\section{Future work and improvements}
 %TODO One can note that this filter has been implemented from scratch and enables to solve the problem but it is not perfect. Particularly, it sets all coefficients to zero until the cutoff frequency is reached. A better
+
+%TODO In terms of software engineering, it would have been better to abstract the characteristics so that the algorithm could use any characteristic such as the standard deviation, the \gls{fft} or any other possible parameter. It was however left as  By lack of time and no real need in the current implementation both types of properties are always computed
 %
 %
 %

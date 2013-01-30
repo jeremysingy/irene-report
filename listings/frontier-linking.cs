@@ -1,4 +1,6 @@
-function LinkFrontier(Frontier[] bottoms, Frontier[] tops) {
+function Link(Frontier[] bottoms, Frontier[] tops) {
+    FrontierSection[] sections = {};
+    
     foreach (Frontier b in bottoms) {
         // Sort grooves by X-coordinate (order not always defined!)
         b.Grooves.SortByXCoord();
@@ -18,10 +20,12 @@ function LinkFrontier(Frontier[] bottoms, Frontier[] tops) {
             if (f != crtSection.LinkedFrontier) {
                 int linkedIndex = ClosestGrooveIndex(f, b.Grooves[i]);
                 crtSection = new FrontierSection(b, f, i, 1, linkedIndex);
-                b.Sections.Add(crtSection);
+                sections.Add(crtSection);
             }
             else    // Just enlarge the section
                 crtSection.AddGroove();
         }
     }
+    
+    return sections;
 }

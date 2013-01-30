@@ -1,8 +1,7 @@
-function LinkFrontier(Frontier[] tops, Frontier[] bottoms) {
+function LinkFrontier(Frontier[] tops, FrontierSection[] sections) {
     // Link grooves together between cracks from the selected shifts
-    foreach (var f in bottoms)
-        foreach (var s in f.Sections)
-            s.LinkGrooves();
+    foreach (var s in sections)
+        s.LinkGrooves();
 
     // Find and sort starting grooves, not detailed here
     GrooveSection[] startGrooves = FindStartGrooves(tops, bottoms);
