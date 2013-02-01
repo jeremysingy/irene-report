@@ -1570,7 +1570,7 @@ The created frontiers are stored and exposed in two separated lists, \texttt{Top
 
 The particular problem of finding grooves has already been discussed in \autoref{sec:groovebot}. Nevertheless, some necessary steps must be done before and after applying the discussed algorithm. These are explained in this section.
 
-The process detailed here is to be applied for each frontier at the top of each chunk, so that every grooves can be found over the record. The bottom frontiers do not need to be taken into account. They will rather be used at the tracking step which will be explained in \autoref{sec:groovetracking}. A simple schema representing visually the result of this step on a chunk can be seen in \autoref{fig:chunkbottoms}. Found grooves are represented as red dots.
+The process detailed here is to be applied for each frontier at the top of each chunk, so that every groove can be found over the record. The bottom frontiers do not need to be taken into account. They will rather be used at the tracking step which will be explained in \autoref{sec:groovetracking}. A simple schema representing visually the result of this step on a chunk can be seen in \autoref{fig:chunkbottoms}. Found grooves are represented as red dots.
 
 \begin{figure}[!ht]
 \centering
@@ -1696,26 +1696,26 @@ In this case, the groove bottom is not clear, in fact due to deviation from diff
 \subsection{Tracking using curve fitting}
 \label{sec:trackfit}
 
-To avoid problems with these inaccuracy. A solution is to somehow smooth the values. A simple averaging would however not be a good choice. On the previous example the choice between the two values will not be improved by a simple smoothing. In fact, we know that the general groove shape is, in a lot of cases, similar to a parabola.
+To avoid problems with these inaccuracies, a solution is to somehow smooth the values. A simple averaging would however not be a good choice. On the previous example the choice between the two values will not be improved by a simple smoothing. In fact, we know that the general groove shape is, in a lot of cases, similar to a parabola.
 
 \subsubsection{Parabola equation}
 
 Mathematically, a parabola is the result of plotting a quadratic function such as
 \begin{equation}
-y = ax^2 + bx + c
+y = ax^2 + bx + c \; .
 \end{equation}
 It has the interesting property of having its only vertex at the coordinate
 \begin{equation}
 \label{eq:paravertex}
-x = -\frac{b}{2a}
+x = -\frac{b}{2a} \; .
 \end{equation}
 Therefore, knowing the equation of the parabola enables to easily find the center point, located at the vertex.
 
 \subsubsection{Curve fitting}
 
-To find this equation, a curve fitting method must be used. This process enables to approximate a mathematical functions that fits some discrete points. It exists different kind of curve fitting, for example polynomial interpolation which tries to exactly match the points at the discrete values. The degree then depends on the number of points.
+To find this equation, a curve fitting method must be used. This process enables to approximate a mathematical functions that fits some discrete points. There are different kinds of curve fitting, for example polynomial interpolation which tries to exactly match the points at the discrete values. The degree then depends on the number of points.
 
-In our case, we want the general shape to be approximated by a function of the wanted degree. All points must not exactly match the curve as the wanted behavior in the and is too smooth the signal. A well-known method for fitting is for example the least-squares which enables to approximate a function by minimizing the squared error from the approximated curve to the data points. The general shape is then smoothed by a function of the wanted degree.
+In our case, we want the general shape to be approximated by a function of the wanted degree. All points do not necessarily have to exactly match the curve as the wanted behavior is too smooth the signal. A well-known method for fitting is for example the least-squares which enables to approximate a function by minimizing the squared error from the approximated curve to the data points. The general shape is then smoothed by a function of the wanted degree.
 
 In fact, curve fitting methods are already implemented in \gls{prism}. They are for example used by a specific algorithm to process cylinders. The \texttt{PolyInterpolation} class implements several methods as \texttt{fitP()}. By passing two arrays representing the X and Y values and the order of the fitted function, the method automatically returns the corresponding coefficients in an array. Using this method to find the center is represented in \autoref{fig:fitfindex}.
 
@@ -1768,7 +1768,7 @@ On the general results, the curve fitting method allows to track more properly a
 
 \subsubsection{Final implementation}
 
-As often, the raw results cannot be directly use in some cases. Firstly, what happens if a signal is very and flat? The effective minimum found by \eqref{eq:paravertex} could be located far away the current area, even out of the record. If the shape is really bad at certain place, the fitted parabola direction could also be inverted, making the vertex a maximum instead of a minimum. \autoref{fig:fitfindprobs} present such problematic cases.
+As often, the raw results cannot be directly use in some cases. Firstly, what happens if a signal is very noisy or flat? The effective minimum found by \eqref{eq:paravertex} could be located far away the current area, even out of the record. If the shape is really bad at certain place, the fitted parabola direction could also be inverted, making the vertex a maximum instead of a minimum. \autoref{fig:fitfindprobs} presents such problematic cases.
 
 \begin{figure}[!ht]
 \centering
@@ -1800,7 +1800,7 @@ As often, the raw results cannot be directly use in some cases. Firstly, what ha
     \label{fig:fitfindprobs}
 \end{figure}
 
-This eventuality has to be checked with the proper code. The simple test is to ensure that the vertex is located in the neighborhood by checking the distance from the last point. If is too long, the current center may be set to the previous value. The parabola direction can also be tested with the sign of the $a$ coefficient. If $a >= 0$, the corresponding vertex should not be taken into account.
+This eventuality has to be checked with the proper code. The simple test is to ensure that the vertex is located in the neighborhood by checking the distance from the last point. If too far, the current center may be set to the previous value. The parabola direction can also be tested with the sign of the $a$ coefficient. If $a >= 0$, the corresponding vertex should not be taken into account.
 
 %TODO first setting with depth, algo, etc.
 
@@ -1828,7 +1828,7 @@ The routine \texttt{HeightFromX()} enables to get the height (or Y position) on 
 
 \subsection{Design}
 
-As previously explained, the complete tracking of a chunk is quite complicated and has been decomposed in multiple steps. This is also reflected in the final design. The process involves already discussed classes as \texttt{Chunk} and \texttt{Frontier} but the processing has been separated in their own modules as viewed in \autoref{fig:groovetrackdiag}.
+As previously explained, the complete tracking of a chunk is quite complicated and has been decomposed in multiple steps. This is also reflected in the final design. The process involves already discussed classes such as \texttt{Chunk} and \texttt{Frontier} but the processing has been separated in their own modules as viewed in \autoref{fig:groovetrackdiag}.
 
 \begin{figure}[!ht]
 \centering
@@ -1857,7 +1857,7 @@ These main steps are described in the sections below.
 
 \subsection{Frontier linking}
 
-Before actually links all groove sections together, a previous step must be performed. The common frontiers must be identified. At this point, the missing piece is a link between the chunks, as all grooves should be entirely tracked. This connection will be done on the frontier basis. The current known information is a groove, which starts on a frontier at the top of a chunk and ends to another frontier at the bottom of the same chunk. Somehow, to eventually link the groove sections together, a association between a \emph{bottom} frontier and a \emph{top} frontier has to be done. An example of correct frontier linking can be visualized in \autoref{fig:frontlink}.
+Before actually linking all groove sections together, a previous step must be performed. The common frontiers must be identified. At this point, the missing piece is a link between the chunks, as all grooves should be entirely tracked. This connection will be done on the frontier basis. The current known information is a groove, which starts on a frontier at the top of a chunk and ends to another frontier at the bottom of the same chunk. Somehow, to eventually link the groove sections together, an association between a \emph{bottom} frontier and a \emph{top} frontier has to be done. An example of correct frontier linking can be visualized in \autoref{fig:frontlink}.
 
 \begin{figure}[!ht]
 \centering
@@ -1873,7 +1873,7 @@ This step must be seen as a general problem over the record: at this point it is
 
 \subsubsection{Frontier section}
 
-For this process, an new object type has to be defined: a frontier section. A frontier section defines a range of a frontier that has been linked with another one. This range is important as we saw that several frontiers may be linked to a single one. A section stores the following information:
+For this process, a new object type has to be defined: a frontier section. A frontier section defines the range of a frontier that has been linked with another one. This range is important as we saw that several frontiers may be linked to a single one. A section stores the following information:
 
 \begin{itemize}
 \item Reference to the linked frontier
@@ -1887,9 +1887,9 @@ A class \texttt{FrontierSection} containing the corresponding attributes is defi
 
 At least one frontier section is created per bottom frontier. Then, the iteration is performed on each groove of the current computed frontier. For each groove ending position, the closest frontier is found. If there is no frontier below this position, this means that the end of a revolution has been reached. It is located at the bottom of the mapped record and no other chunk is present below.
 
-Additionally, when a new section starts, the index of the closest groove index in the linked frontier is sought. The index reflects the position on the frontier where the groove is located. This will temporarily be the groove section that will be linked the current one. The section is then stored in a collection.
+Additionally, when a new section starts, the index of the closest groove index in the linked frontier is sought. The index reflects the position on the frontier where the groove is located. This will temporarily be the groove section that will be linked to the current one. The section is then stored in a collection.
 
-Finally, the process repeats for every grooves in the frontier. As long as the closest frontier remains the same, the section is conceptually enlarged by adding a groove. If the closest frontier changes, it means that a new section must be defined. The process then continues similarly. An full example showing the result of this processing is presented in \autoref{fig:frontlinkex}.
+Finally, the process repeats for every groove in the frontier. As long as the closest frontier remains the same, the section is conceptually enlarged by adding a groove. If the closest frontier changes, it means that a new section must be defined. The process then continues similarly. A full example showing the result of this processing is presented in \autoref{fig:frontlinkex}.
 
 \begin{figure}[!ht]
 \centering
@@ -1912,7 +1912,7 @@ label={lst:frontierlink}]
 
 From this main algorithm, the first subproblem is to find the closest frontier from a given groove. For this purpose, the only choice is to do it geometrically, as there is still no connection between different chunks or frontiers. Basically, the goal is to find the minimum Y distance between all frontiers and the groove's last point, whereas the frontiers are \emph{below} the point.
 
-In specific situations, e.g. when the crack is almost vertical (see \autoref{fig:crackbellprob}), it is possible that the next frontier is slightly above the end groove position. A small negative number is then allowed. The typical value is for example 5 pixels, so that it would not be possible for a wrong frontier to be detected (the chunk should have an height less or equal to 5 pixels). The algorithm is described in \autoref{lst:frontierclosest}.
+In specific situations, e.g. when the crack is almost vertical (see \autoref{fig:crackbellprob}), it is possible that the next frontier is slightly above the end groove position. A small negative number is then allowed. The typical value is for example 5 pixels, so that it would not be possible for a wrong frontier to be detected (the chunk should have a height less or equal to 5 pixels). The algorithm is described in \autoref{lst:frontierclosest}.
 
 \lstinputlisting[language={[Sharp]C},
 caption={Algorithm for finding closest end frontier from a given groove.},
@@ -1921,7 +1921,7 @@ label={lst:frontierclosest}]
 
 \subsubsection{Closest groove}
 
-When the closest frontier has been found, it remains to find groove in this frontier that is the nearest to the current one. This algorithm consists simply to run through the grooves in the linked frontier, compute the horizontal distance from the current groove and return the one with the smallest distance. It is presented in \autoref{lst:frontierclosestgroove}.
+When the closest frontier has been found, it remains to find the groove in this frontier that is the nearest to the current one. This algorithm consists simply to run through the grooves in the linked frontier, compute the horizontal distance from the current groove and return the one with the smallest distance. It is presented in \autoref{lst:frontierclosestgroove}.
 
 \lstinputlisting[language={[Sharp]C},
 caption={Algorithm for finding the closest groove.},
@@ -1939,7 +1939,7 @@ The classes involved in this step are listed in \autoref{fig:frontlinkdiag}.
 \label{fig:frontlinkdiag}
 \end{figure}
 
-The \texttt{FrontierLinker} class contains the algorithms previously explained and will link all frontiers together. The \texttt{Link()} method takes all frontiers in parameters and build a list of \texttt{FrontierSection} objects that is directly returned.
+The \texttt{FrontierLinker} class contains the algorithms previously explained and will link all frontiers together. The \texttt{Link()} method takes all frontiers in parameters and builds a list of \texttt{FrontierSection} objects that is directly returned.
 
 \subsection{Audio characteristics}
 \label{sec:audiochar}
@@ -1948,11 +1948,11 @@ From the previous step, all frontiers are now logically linked to another when p
 
 Finding the real match is not a trivial task as well. In some cases, the correct link is pretty obvious and can be easily confirmed by the user. Sometimes, it is more difficult to spot. A way of finding the right match is to analyze and compare characteristics of the actual audio signal from a section before -- and after -- the crack. \gls{visualaudio} uses such an implementation for the linking and the same kind of analysis will be done for \gls{prism}.
 
-Before the comparison, the actual audio signal must first be extracted. Even if the groove is already tracked, in the binned image, the audio must be analyzed from the detailed acquisition. It can be seen as the final processing on a small section of the record. For this purpose, it has been difficult to find a very suitable method. Finally, a comparison method must be used to be able to give the matching likeliness between two audio signals.  The general process followed during implementation is explained in the following sections, before detailing the final implementation.
+Before the comparison, the actual audio signal must first be extracted. Even if the groove is already tracked, in the binned image, the audio must be analyzed from the detailed acquisition. It can be seen as the final processing on a small section of the record. For this purpose, it has been difficult to find a very suitable method. Finally, a comparison method must be used to be able to give the matching likelihood between two audio signals.  The general process followed during implementation is explained in the following sections, before detailing the final implementation.
 
 \subsubsection{Audio analysis}
 
-In the first implementation, the idea was to simply look at the tracked horizontal position and follows vertically the approximated groove center. This early approach suffered from different flows. Firstly, it is a bad idea to only rely on the tracked position to follow the exact center. The binned image can be decimated at a high factor (e.g. 100), resulting in inaccurate measures. Also, especially on the detailed raw image, some outliers may appear (e.g. because of bad points) distorting the original audio signal.
+In the first implementation, the idea was to simply look at the tracked horizontal position and follows vertically the approximated groove center. This early approach suffered from different flaws. Firstly, it is a bad idea to only rely on the tracked position to follow the exact center. The binned image can be decimated at a high factor (e.g. 100), resulting in inaccurate measures. Also, especially on the detailed raw image, some outliers may appear (e.g. because of bad points) distorting the original audio signal.
 
 In a first attempt, the outliers were removed by cleaning the signal afterwards. The method to do so is to compute the signal mean, and then keep track of all $\Delta s_i$ (absolute difference between a value $i$ and the mean). Then, the average $\overline{\Delta S}$ of all deltas is itself computed. Finally, based on a tolerance factor $t$, the outliers are fixed in $i$ if $\Delta s_i > t \overline{\Delta S}$. The corresponding algorithm is presented in \autoref{lst:removeout}.
 
@@ -1961,7 +1961,7 @@ caption={Algorithm to remove outliers.},
 label={lst:removeout}]
 {listings/remove-outliers.cs}
 
-Bad values are replaced with a interpolated from the neighbors. The result of this algorithm can be visualized in \autoref{fig:removeout}. In this case, especially one big outlier is visible that is removed after the cleaning.
+Bad values are replaced with a interpolation of the neighbors. The result of this algorithm can be visualized in \autoref{fig:removeout}. In this case, especially one big outlier is visible that is removed after the cleaning.
 
 \begin{figure}[!ht]
 \tikzsetnextfilename{remove-outliers}
@@ -2016,7 +2016,7 @@ The first used characteristic is the standard deviation of the signal. This is t
 \sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N}} \left(x_i - \overline{x} \right)^2 \; .
 \end{equation}
 
-It is a well-known parameter informing on the dispersion of the values around the mean of the signal energy. The main advantage of using this parameter is that it gives a single value which is then easy to compare. However, a important issue appeared in the first tests. In fact, the surface of the record is sometimes distorted because of a crack. This height difference may result in very big signal modification. Therefore, the standard deviation is influenced a lot and become very large even if the signal remains silent.
+It is a well-known parameter informing on the dispersion of the values around the mean of the signal energy. The main advantage of using this parameter is that it gives a single value which is then easy to compare. However, an important issue appeared in the first tests. In fact, the surface of the record is sometimes distorted because of a crack. This height difference may result in very big signal modification. Therefore, the standard deviation is influenced a lot and become very large even if the signal remains silent.
 
 The way to solve this issue is to apply a high-pass filter over the signal. This surface variation is at very low frequency and it does not come from the audio itself, it can then be removed without any loss on the audio. It has been chosen to use the \gls{fft} to apply the filter. Transforming the signal into the frequency domain enables to place the cutoff at a specified frequency. Then, the original signal is converted back using the inverse transform. A visualization on a audio sample is presented in \autoref{fig:fftfilterex}.
 
@@ -2036,9 +2036,9 @@ legend style={at={(1.05,0.5)},anchor=west}]
 \label{fig:fftfilterex}
 \end{figure}
 
-This example is applied on an almost silent section resulting in very small signal energy. However, the standard deviation on the raw signal would be very high because of the general surface shape. The high-pass filter cleans it using a cutoff frequency and removing values below it.
+This example is applied on an almost silent section resulting in a very small signal energy. However, the standard deviation on the raw signal would be very high because of the general surface shape. The high-pass filter cleans it using a cutoff frequency and removing values below it.
 
-One can note that the signal is altered at the beginning and the end. This is due to the transformation, particularly to the window function. The details about applying \gls{fft} and windowing is explained in the next subsection. The algorithm using implemented routines can be summarized in the following steps:
+One can note that the signal is altered at the beginning and the end. This is due to the transformation, particularly to the window function. The details about applying \gls{fft} and windowing is explained in the next subsection. The algorithm using existing routines can be summarized in the following steps:
 
 \begin{enumerate}
 \item Apply the \gls{fft} on the original signal by previously using a proper window function (see next subsection).
@@ -2052,7 +2052,7 @@ From this filtered signal, the standard deviation as developed in \eqref{eq:stdd
 
 During the project, different solutions have been tried to get a proper characteristic enabling to compare audio signal. With all issues such as surface distortion or outliers, using the \gls{fft} has been also implemented. Indeed, the frequency analysis is almost not influenced by these problems.
 
-A \texttt{fft()} function is already implemented in \gls{prism} in the \texttt{Misc} class, enabling to compute \gls{fft} coefficients of data. However, this routine is low-level and requires some preprocessing before using it. Firstly, the parameter is an array of size $2(n+1)$ representing the complex coefficients. The real parts are indexed at $i+1$ and the imaginary at $i+2$. Moreover, a precondition of the \gls{fft} is that the data size must be a power of two. The function then returns an array of the same size containing the complex coefficients in the frequency domain. In this case, we just need the frequency magnitudes, i.e. the modules of the complex numbers, which is sufficient to know the distribution of frequencies.
+A \texttt{fft()} function is already implemented in \gls{prism} in the \texttt{Misc} class, enabling to compute \gls{fft} coefficients of data. However, this routine is low-level and requires some preprocessing before using it. Firstly, the parameter is an array of size $2(n+1)$ representing the complex coefficients. The real parts are indexed at $2i+1$ and the imaginary at $2i+2$. Moreover, a precondition of the \gls{fft} is that the data size must be a power of two. The function then returns an array of the same size containing the complex coefficients in the frequency domain. In this case, we just need the frequency magnitudes, i.e. the modules of the complex numbers, which is sufficient to know the distribution of frequencies.
 
 Also, another common practice is to use a specific window function to improve the results. A signal is multiplied by a window function to specify an interval of values. These functions have values in the interval $[0,1]$ In fact, the signal corresponds itself to an observation and can be viewed as windowed from the first and last sample by a rectangular function (1 from 0 to $n$, zero otherwise).
 
@@ -2085,7 +2085,7 @@ The resulting spectrum, using a Hann window suffers much less from the spectral 
 
 To simplify the use of Fourier transforms, some utilities have been added to a class \texttt{SignalUtils}. The function \texttt{FftAmplitudes()} automatically computes the amplitudes of frequency coefficients from a real signal and applying a Hann window. The \gls{fft} size can be defined or it is determined as the smallest power of two greater than the signal length. When the \gls{fft} has been computed, the modules are directly calculated and returned.
 
-To properly compare the spectra, a frequency range must be defined, to compare only the valuable frequencies from the source audio. The \texttt{fft()} routine does not return results mapped to an actual frequencies. In fact, on a discrete signal, the frequencies depend of the size of the \gls{fft} $N$ and the sample frequency $f_s$. Thus, the corresponding frequency at position $i$ is
+To properly compare the spectra, a frequency range must be defined, to compare only the valuable frequencies from the source audio. The \texttt{fft()} routine does not return results mapped to actual frequencies. In fact, on a discrete signal, the frequencies depend of the size of the \gls{fft} $N$ and the sample frequency $f_s$. Thus, the corresponding frequency at position $i$ is
 \begin{equation}
 \label{eq:freq}
 f = \frac{i f_s}{N} \; .
@@ -2098,12 +2098,12 @@ Given parameter values, only frequencies between the defined range are then stor
 Now that different properties have been computed at the beginning and end of every groove section, we must find a way to compare them together and get a value indicating the likeness of a match. Comparing the audio cannot give an exact result in the general case. We cannot say that two grooves match together just because their audio signal is similar. The following list presents different cases that can happen.
 
 \begin{description}
-\item[Audio variation] Firstly, it is quite possible than the audio changes entirely just where the crack happens. In this case, there could be almost on similarity between the two signals.
-\item[Silent parts] On a part where there is a lot of silence, the only audio signal is noise, and there is no real audio properties to be compared between two groove sections.
+\item[Audio variation] Firstly, it is quite possible than the audio changes entirely just where the crack happens. In this case, there could be almost no similarity between the two signals.
+\item[Silent parts] On a part where there is a lot of silence, the sole audio signal is noise, and there is no real audio properties to be compared between two groove sections.
 \item[Similar audio] If the recorded sound remains similar for a long time (e.g. a repetitive musical section), the differentiation between grooves becomes difficult.
 \end{description}
 
-These facts show that it is almost impossible to match only two grooves by a simple comparison. However we need to match entire frontiers and not single grooves. In most cases, there will be multiple groove sections to test between each other. Then, not only the precision is better (because more data can be compared), but the sound is also more likely to vary when area is larger.
+These facts show that it is almost impossible to match only two grooves by a simple comparison. However we need to match entire frontiers and not single grooves. In most cases, there will be multiple groove sections to test between each other. Then, not only the precision is better (because more data can be compared), but the sound is also more likely to vary when the area is larger.
 
 \subsubsection{Shifting}
 
@@ -2129,7 +2129,7 @@ In fact, the final result of this step will be the shifting corresponding to the
 
 In the chosen convention, the shift is relative to the displacement of the first frontier (upper part of the crack) against the other. The class \texttt{FrontierSection} already discussed enables to easily change shift and compare values. The two methods \texttt{IncrementShift()} and \texttt{DecrementShift()} logically change the shift from the current position. \texttt{LinkedGroovesCount()} gives the number of linked groove corresponding to the current shift.
 
-To match the frontiers from the computed characteristics, the method \texttt{BestMatching()} takes the maximum allowed shift (e.g. if 3, looks from \numrange{-3}{3}), tries all positions and set the shift to the best match. The likeness is computed on the maximum number of possible groove sections and averaged before being compared. The comparison ratio between two grooves regarding the different used characteristics is explained in the following sections.
+To match the frontiers from the computed characteristics, the method \texttt{BestMatching()} takes the maximum allowed shift (e.g. if 3, it looks from \numrange{-3}{3}), tries all positions and sets the shift corresponding to the best match. The likeness is computed on the maximum number of possible groove sections and averaged before being compared. The comparison ratio between two grooves regarding the different used characteristics is explained in the following sections.
 
 \subsubsection{Using standard deviation}
 
@@ -2150,12 +2150,12 @@ l = \frac{1}{N} \sum_{i=1}^{N} \sigma i_{rat} \overline{\sigma}
 
 Using \gls{fft} to compare signal is more problematic. In the first tests, an idea was to find the $n$ greatest peaks in the spectrum representing the most represented frequencies and compare the distance between frequency and/or magnitude. After several tries, it did not give better results and was difficult to implement properly in the general case.
 
-An \gls{fft} comparison has however been implemented, which basically compares the overall difference between the two results. As explained in \autoref{sec:audiochar}, the stored .spectrum is already filtered to remove very low and high frequencies, so the size is also the same for every sections. A formula to get the normalized distance between two signals $\mathbf{s_1}$ and $\mathbf{s_2}$ is then
+An \gls{fft} comparison has however been implemented, which basically compares the overall difference between the two results. As explained in \autoref{sec:audiochar}, the stored spectrum is already filtered to remove very low and high frequencies, so the size is also the same for every sections. A formula to get the normalized distance between two signals $\mathbf{s_1}$ and $\mathbf{s_2}$ is then
 \begin{equation}
 \label{eq:fftcomp}
 \mathbf{s_{dist}} = \frac{\left| \mathbf{s_1} - \mathbf{s_2} \right|}{\mathbf{s_1} + \mathbf{s_2}}
 \end{equation}
-with the division as an element-wise operation. This results in a distance vector in the range $[0,1]$. The value tends to 0 when values at the same frequency are very close, and to 1 when they are distant. From this, the likeness ratio between the two signals can finally be approximated by computing the average and take the opposite $1 - \overline{\mathbf{s_{dist}}}$.
+with the division as an element-wise operation. This results in a distance vector in the range $[0,1]$. The value tends to 0 when values at the same frequency are very close, and to 1 when they are distant. From this, the likeness ratio between the two signals can finally be approximated by computing the average and taking the opposite $1 - \overline{\mathbf{s_{dist}}}$.
 
 \subsubsection{Design}
 
@@ -2190,7 +2190,7 @@ caption={Algorithm for final track building.},
 label={lst:trackbuild}]
 {listings/track-building.cs}
 
-One can note that this algorithm continues to link from the starting grooves without actually verifying if the end of the revolution match correctly. In fact, this is a willing behavior. As with other tracking methods, the result will be shown to the end-user. This enables to clearly identify if the match is correct, i.e. if the links between the bottom to the top are vertical (they should have approximately the same horizontal position). Otherwise, the user can use the interface to easily correct the matches (see Appendix~TODO).
+One can note that this algorithm continues to link from the starting grooves without actually verifying if the end of the revolution matches correctly. In fact, this is a willing behavior. As with other tracking methods, the result will be shown to the end-user. This enables to clearly identify if the match is correct, i.e. if the links between the bottom to the top are vertical (they should have approximately the same horizontal position). Otherwise, the user can use the interface to easily correct the matches (see Appendix~TODO).
 %TODO
 
 Even with an incorrect match, the processing is still possible. This can be useful, in the case of imprecise crack or groove detection, if it is not possible to get a correct result even manually. An example of a correctly tracked record can be seen in \autoref{fig:finaltrackex}, as it is viewed in \gls{prism} on the binned image.
@@ -2220,7 +2220,7 @@ The main point is the \texttt{GrooveLinker()} class which implements the operati
 
 As seen in the previous sections, the whole procedure to automatically build an appropriate tracking on a cracked records requires a lot of different steps, and thus the final architecture becomes rapidly complicated.
 
-To simplify the integration and use within the current \gls{prism} implementation and avoid bloating the existing code base, a class named \texttt{CracksProcessor} has been added. This latter acts as a facade between and the classes described in the sections above and representing business objects. It simplifies the whole process by providing simple functions and using the appropriate submodules. Moreover, it is useful to make the link between all parameters that are configurable by the end-user. A summary of the main classes composing the new module and their integration in the rest of the program is presented in \autoref{fig:crackintegrdiag}.
+To simplify the integration and use within the current \gls{prism} implementation and avoid bloating the existing code base, a class named \texttt{CracksProcessor} has been added. This latter acts as a facade between the classes described in the sections above (representing business objects) and the rest of the program. It simplifies the whole process by providing simple functions and using the appropriate submodules. Moreover, it is useful to make the link between all parameters that are configurable by the end-user. A summary of the main classes composing the new module and their integration in the rest of the program is presented in \autoref{fig:crackintegrdiag}.
 
 \begin{figure}[!ht]
 \centering
@@ -2236,7 +2236,7 @@ To simplify the integration and use within the current \gls{prism} implementatio
 
 \subsection{Drawing result}
 
-The \texttt{ObjectDrawer} class is an utility to draw all results, as the actual tracking on the record, the position of the chunks or the grooves on the existing panels in \gls{prism}. An example is shown in \autoref{fig:prismdrawex}.
+The \texttt{ObjectDrawer} class is a utility to draw all results, as the actual tracking on the record, the position of the chunks or the grooves on the existing panels in \gls{prism}. An example is shown in \autoref{fig:prismdrawex}.
 
 \begin{figure}[!ht]
 \centering
@@ -2269,6 +2269,9 @@ The existing drawing methods, \texttt{ pict\_paint()} and \texttt{snd\_paint()} 
 %TODO One can note that this filter has been implemented from scratch and enables to solve the problem but it is not perfect. Particularly, it sets all coefficients to zero until the cutoff frequency is reached. A better
 
 %TODO In terms of software engineering, it would have been better to abstract the characteristics so that the algorithm could use any characteristic such as the standard deviation, the \gls{fft} or any other possible parameter. It was however left as  By lack of time and no real need in the current implementation both types of properties are always computed
+
+%TODO groove detection fft
+
 %
 %
 %
