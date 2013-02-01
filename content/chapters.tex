@@ -2095,7 +2095,7 @@ Given parameter values, only frequencies between the defined range are then stor
 
 \subsection{Audio comparison}
 
-Now that different properties have been computed at the beginning and end of every groove section, we must find a way to compare them together and get a value indicating the likeness of a match. Comparing the audio cannot give an exact result in the general case. We cannot say that two grooves match together just because their audio signal is similar. The following list presents different cases that can happen.
+Now that different properties have been computed at the beginning and end of every groove section, we must find a way to compare them together and get a value indicating the likelihood of a match. Comparing the audio cannot give an exact result in the general case. We cannot say that two grooves match together just because their audio signal is similar. The following list presents different cases that can happen.
 
 \begin{description}
 \item[Audio variation] Firstly, it is quite possible than the audio changes entirely just where the crack happens. In this case, there could be almost no similarity between the two signals.
@@ -2129,7 +2129,7 @@ In fact, the final result of this step will be the shifting corresponding to the
 
 In the chosen convention, the shift is relative to the displacement of the first frontier (upper part of the crack) against the other. The class \texttt{FrontierSection} already discussed enables to easily change shift and compare values. The two methods \texttt{IncrementShift()} and \texttt{DecrementShift()} logically change the shift from the current position. \texttt{LinkedGroovesCount()} gives the number of linked groove corresponding to the current shift.
 
-To match the frontiers from the computed characteristics, the method \texttt{BestMatching()} takes the maximum allowed shift (e.g. if 3, it looks from \numrange{-3}{3}), tries all positions and sets the shift corresponding to the best match. The likeness is computed on the maximum number of possible groove sections and averaged before being compared. The comparison ratio between two grooves regarding the different used characteristics is explained in the following sections.
+To match the frontiers from the computed characteristics, the method \texttt{BestMatching()} takes the maximum allowed shift (e.g. if 3, it looks from \numrange{-3}{3}), tries all positions and sets the shift corresponding to the best match. The likelihood is computed on the maximum number of possible groove sections and averaged before being compared. The comparison ratio between two grooves regarding the different used characteristics is explained in the following sections.
 
 \subsubsection{Using standard deviation}
 
@@ -2139,10 +2139,10 @@ Comparing two standard deviation is quite easy. The implementation is based on w
 \sigma i_{rat} = \min\left(\frac{\sigma 1}{\sigma 2}, \frac{\sigma 2}{\sigma 1}\right) \; .
 \end{equation}
 
-This results in a ratio in the range $[0,1]$. To improve the results, this ratio is multiplied by the mean $\overline{\sigma}$ between the two sections. This helps to favor traces with more energy and distinguish between silent and noisy parts. Finally, the likeness $l$ for a complete match with $N$ groove sections is then computed as in \eqref{eq:stddevlikeness}.
+This results in a ratio in the range $[0,1]$. To improve the results, this ratio is multiplied by the mean $\overline{\sigma}$ between the two sections. This helps to favor traces with more energy and distinguish between silent and noisy parts. Finally, the likelihood $l$ for a complete match with $N$ groove sections is then computed as in \eqref{eq:stddevlikelihood}.
 
 \begin{equation}
-\label{eq:stddevlikeness}
+\label{eq:stddevlikelihood}
 l = \frac{1}{N} \sum_{i=1}^{N} \sigma i_{rat} \overline{\sigma}
 \end{equation}
 
@@ -2155,7 +2155,7 @@ An \gls{fft} comparison has however been implemented, which basically compares t
 \label{eq:fftcomp}
 \mathbf{s_{dist}} = \frac{\left| \mathbf{s_1} - \mathbf{s_2} \right|}{\mathbf{s_1} + \mathbf{s_2}}
 \end{equation}
-with the division as an element-wise operation. This results in a distance vector in the range $[0,1]$. The value tends to 0 when values at the same frequency are very close, and to 1 when they are distant. From this, the likeness ratio between the two signals can finally be approximated by computing the average and taking the opposite $1 - \overline{\mathbf{s_{dist}}}$.
+with the division as an element-wise operation. This results in a distance vector in the range $[0,1]$. The value tends to 0 when values at the same frequency are very close, and to 1 when they are distant. From this, the likelihood ratio between the two signals can finally be approximated by computing the average and taking the opposite $1 - \overline{\mathbf{s_{dist}}}$.
 
 \subsubsection{Design}
 
@@ -2170,7 +2170,7 @@ The classes organization about signal comparison is quite simple and detailed in
 
 The characteristics for the beginning or the end of a groove section are stored in a class called \texttt{GrooveProperties}. The corresponding methods \texttt{ComputeStdDev()} or \texttt{ComputeFft()} compute the corresponding characteristics. Each groove section holds two instances of this class representing the characteristic at the start and the end. These are constructed upon the call of \texttt{CreateProperties()}.
 
-The method \texttt{BestMatching()} in \texttt{FrontierSection} will then try different shifting values, compute the likeness by comparing the characteristics and set the shift according to the best result.
+The method \texttt{BestMatching()} in \texttt{FrontierSection} will then try different shifting values, compute the matching likelihood by comparing the characteristics and set the shift according to the best result.
 
 \subsection{Track building}
 
