@@ -1,4 +1,3 @@
-transformation.}, label={lst:inttransfo}]
 // Start all drawing at the panel center and tip of the red triangle
 g.TranslateTransform(this.Width / 2, trianglePos.Size.Height);
 

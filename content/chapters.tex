@@ -193,6 +193,7 @@ Small differences can cause the 2D image to be blurred or the 3D scan to be out 
 Before explaining the specificities of each system, it is noteworthy to explain the basic concepts about record acquisition used in both 2D and 3D systems. The most important is to understand the mapping of a record onto a 2D image. This characteristic is slightly different from the two categories, cylinders or discs.
 
 \subsection{Disc mapping}
+\label{sec:discmap}
 
 As previously seen in \autoref{fig:labirene}, the setup for flat discs acquisition looks similar to an ordinary phonograph. The disc is placed on the turntable and rotates while the sensor takes a single line of capture at regular intervals.
 
@@ -677,32 +678,9 @@ The current user interface for manual tracking is functional but can still be im
 \section{Interactive tracking}
 \label{sec:inttracking}
 
-This section presents the interactive tracking feature as it has been integrated into the \gls{prism} program. The next subsections present it in terms of graphical interface, explain its utilization and detail its implementation.
+This section presents the interactive tracking feature as it has been integrated into the \gls{prism} program. The next two subsections present it in terms of main features and graphical interface, before detailing the implementation and software design.
 
-\subsection{Graphical design}
-
-\subsubsection{Location and integration}
-
-As the current interface is already overflowed with all existing parameters and options, it is important to add the new feature so that it is integrated smoothly in the existing application, without making it tedious to use.
-
-As seen in \autoref{fig:prismgui}, the interface is already able to show a detailed part of the disc on the right panel. When the user clicks on this detailed part, he can visualize other information on the signal. However, it is not designed to be interactive. In fact, each time the user selects a part on the right image, the corresponding part is reloaded and stored in a bitmap to be drawn on screen. The whole process is too time-consuming for an interactive drawing though it is suitable for its purpose.
-
-The new feature has then to be separated from this detailed view. It has been chosen to put a tabbed panel to choose between the two configuration. As the user will not need both features at the same time, this is a suitable solution.
-
-\subsubsection{Tracking panel}
-
-The interactive tracking panel is separated in two parts: controls and visualization. The first part enables the user to manage and edit the different options while the second represents the record scan which the user has to follow to indicates the grooves. \autoref{fig:intpanelprism} represents the whole panel.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=0.6\textwidth]{images/int-track-panel-prism}
-\caption{Interactive tracking panel in PRISM.}
-\label{fig:intpanelprism}
-\end{figure}
-
-The controls enable to monitor the tracking by changing several parameters such as the speed or the zoom level. As explained in \autoref{sec:inttrack}, the zoom can also be locked regarding to the speed, using the corresponding option.
-
-\subsection{Principle of operation}
+\subsection{Main features}
 
 To use the interactive tracking, the user first selects the corresponding button in the tracking options. Then, when the record is loaded, the corresponding disc is visible in the interactive panel. A red triangle acts as a beacon to clearly see the current tracked position.
 
@@ -733,35 +711,63 @@ Another feature which has been added is the correction of the actual position to
 
 The user will then see two triangles. A red one which is fixed and represents the position that the user points out, and the blue one which shifts to the deepest position in the surrounding area.
 
-\subsection{Design and classes organization}
+\subsubsection{Assisted tracking}
 
-This part of the implementation is much about user interface and does not require a lot of processing. The main point is to find an appropriate way of integrating the new feature without blowing up the existing codebase which is already quite complex (see~\autoref{sec:prismarchi}).
+Sometimes, an automatic tracking is partly possible in an undamaged section of a record, e.g. between two points where the surface is not crossed by a crack. In this case, the existing algorithms would still fail to globally track the record because of the damaged areas.
 
-The new feature has been implemented essentially in two new classes called \texttt{InteractiveControl} and \texttt{DrawPanel} as represented in the diagram of \autoref{fig:inttrackprismdiag}.
+A feature has been added able to automatically track the record. Instead of drawing a straight line, a tracker tries to follow the grooves and stops at the cursor position.
+%An example can be viewed in \autoref{fig:intassistedtrack}.
+
+This is particularly useful when the grooves are not straight, e.g. in the case of off-axis (see~\autoref{sec:discmap}).
+
+\subsubsection{Groove pattern cloning}
+
+It also often happens, in the case of cracks, that once the correct way has been figured out for a revolution, the same pattern applies in the near area. A feature enables to copy the current pattern from the previous revolution has been added. An example can be viewed in \autoref{fig:intclonepattern}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics{diagrams/int-track-prism.1}
-\caption{Class diagram for the interactive tracking in PRISM.}
-\label{fig:inttrackprismdiag}
+\includegraphics[width=0.7\textwidth]{images/int-track-clone}
+\caption{Example of the groove pattern cloning.}
+\label{fig:intclonepattern}
 \end{figure}
 
-The first one embeds the whole control with the controlling part (toolbox) and the visualization path. It is a specific control and inherits the \texttt{UserControl} class of the WinForms \gls{api}. The specific interactive part drawing the record is handled by the second class. It inherits from the WinForms \texttt{Panel} class. Another class called \texttt{BeaconTriangle} has been created to simplify the rendering of the blue and red triangles indicating the tracked position.
+One can see that even if the path is not evident, once it has been found the exact same pattern can be copied for every revolution.
 
-The interactive panel is owned by the \texttt{frmMain} class already created in PRISM. It uses the \texttt{Hardware} class for the communication with the record information, e.g. to get the original bitmap or set the points building the tracking path. The reference to \texttt{PictureBox} called \texttt{pict} and \texttt{picture} point to the same instance. It represents the left panel showing the global view. The \texttt{InteractiveControl} class needs it to force the drawing when the values are updated (e.g. while points are being added).
+\subsection{Graphical design}
 
-An utility class called \texttt{Utils} stands for common operations used specifically for the new feature.
+\subsubsection{Location and integration}
 
-\subsection{Implementation details}
-\label{sec:intimpldet}
+As the current interface is already overflowed with all existing parameters and options, it is important to add the new feature so that it is integrated smoothly in the existing application, without making it tedious to use.
 
-\subsubsection{Bitmap creation}
+As seen in \autoref{fig:prismgui}, the interface is already able to show a detailed part of the disc on the right panel. When the user clicks on this detailed part, he can visualize other information on the signal. However, it is not designed to be interactive. In fact, each time the user selects a part on the right image, the corresponding part is reloaded and stored in a bitmap to be drawn on screen. The whole process is too time-consuming for an interactive drawing though it is suitable for its purpose.
+
+The new feature has then to be separated from this detailed view. It has been chosen to put a tabbed panel to choose between the two configuration. As the user will not need both features at the same time, this is a suitable solution.
+
+\subsubsection{Tracking panel}
+
+The interactive tracking panel is separated in two parts: controls and visualization. The first part enables the user to manage and edit the different options while the second represents the record scan which the user has to follow to indicates the grooves. \autoref{fig:intpanelprism} represents the whole panel.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.6\textwidth]{images/int-track-panel-prism}
+\caption{Interactive tracking panel in PRISM.}
+\label{fig:intpanelprism}
+\end{figure}
+
+The controls enable to monitor the tracking by changing several parameters such as the speed or the zoom level. As explained in \autoref{sec:inttrack}, the zoom can also be locked regarding to the speed, using the corresponding option.
+
+%\subsection{Implementation details}
+%\label{sec:intimpldet}
+
+%\subsubsection{Bitmap creation}
+\subsection{Bitmap creation}
 
 At creation, the scanned record must firstly be converted to a bitmap, so that it can be drawn on the panel. Most part of the process is implemented in the \texttt{BitmapFromData()} in the utility class.
 
 As already explained, the raw data of the scanned record is stored as an array of floating-point values (see~\autoref{sec:3dcaptureprop}). They must then be converted and normalized to be stored as values in the range \numrange[range-phrase=--]{0}{255} to represents pixel values. The bitmap created has the \SI{8}{bpp} format, using a 256 colors palette of grayscale values, so that the memory is not wasted with other colors.
 
-\subsubsection{Draw panel animation}
+%\subsubsection{Draw panel animation}
+\subsection{Drawing}
 
 The main implementation point is to update and draw the panel. This part is handled using \gls{gdi}, provided in Microsoft .NET through the \texttt{System.Drawing} classes.
 
@@ -780,7 +786,7 @@ There are different coordinate systems, as viewed in \autoref{fig:inttracktransf
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.6\textwidth]{images/int-track-transfo}
-\caption[Panel and record coordinate systems in the interactive tracking panel.]{Panel and record coordinate systems in the interactive tracking panel. The first one is represented in orange and the second in green. When the record is drawn at $(30,300)$, the bitmap is translated to the left and top.}
+\caption[Panel and record coordinate systems in the interactive tracking panel.]{Panel and record coordinate systems in the interactive tracking panel. The first one is represented in orange and the second in green. When the record is drawn at $(30,200)$, the bitmap is translated to the left and top.}
 \label{fig:inttracktransfo}
 \end{figure}
 
@@ -817,12 +823,40 @@ The bitmap and the tracked points are drawn in the same coordinate system. One c
 
 The matrix is then reset to draw the red triangle. No transformation is needed as it is directly positioned at the very top center. Then, to draw the actual tracked position indicated by the blue triangle, the same transformations as for the bitmap must be applied for the X coordinates. However, we cannot just alter the current matrix. Indeed, the zoom would alter the triangle size as well. As for the record, we only want the position to be altered. The only way is then to define a new matrix and only apply the transformation to the point, before setting the position.
 
-\subsubsection{Groove center approximation}
+%\subsubsection{Groove center approximation}
+\subsection{Groove center approximation}
 \label{sec:centerapprox}
 
 As explained in the previous section, the groove center is refined from the position indicated by the user. This is done by iterating $n$ points before and after the current point in the same row, and returning the deepest position. The $n$ value is determined using an approximated groove width and a tolerance factor $t$ in the range $[0,1]$. For example, if the groove width is $60$ and the tolerance $0.8$, then $n = \frac{60}{2} t = 24$.
 
 The groove width can be fixed or determined by analyzing the record. This step will be explained in \autoref{sec:groovefilter}.
+
+\subsubsection{Using curve fitting}
+
+TODO.
+
+\subsection{Managing tracked points}
+
+TODO.
+
+\subsection{Design and classes organization}
+
+This part of the implementation is much about user interface and does not require a lot of processing. The main point is to find an appropriate way of integrating the new feature without blowing up the existing codebase which is already quite complex (see~\autoref{sec:prismarchi}).
+
+The new feature has been implemented essentially in two new classes called \texttt{InteractiveControl} and \texttt{DrawPanel} as represented in the diagram of \autoref{fig:inttrackprismdiag}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics{diagrams/int-track-prism.1}
+\caption{Class diagram for the interactive tracking in PRISM.}
+\label{fig:inttrackprismdiag}
+\end{figure}
+
+The first one embeds the whole control with the controlling part (toolbox) and the visualization path. It is a specific control and inherits the \texttt{UserControl} class of the WinForms \gls{api}. The specific interactive part drawing the record is handled by the second class. It inherits from the WinForms \texttt{Panel} class. Another class called \texttt{BeaconTriangle} has been created to simplify the rendering of the blue and red triangles indicating the tracked position.
+
+The interactive panel is owned by the \texttt{frmMain} class already created in PRISM. It uses the \texttt{Hardware} class for the communication with the record information, e.g. to get the original bitmap or set the points building the tracking path. The reference to \texttt{PictureBox} called \texttt{pict} and \texttt{picture} point to the same instance. It represents the left panel showing the global view. The \texttt{InteractiveControl} class needs it to force the drawing when the values are updated (e.g. while points are being added).
+
+An utility class called \texttt{Utils} stands for common operations used specifically for the new feature.
 
 \subsection{Adaptation for RENE}
 
@@ -928,7 +962,7 @@ However, sometimes this correction is not sufficient. The slope is almost remove
 The final pseudocode for the method \texttt{NormalizedRow()} can be found in \autoref{lst:normrow}.
 
 \lstinputlisting[language={[Sharp]C},
-caption={Pseudocode of the row normalization function},
+caption={Pseudocode of the row normalization function.},
 label={lst:normrow}]
 {listings/normalize-row.cs}
 
@@ -1085,7 +1119,7 @@ An example of a $5 \times 5$ kernel applying a Gaussian blur with $\sigma = 0.8$
 \addplot3[surf,domain=-2:2] {1 / (2 * pi * 0.8^2) * exp( -(x^2+y^2) / (2 * 0.8^2) )};
 \end{axis}
 \end{tikzpicture}
-\caption{Visualization of the two-dimensional Gaussian with $\sigma = 0.8 $ .}
+\caption{Visualization of the two-dimensional Gaussian with $\sigma = 0.8$.}
 \label{fig:convolgauss}
 \end{figure}
 
@@ -1096,7 +1130,7 @@ All the filters in this example remove the noise in the image. The regular blur 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.9\textwidth]{images/filter-methods}
-\caption[Visualization of the different filtering methods]
+\caption[Visualization of the different filtering methods.]
 {Visualization of the different filtering methods with kernels of dimension $7 \times 7$. The top left part is the source image and on the right is the simple constant blur. The two bottoms parts are respectively the Gaussian and median filters.}
 \label{fig:filtermeth}
 \end{figure}
@@ -1491,8 +1525,8 @@ Actually, this algorithm has already been discussed and is the peak detection al
     \caption{Plot of the chunk X-coordinates.}
     \label{fig:frontierdet2}
     \end{subfigure}
-    \caption[Relation between peak and and frontier .]
-    {Relation between peak and and frontier detection inside a chunk. The extremities of each frontiers are numbered in both cases and correspond to the extremums on the resulting signal (right side).}
+    \caption[Relation between peak and frontier detection.]
+    {Relation between peak and frontier detection inside a chunk. The extremities of each frontiers are numbered in both cases and correspond to the extrema on the resulting signal (right side).}
     \label{fig:frontierdetalgo}
 \end{figure}
 
