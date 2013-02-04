@@ -763,12 +763,33 @@ The controls enable to monitor the tracking by changing several parameters such 
 
 \subsection{Bitmap creation}
 
-%TODO explain contrast adjustment
 At creation, the scanned record must firstly be converted to a bitmap, so that it can be drawn on the panel. Most part of the process is implemented in the \texttt{BitmapFromData()} in the utility class.
 
 As already explained, the raw data of the scanned record is stored as an array of floating-point values (see~\autoref{sec:3dcaptureprop}). They must then be converted and normalized to be stored as values in the range \numrange[range-phrase=--]{0}{255} to represents pixel values. The bitmap created has the \SI{8}{bpp} format, using a 256 colors palette of grayscale values, so that the memory is not wasted with other colors.
 
-%\subsubsection{Draw panel animation}
+\subsubsection{Contrast adjustment}
+
+Moreover, the normalization must not be applied on the whole image in one step. Given some record values, the contrast would be very low in this case. This is not an issue for the existing detailed bitmap as the contrast is optimized for the viewed part at each click. However, this would take way too much time if the bitmap would have to be recreated (almost) every time the view changes.
+
+To address this problem, the bitmap is normalized in several rectangle pieces. The width corresponds to the size of a single scan (180 points in one pass for the \gls{3dprobe}, see \autoref{sec:3dcaptureprop}). Because there is sometimes a slight Z-shift between two revolution. The height may be changed by the user. Getting a good contrast depends a lot on the acquisition. On damaged records with out-of-range values, the overall contrast may be very bad. The default value of \SI{60}{px} works in most cases. The difference between local or global adjusted contrast can be viewed in \autoref{fig:contrastimage}.
+
+\begin{figure}[!ht]
+    \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/contrast-global}
+    \caption{Contrast adjusted from the whole image range.}
+    \label{fig:contrastlocal}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/contrast-local}
+    \caption{Contrast adjusted in subrectangles of $(180,60)$.}
+    \label{fig:contrastglobal}
+    \end{subfigure}
+    \caption{Illustration of global and local contrast adjustment on the Dickson cylinder. Because of the height irregularities, the depth of grooves is barely visible on the left image.}
+    \label{fig:contrastimage}
+\end{figure}
+
 \subsection{Drawing}
 \label{sec:intdrawing}
 
@@ -913,7 +934,7 @@ The main point for the user is then to correctly match the pieces together, whil
 
 Seeing the colored dots, the user then knows that if the track has the same color at the start than at the end, the tracking has a substantial possibility to be correct.
 
-The techniques used to implement this feature will also be useful to detect groove for an automatic tracking system, to be able to reassemble them in a next step. This step will be explained in more detail in TODO. %TODO link section
+The techniques used to implement this feature will also be useful to detect groove for an automatic tracking system, to be able to reassemble them in a next step. This step will be explained in more detail in \autopageref{sec:groovedetect}.
 
 \subsection{Finding groove bottoms}
 
@@ -1611,6 +1632,7 @@ The created frontiers are stored and exposed in two separated lists, \texttt{Top
 %This algorithm works particularly well. The only parameter to be correctly adjust is the X-delta. Of %course, when a frontier is vertical it could be seen as a 
 
 \section{Groove detection}
+\label{sec:groovedetect}
 
 The particular problem of finding grooves has already been discussed in \autoref{sec:groovebot}. Nevertheless, some necessary steps must be done before and after applying the discussed algorithm. These are explained in this section.
 
