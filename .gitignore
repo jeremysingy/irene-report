@@ -7,5 +7,6 @@ images/orig
 *.ist
 *.log
 *.mps
-*.pdf
+/*.pdf
+graphs/*.pdf
 diagrams/*.[0-9]
