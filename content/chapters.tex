@@ -40,11 +40,11 @@ Then, the next step will be to design and implement a tracking feature able to p
 
 \section{Report structure}
 
-This report is separated into three main sections. The first one corresponds to the analysis performed in order to have a good understanding of the subject before starting on the actual project. \ref{chap:phonorecords} details the important points to know about phonograph records, history as well as main techniques implemented between the 19th and the 20th century. Then, \ref{chap:acqprocsys} will presents the current solutions developed at \gls{lbnl}. Both the 2D and 3D acquisition systems will be presented, as well as the processing part involving the different softwares.
+This report is separated into three main sections. The first one corresponds to the analysis performed in order to have a good understanding of the subject before starting on the actual project. \autoref{chap:phonorecords} details the important points to know about phonograph records, history as well as main techniques implemented between the 19th and the 20th century. Then, \ref{chap:acqprocsys} will presents the current solutions developed at \gls{lbnl}. Both the 2D and 3D acquisition systems will be presented, as well as the processing part involving the different softwares.
 
-The second part will present the main work realized during the thesis. \ref{chap:mantrack} will detail the improvements to help the user for the restoration of profoundly damaged records, using a manual solution. Then, a proposition able to automatically process damaged records in certain circumstances while be presented. The implementation of the different parts is separated from Chapters~\ref{chap:groovedetect} through \ref{chap:linking}.
+The second part will present the main work realized during the thesis. \autoref{chap:mantrack} will detail the improvements to help the user for the restoration of profoundly damaged records, using a manual solution. Then, the implementation of a prototype able to automatically process damaged records in certain circumstances while be presented in \autoref{chap:autoprocess}.
 
-%TODO end the structure
+The general results and tests with different records will be presented in \autoref{chap:tests}. Finally, \autoref{chap:conclusion} will summarize the objectives and results, explain the remaining problems and propose further work related to the subject.
 
 \chapter{Phonograph cylinders and records}
 \label{chap:phonorecords}
@@ -934,7 +934,7 @@ The main point for the user is then to correctly match the pieces together, whil
 
 Seeing the colored dots, the user then knows that if the track has the same color at the start than at the end, the tracking has a substantial possibility to be correct.
 
-The techniques used to implement this feature will also be useful to detect groove for an automatic tracking system, to be able to reassemble them in a next step. This step will be explained in more detail in \autopageref{sec:groovedetect}.
+The techniques used to implement this feature will also be useful to detect groove for an automatic tracking system, to be able to reassemble them in a next step. This step will be explained in more detail in \autoref{sec:groovedetect}.
 
 \subsection{Finding groove bottoms}
 
@@ -1022,7 +1022,7 @@ The next chapter will present some ways to detect the cracks in a record. This w
 
 %\chapter{Chunk and groove detection}
 \chapter{Towards an automated processing}
-\label{chap:groovedetect}
+\label{chap:autoprocess}
 
 The main problem to address in this project is that the current algorithms are unable to properly track (find) the grooves when a record is cracked.
 
@@ -2316,29 +2316,24 @@ The existing drawing methods, \texttt{ pict\_paint()} and \texttt{snd\_paint()} 
 
 %TODO add general information/considerations
 
-%
-%\chapter{Extraction of the sample recordings}
-%
-%TODO.
+\chapter{Tests on sample recordings}
+\label{chap:tests}
 
-%\chapter{Conclusion}
-%TODO.
-%\section{Objectives review}
-%
-%
-%
-%\section{Encountered problems}
-%
-%
-%
-%\section{Future work and improvements}
+TODO.
+
+\chapter{Conclusion}
+\label{chap:conclusion}
+
+\section{Objectives review}
+
+\section{Encountered problems}
+
+\section{Future work and improvements}
+
 %TODO One can note that this filter has been implemented from scratch and enables to solve the problem but it is not perfect. Particularly, it sets all coefficients to zero until the cutoff frequency is reached. A better
 
 %TODO In terms of software engineering, it would have been better to abstract the characteristics so that the algorithm could use any characteristic such as the standard deviation, the \gls{fft} or any other possible parameter. It was however left as  By lack of time and no real need in the current implementation both types of properties are always computed
 
 %TODO groove detection fft
 
-%
-%
-%
-%\section{Personal conclusion}
+\section{Personal conclusion}
