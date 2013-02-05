@@ -19,7 +19,7 @@ Nowadays, a lot of unique records remain in archives stored in different librari
 
 The team at \gls{lbnl} first started to develop a system called \gls{irene}. It enables to extract the sound using digitized images of a disc. The installation for acquisition is completed by a software package that processes the extraction step, called \gls{rene}. Some time later, the development of a new project called \gls{3dprobe} started. Instead of capturing 2D images, the acquisition uses a special probe able to measure the real depth on the surface of the scanned record. This new system has enabled to process other types of records such as cylinders and is able to offer a better outcome with some specific mediums.
 
-Even earlier in Switzerland, at the College of Engineering and Architecture of Fribourg, another project called VisualAudio has been set up. It aims to archive discs that are deteriorating in a durable way so that the recordings can be heard years later. The discs are stored on a photographic film which is a support with a long life span. An application has also been developed, enabling to extract the sound using non-contact optical scanning in a way similar to \gls{irene}.
+Even earlier in Switzerland, at the College of Engineering and Architecture of Fribourg, another project called \gls{visualaudio} has been set up. It aims to archive discs that are deteriorating in a durable way so that the recordings can be heard years later. The discs are stored on a photographic film which is a support with a long life span. An application has also been developed, enabling to extract the sound using non-contact optical scanning in a way similar to \gls{irene}.
 
 \section{Project goals}
 
@@ -36,7 +36,7 @@ Up to now, \gls{irene} and \gls{3dprobe} cannot automatically process such damag
 
 The aim of this Master's thesis is to find ways to read correctly these kinds of degraded records with the solutions developed at LBNL by Carl Haber and his team. In a first step, an improvement of the manual tracking will be implemented. It is still useful to keep it for some cases, e.g for special early recordings or when a disc is heavily cracked.
 
-Then, the next step will be to design and implement a tracking feature able to process cracked records and link their traces automatically. VisualAudio already implements a feature enabling to track cracked discs in an automatic or semi-automatic way. It can then be taken as an example, though it will obviously not be possible to directly adopt its implementation, as the systems are quite different.
+Then, the next step will be to design and implement a tracking feature able to process cracked records and link their traces automatically. \gls{visualaudio} already implements a feature enabling to track cracked discs in an automatic or semi-automatic way. It can then be taken as an example, though it will obviously not be possible to directly adopt its implementation, as the systems are quite different.
 
 \section{Report structure}
 
@@ -1105,7 +1105,7 @@ On the brightness image (\autoref{fig:crackbri}), the pixels appear much darker 
 
 \subsubsection{Differences with VisualAudio}
 
-On the cracked discs processed by VisualAudio, the cracks are quite big and usually bigger than the actual grooves. The process to find cracks starts by decimating the image, e.g. by a factor of 16. The cracks detection can then be processed quickly.
+On the cracked discs processed by \gls{visualaudio}, the cracks are quite big and usually bigger than the actual grooves. The process to find cracks starts by decimating the image, e.g. by a factor of 16. The cracks detection can then be processed quickly.
 
 However, in our case, the cracks appearing in wax cylinders and discs can be very small, usually smaller than an actual groove. If the image is binned, two much information is lost to properly find all cracks. The processing must then be applied on the original image. The size is bigger but this is not an issue with \gls{3dprobe}. Firstly, the scan is not separated in different files and has not to be merged. The resulting image is also smaller, as the number of points per line is smaller (see \autoref{sec:3dcaptureprop}) as well as the sampling frequency detailed in \eqref{eq:samprate3d}. The multi-pass scan is not an issue, as for vertically-cut records the passes are usually averaged instead of kept as individual values. Therefore, the final image size is not multiplied.
 
@@ -1464,9 +1464,9 @@ This section explains how to separate a chunk into several \emph{frontiers} whic
 
 \subsection{Difference with VisualAudio}
 
-At this point, the choice has been made not to directly follow the idea of VisualAudio. In the latter, the next step after the chunks detection is directly the tracking (or even processing, as there is no previous tracking step as with \gls{irene}). The portion inside the chunk is isolated by applying a mask, and the grooves are found and tracked by a method using histograms (see Chapter~6 in \cite{seydoux08}). It is only after this step that the chunks (now defined by a set of traces, or grooves) are separated in frontiers to continue towards the linking step.
+At this point, the choice has been made not to directly follow the idea of \gls{visualaudio}. In the latter, the next step after the chunks detection is directly the tracking (or even processing, as there is no previous tracking step as with \gls{irene}). The portion inside the chunk is isolated by applying a mask, and the grooves are found and tracked by a method using histograms (see Chapter~6 in \cite{seydoux08}). It is only after this step that the chunks (now defined by a set of traces, or grooves) are separated in frontiers to continue towards the linking step.
 
-This choice was made after analyzing the VisualAudio code and documentation. This part was quite complex and it required some algorithms that did not look relevant in the case of \gls{prism}. Instead, it was decided to geometrically separate the chunk into frontiers, before finding and tracking the groove from the detected frontiers.
+This choice was made after analyzing the \gls{visualaudio} code and documentation. This part was quite complex and it required some algorithms that did not look relevant in the case of \gls{prism}. Instead, it was decided to geometrically separate the chunk into frontiers, before finding and tracking the groove from the detected frontiers.
 
 \subsection{Goal of this step}
 \label{chap:linking}
@@ -1492,7 +1492,7 @@ To correctly link the trace, it is mandatory that the different pieces to link a
     \label{fig:chunkconcave}
 \end{figure}
 
-In fact, the problem can be solved by splitting the chunks into well-defined parts. In VisualAudio, these parts are called \emph{zones}. The corresponding zones from the previous example can be seen in \autoref{fig:chunkzones}. With this separation into zones, the tracking of grooves inside each zone is no more problematic.
+In fact, the problem can be solved by splitting the chunks into well-defined parts. In \gls{visualaudio}, these parts are called \emph{zones}. The corresponding zones from the previous example can be seen in \autoref{fig:chunkzones}. With this separation into zones, the tracking of grooves inside each zone is no more problematic.
 
 This separation looks evident for the human eyes, but the exact definition is more difficult to spot. We must firstly define what is a frontier.
 
