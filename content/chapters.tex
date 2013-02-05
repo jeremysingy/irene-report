@@ -99,7 +99,7 @@ Then, to reproduce the recorded sound, the cylinder is repositioned at its start
 \subsection{Record types}
 \label{sec:rectypes}
 
-\subsubsection{Direct and stamped recordings}
+\subsubsection{Direct vs. stamped recordings}
 
 The first important distinction is the way records are recorded. This also defines the different used materials. Firstly, the records made for direct recording are made to be recorded one time and play back directly with the adapted phonograph. This category is the most important for recovering nowadays because they are originally no other copies available. It includes the following record types:
 
@@ -1387,9 +1387,9 @@ In the beginning, several edge detection algorithms have been tested, e.g. the w
 
 \subsubsection{General results}
 
-In general, most of the cracks are easily detected by correctly adapting the different parameters. However, others are really hard to detect, when they are very tight. Fortunately, when it is the case there is normally no groove shifting. This means that some cracks can be avoided. As the system is quite different from VisualAudio, this will not cause a problem on the tracking. If the image is binned by a factor of 30, any crack being smaller than around 10 pixels is not even spotted by the tracking algorithm.
+The results of the crack detection algorithm vary a lot depending on the type of record and damage. Some are easily detected by correctly adapting the different parameters. However, others are really hard to detect, especially when they are very tight. In this case, the tracking algorithm will have to be robust enough to pass through very thin cracks, when the shift remains small. Indeed, if the image is binned by a factor of 30, any crack being smaller than around 15 pixels is not even spotted by the tracking algorithm.
 
-The main issue will be when a crack is not entirely detected. The frontier of the chunk can stop anywhere, as seen in \autoref{fig:crackbellprob} causing future linking problems.
+The main issue will be when a crack is not entirely detected. The frontier of the chunk can stop anywhere, as seen in \autoref{fig:crackbellprob} causing probable linking problems.
 
 \begin{figure}[!ht]
 \centering
@@ -1398,17 +1398,19 @@ The main issue will be when a crack is not entirely detected. The frontier of th
 \label{fig:crackbellprob}
 \end{figure}
 
-In VisualAudio, even if the cracks are much bigger, this issue can also happen. The workaround is to manually edit the exported image to ``draw'' the missing part. In the case of \gls{prism}, we will try to avoid it, and the frontier detection as explained in \autoref{sec:findfrontiers} should not be affected by this issue.
+In \gls{visualaudio}, even if the cracks are much bigger, this issue may also happen. The workaround is to manually edit the exported image to ``draw'' the missing part. In the case of \gls{prism}, we will try to avoid it, and the frontier detection (as it will be explained in \autoref{sec:findfrontiers}) should not be affected by this issue.
+
+The next sections briefly presents the result on the records acquired with \gls{3dprobe}. However, this is at this step only informative and related to chunk detection. The final tests (see \autoref{chap:tests}) will explain the final results and the configurations will be added in appendices (see \autoref{chap:arch-content}).
 
 \subsubsection{Bell disc}
 
-On the bell disc, some cracks are easily detected while others are really hard to spot. The following parameters gave good results.
+On the bell disc, some cracks are easily detected while others are really hard to spot. Fortunately, when it is the case there is almost no groove shifting. The following parameters gave good results.
 
 \begin{itemize}
 \item Not using brightness normalization
 \item Using $3 \times 3$ median blur
 \item Threshold of 20
-\item 5 passes opening morphology (TODO kernels)
+\item 5 passes opening morphology
 \item Bad fibers: two bad fibers at the start of each capture
 \end{itemize}
 
@@ -1418,10 +1420,7 @@ Using the brightness normalization as seen in \autoref{sec:brinorm} does not rea
 
 As described in \autoref{sec:samplerec}, this record contains also some parts where the wax layer is broken and no groove is visible. Apart from this, a single radial crack crosses the whole record at the beginning. This crack is easy to detect as it is wide. At some point the crack is getting tighter and difficult to distinguish from the rest of the record. It is however in a very damaged part where the grooves are very difficult to distinguish as well, even for a human.
 
-The parameters do not influence a lot the detection and will then remain the same as for the Bell disc above. It would be possible to extract several parts of it but probably not entirely automatically.
-
-%TODO parameters
-%bad fiber: two bad fibers at the start of each capture
+The parameters do not influence a lot the detection and will then remain the same as for the Bell disc above. It would be possible to extract several parts of it but probably not entirely automatically. The only difference is that there is no bad fiber from this acquisition.
 
 \subsubsection{Boas cylinder}
 
@@ -1452,9 +1451,9 @@ Almost all the implementation of the automatic tracking feature has been done in
 
 Firstly, the \texttt{ChunkDetector} class contains all processing code related to chunk detection. Most algorithms use Emgu CV for the specific step. From the user's point of view, the only interesting method is \texttt{Process()} which will analyze the loaded record and return a list of chunks. The constructor takes in parameters the \texttt{Hardware} object representing the record.
 
-A chunk is itself described in its own class named \texttt{CrackedChunk}. The contour of the chunk can be accessed via the property Contour. The rest of the implementation will be explained as other properties are added.
+A chunk is itself described in its own class named \texttt{CrackedChunk}. The contour of the chunk can be accessed via the property \texttt{Contour}. The rest of the implementation will be explained as other properties are added.
 
-The way all the parameters (thresholding, number of passes, etc.) will be explain more generally in TODO.
+The way all the parameters (thresholding, number of passes, etc.) are specified from the \gls{gui} to the object will be explain more generally in \autoref{sec:autointegration}.
 
 \section{Establishing frontiers}
 \label{sec:findfrontiers}
@@ -1657,10 +1656,41 @@ The process detailed here is to be applied for each frontier at the top of each 
 \label{fig:chunkbottoms}
 \end{figure}
 
+Before talking about the actual algorithm, the next section will explain other routines added during the implementation to improve the groove detection and tracking.
+
+\subsection{Preparing the binned image}
+
+The algorithms that will be explained in this section and the next one depend a lot on the binned image created previously by the program from the acquisition. During implementation, several issues appeared mostly due to the surface irregularities. Some -- e.g. the bad fibers and basic slope correction -- have already been explained during the interactive tracking implementation (see \autoref{sec:groovepreparefilter}).
+
+\subsubsection{Slope correction}
+
+The slope correction already implemented in \gls{prism} is applied at loading time, directly on the detailed acquisition and using a fixed user-defined value. During tests, it has been discovered that the slope may change from an area to another, making this feature insufficient. For the existing tracking methods, this is usually not an issue, but the signal was sometimes too degenerate too detect and track the grooves properly.
+
+A routine has been added, enabling too fix the slope on the whole binned image after its creation. This enables to improve the tracking without affecting the processed audio. The principle is to compute a linear regression of all samples from all scans and subtract the resulting line from the initial signal. The result is visualized in \autoref{fig:slopecorr}.
+%TODO continue?
+
+\begin{figure}[!ht]
+\tikzsetnextfilename{slope-correction}
+\centering
+\begin{tikzpicture}
+\begin{axis} [ unit vector ratio*=2 1 1, width=0.7\textwidth,
+legend style={at={(1.1,0.5)},anchor=west}]%draw=none
+%,xlabel=x,ylabel=value,xmin=0, xmax=2
+\addplot +[mark=none] table[x expr=\coordindex,y expr=0.1*\thisrow{raw}-500, restrict x to domain=0:600] {graphs/slope-correction.dat};
+\addplot +[mark=none] table[x expr=\coordindex,y expr=0.1*(\thisrow{slope}+1585), restrict x to domain=0:600] {graphs/slope-correction.dat};
+\addplot +[mark=none] table[x expr=\coordindex,y expr=0.1*(\thisrow{new}-6585), restrict x to domain=0:600] {graphs/slope-correction.dat};
+\legend{Original, Lin. regression, Subtracted};
+\end{axis}
+\end{tikzpicture}
+\caption{Illustration of the result using linear regression for slope correction.}
+\label{fig:slopecorr}
+\end{figure}
+
+This slope correction may be use or not by the user by choosing an option that was added in the \gls{gui} (see \autoref{chap:usermanauto}).
+
 \subsection{Creating signal}
 
 From the list of interpolated points computed previously (see \autoref{sec:frontierinterp}), the first task is to get the corresponding signal from the line defined by these points, i.e. the surface height information. At this point, an important thing to take in account is that the tracking is performed over the binned image (see \autoref{sec:binrepr}) while the cracks detection has been done on the detailed image, for the reasons already explained in \autoref{sec:crackrecchar}. The groove finding will also be performed on the binned image. This enables to get rid of bad points values, especially around a cracked area, as the binned image is smoothed.
-%TODO where to explain binned image cleaning?
 
 The values will also be normalized in the same way as seen in \autoref{sec:groovepreparefilter} so that the height differences depend less on the record type. The main difference in the function signature is that the parameter is no more a row index, but the list of previously computed points, as it is not necessarily straight and completely horizontal.
 
@@ -1891,7 +1921,7 @@ At each loop iteration, all frontiers at the bottom of the chunk must be tested.
 The current point (blue dot) is in the range of the two red-colored frontiers. Both these frontiers are below the point are potential candidates. The closest one is the one above so that the next stopping point, represented by the horizontal line, is at the height of this frontier at this position. The algorithm to find the bottom position is summarized in \autoref{lst:trackingstop}.
 
 \lstinputlisting[language={[Sharp]C},
-caption={Pseudocode representing localization ofo the end position and frontier.},
+caption={Pseudocode representing localization of the end position and frontier.},
 label={lst:trackingstop}]
 {listings/tracking-stop.cs}
 
@@ -2268,8 +2298,7 @@ caption={Algorithm for final track building.},
 label={lst:trackbuild}]
 {listings/track-building.cs}
 
-One can note that this algorithm continues to link from the starting grooves without actually verifying if the end of the revolution matches correctly. In fact, this is a willing behavior. As with other tracking methods, the result will be shown to the end-user. This enables to clearly identify if the match is correct, i.e. if the links between the bottom to the top are vertical (they should have approximately the same horizontal position). Otherwise, the user can use the interface to easily correct the matches (see Appendix~TODO).
-%TODO
+One can note that this algorithm continues to link from the starting grooves without actually verifying if the end of the revolution matches correctly. In fact, this is a willing behavior. As with other tracking methods, the result will be shown to the end-user. This enables to clearly identify if the match is correct, i.e. if the links between the bottom to the top are vertical (they should have approximately the same horizontal position). Otherwise, the user can use the interface to easily correct the matches (see \autoref{chap:usermanauto}).
 
 Even with an incorrect match, the processing is still possible. This can be useful, in the case of imprecise crack or groove detection, if it is not possible to get a correct result even manually. An example of a correctly tracked record can be seen in \autoref{fig:finaltrackex}, as it is viewed in \gls{prism} on the binned image.
 
@@ -2295,6 +2324,7 @@ This section presents an overview in terms of classes organization. The design w
 The main point is the \texttt{GrooveLinker()} class which implements the operations detailed above. For the best matching, it indirectly uses the properties of the grooves attached to the corresponding frontiers, through the \texttt{FrontierSection} class. Then, the \texttt{BuildTrack()} method returns the result as a list of \texttt{LinkedTrack} objects.
 
 \section{Integration and other considerations}
+\label{sec:autointegration}
 
 As seen in the previous sections, the whole procedure to automatically build an appropriate tracking on a cracked records requires a lot of different steps, and thus the final architecture becomes rapidly complicated.
 
@@ -2310,7 +2340,7 @@ To simplify the integration and use within the current \gls{prism} implementatio
 
 \subsection{User configuration}
 
-\texttt{CracksConfig} is a user interface control. This control is embedded in the main form (class \texttt{frmMain}) and displays all configurable parameters related to the processing of cracked records. In the \gls{gui}, this is displayed in a new tab right next to the interactive panel tab already added before (see \autoref{sec:inttracking}). The description of the parameters is explained in detail in the User Manual (see Appendix~TODO). The \texttt{CracksProcessor} class uses it to get the current user configuration.
+\texttt{CracksConfig} is a user interface control. This control is embedded in the main form (class \texttt{frmMain}) and displays all configurable parameters related to the processing of cracked records. In the \gls{gui}, this is displayed in a new tab right next to the interactive panel tab already added before (see \autoref{sec:inttracking}). The description of the parameters is explained in detail in the User Manual (see \autoref{chap:usermanauto}). The \texttt{CracksProcessor} class uses it to get the current user configuration.
 
 \subsection{Drawing result}
 
