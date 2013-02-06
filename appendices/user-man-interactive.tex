@@ -6,7 +6,7 @@
 
 This documents aims to explain the new \emph{Interactive Tracking} feature developed during this thesis, from the end-user's point of view. It will details the steps required to use all new functions and to be able to recover a record using the new features.
 
-As a prerequisite, the user should already be familiar with the existing PRISM and/or RENE programs to restore recordings acquired with IRENE. This document is focused on the version as integrated in PRISM. Almost explanations on this document also apply to the RENE version. The differences are explained in \autoref{sec:inttrackrene}.
+As a prerequisite, the user must already be familiar with the existing PRISM and/or RENE programs to restore recordings acquired with IRENE. This document is focused on the version as integrated in PRISM. Almost explanations on this document also apply to the RENE version. The differences are explained in \autoref{sec:inttrackrene}.
 
 \section{General description}
 
@@ -18,7 +18,7 @@ In the application user interface, the main difference is the addition of a new 
 \centering
 \includegraphics[width=0.9\textwidth]{images/int-right-panel}
 \caption[Location of the interactive panel in PRISM.]
-{Location of the interactive panel in PRISM as well as the option highlighted in orange.}
+{Location of the interactive panel as well as the new tracking option highlighted in orange, as viewed in PRISM.}
 \label{fig:intpanel}
 \end{figure}
 
@@ -95,7 +95,7 @@ In the interactive panel, the drawn record can be seen as a draggable object. Wh
 \label{fig:intshift}
 \end{figure}
 
-Once the groove as been selected, the tracking may start. To actually save the current tracking points, the \emph{Start/Stop} button must be pressed. Then to start tracking, the most convenient way is to click on the record image and add speed using the mouse wheel. The image then starts scrolling down, representing the record being tracked.
+Once the groove as been selected, the tracking may start. To actually keep track of the current tracking points, the \emph{Start/Stop} button must be pressed. Then to start tracking, the most convenient way is to click on the record image and add speed using the mouse wheel. The image then starts scrolling down, representing the record being tracked.
 
 The main goal is then to keep the top of the arrow as close as possible to the groove center, ensuring a proper tracking. The speed can be adjusted at any time with the mouse wheel. The user can also release the click, change the speed on the control and click again on the record to continue tracking.
 
@@ -122,7 +122,7 @@ When the cursor is moving over the binned image (without clicking on it) the por
 
 \subsection{Start a new revolution}
 
-When an entire revolution has been performed, the final position is at the bottom of the mapped image. If the tracking is correct, the tracking may continue directly at the same horizontal position. The system is able to move back by setting a negative speed. However, to simplify the case of setting the position to the top, a button has been added for this purpose. In reality, it does three things:
+When an entire revolution has been performed, the final position is at the bottom of the mapped image. If the tracking is correct, the tracking may continue directly at the same horizontal position. The system is able to move back by setting a negative speed. However, to simplify the case of setting the position to the top, a button has been added for this purpose (upward pointing arrow). In reality, it does three things:
 
 \begin{itemize}
 \item Go back to the top (without changing horizontal position)
@@ -140,24 +140,61 @@ Resetting the speed is useful so that the position can be adjusted before contin
 \end{figure}
 
 \subsection{Let the program do it}
+\label{sec:assistracking}
 
 Manual or automatic tracking are mainly useful with heavily damaged records that cannot be tracked with an automatic algorithm. However, while it is not directly possible to track over a crack for example, it could be possible to let the program find the way until an irregularity occurs.
 
-The interactive tracking is able to automatically track a section from the current position to a specified one. The user must simply press the \emph{Shift} key while clicking on the record. This way, it is not a straight line that is drawn but the real center is followed until the current position.
+This option is able to automatically track a section from the current position to a specified one, acting as an \emph{assisted} tracking. The user must simply press the \emph{Shift} key while clicking on the record. This way, it is not a straight line that is drawn but the real center is followed until the current position.
 
 \subsection{Correct an error}
 
-TODO.
+Manually tracking a record is an error-prone process. It frequently happens that a particular point is wrong or that the a section of the track is wrong. An option to undo the last operation (leftwards arrow) has been added for this purpose. It removes the new performed while setting the position back to the previous one.
+
+Usually, it directly removes the last tracked point. However, when the previous action added several points in one step, like with the assisted tracking or the copy pattern function (see \autoref{sec:assistracking} and \autoref{sec:copypattern}), it will directly remove the entire action, which is more convenient e.g. if the track was totally wrong in a too large section, which is more convenient.
 
 \subsection{Copy an existing pattern}
+\label{sec:copypattern}
 
-TODO.
+Another useful feature is to copy a pattern that remains common between several revolution. It often happens that once the path has been found for a revolution (from top to bottom), the same pattern is repeated several times.
+
+To avoid doing the same job multiple times, the option (available through the last button on the GUI) automatically copies the pattern from the last revolution, starting at the current position and shifting accordingly. An example of copied pattern can be seen in \autoref{fig:copypattern}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1.0\textwidth]{images/int-copy-pattern}
+\caption{In this example, the same pattern has been copied for each revolutions.}
+\label{fig:copypattern}
+\end{figure}
+
+For this to work properly, it is worth noting that the new revolution must have been previously started (i.e. the position has been put back to the top of the mapped image). The usual sequence is then (\texttt{Go to top}, \texttt{Copy}, \texttt{Go to top}, \texttt{copy}, \dots ). The horizontal shift may also be readjusted in between to precisely match the groove center. It may also be combined with the \emph{Undo} option.
 
 \section{Starting record processing}
 
-TODO.
+Once the tracking is completed, the remaining step is to launch the processing to finally get the audio file. In fact, this is done the same way as with the existing manual tracking. The \emph{Apply} action in the \emph{Manual Tracking} top menu will interpolate the track and launch the corresponding processing
+
+The options can be set as usually regarding the record type (not detailed in this documentation).
+
+\section{Other considerations}
+
+\subsection{Save and load tracking}
+
+This new way of tracking has been integrated to minimize changes in the existing application. For the application, there is no difference between a record tracked with the old manual feature or with the new one. Thus, existing option may also be used, as previously seen to apply the tracking and launch the processing.
+
+Another already existing useful feature is the possibility to save the tracking to the hard drive, and load it back later on. The \emph{Load} and \emph{Save} option may be use as-is with the implementation. The file is automatically saved in the record directory with a name postfixed by the starting range position. This enables to track several main parts of the record starting at different positions.
+
+\subsection{Tracking direction}
+
+Due to its way of operating, the interactive tracking can track only from \emph{top to bottom}, i.e. in one direction. For records that have been recorded in the opposite direction, the acquired record must be flipped vertically at loading time, so that the sound will not be played backwards. This option already exists in both PRISM and RENE.
 
 \section{Interactive tracking in RENE}
 \label{sec:inttrackrene}
 
-TODO.
+This section explains the difference in the implementation specifically for RENE. The first important thing is that the new tab is this time located on the left side of the user interface, as seen in \autoref{fig:intpanelrene}. The new tracking option has been added directly after the existing ones, in the \emph{Control} tab.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/int-right-panel-rene}
+\caption[Location of the interactive panel in RENE.]
+{Location of the interactive panel highlighted in orange, as viewed in RENE.}
+\label{fig:intpanelrene}
+\end{figure}
