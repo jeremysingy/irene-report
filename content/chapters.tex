@@ -775,6 +775,7 @@ At creation, the scanned record must firstly be converted to a bitmap, so that i
 As already explained, the raw data of the scanned record is stored as an array of floating-point values (see~\autoref{sec:3dcaptureprop}). They must then be converted and normalized to be stored as values in the range \numrange[range-phrase=--]{0}{255} to represents pixel values. The bitmap created has the \SI{8}{bpp} format, using a 256 colors palette of grayscale values, so that the memory is not wasted with other colors.
 
 \subsubsection{Contrast adjustment}
+\label{sec:contrastadj}
 
 Moreover, the normalization must not be applied on the whole image in one step. Given some record values, the contrast would be very low in this case. This is not an issue for the existing detailed bitmap as the contrast is optimized for the viewed part at each click. However, this would take way too much time if the bitmap would have to be recreated (almost) every time the view changes.
 

@@ -63,9 +63,12 @@
 \bibliographystyle{plain}
 \bibliography{content/bibliography}
 
+% Include the appendices
 \appendix
-
-% Include the appendicies
-\input{content/appendicies.tex}
+\renewcommand{\thesection}{\arabic{section}}
+\include{appendices/folder-structure}
+\include{appendices/user-man-interactive}
+\include{appendices/user-man-automatic}
+%\include{appendices/requirements}
 
 \end{document}
