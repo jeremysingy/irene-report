@@ -570,7 +570,8 @@ As with every cylinder, it was acquired with the \gls{3dprobe} system. This reco
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.7\textwidth]{images/0724-cracks}
-\caption{Excerpt of the acquisition of the 0724 cylinder as seen from the binned image in PRISM.}
+\caption[Excerpt of the acquisition of the 0724 cylinder.]
+{Excerpt of the acquisition of the 0724 cylinder as seen from the binned image in PRISM.}
 \label{fig:0724cracks}
 \end{figure}
 
@@ -794,7 +795,8 @@ To address this problem, the bitmap is normalized in several rectangle pieces. T
     \caption{Contrast adjusted in subrectangles of $(180,60)$.}
     \label{fig:contrastglobal}
     \end{subfigure}
-    \caption{Illustration of global and local contrast adjustment on the Dickson cylinder. Because of the height irregularities, the depth of grooves is barely visible on the left image.}
+    \caption[Illustration of global and local contrast adjustment on the Dickson cylinder.]
+    {Illustration of global and local contrast adjustment on the Dickson cylinder. Because of the height irregularities, the depth of grooves is barely visible on the left image.}
     \label{fig:contrastimage}
 \end{figure}
 
@@ -1063,7 +1065,8 @@ Somehow, these cracks must be firstly detected in order to process the record co
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.5\textwidth]{images/auto-track-flow}
-\caption{Workflow representing a whole processing using the automatic tracking for cracked records.}
+\caption[Workflow representing a whole processing using the automatic tracking.]
+{Workflow representing a whole processing using the automatic tracking for cracked records.}
 \label{fig:autotrackflow}
 \end{figure}
 
@@ -1277,6 +1280,7 @@ Using this feature will be interesting in cases where the threshold can hardly d
 The thresholding which segments the object from the background only takes into account the value of a single pixel to decide if it is part of a chunk or a crack. In practical cases, the distinction is almost never that evident. The histogram of an image shows peaks as statistical information but the final chosen threshold is a compromise to separate at best the two parts. There will then be some background pixels considered as being part of the object and vice versa. One possibility to clean these regions is to use the morphological operations.
 
 \subsubsection{Morphological operations}
+\label{sec:morphop}
 
 Morphological operations are a technique to clean an image based on the pixels in the neighborhood. These are then boolean masks applied on the binary image in a way similar to the filtering operations seen before.
 
@@ -2203,7 +2207,7 @@ f = \frac{i f_s}{N} \; .
 Given parameter values, only frequencies between the defined range are then stored as characteristic.
 
 \subsection{Audio comparison}
-
+%TODO is it explained with the threshold for indicating the user?
 Now that different properties have been computed at the beginning and end of every groove section, we must find a way to compare them together and get a value indicating the likelihood of a match. Comparing the audio cannot give an exact result in the general case. We cannot say that two grooves match together just because their audio signal is similar. The following list presents different cases that can happen.
 
 \begin{description}
@@ -2363,6 +2367,9 @@ The existing drawing methods, \texttt{ pict\_paint()} and \texttt{snd\_paint()} 
 \label{chap:tests}
 
 TODO.
+
+% one section for interactive, one for auto
+% explain results for specific features (automatic linking, etc.)
 
 \chapter{Conclusion}
 \label{chap:conclusion}
