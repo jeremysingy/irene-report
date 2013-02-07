@@ -905,7 +905,7 @@ Although all the analysis was done in the \gls{prism} program, this feature is a
 
 \subsubsection{Integration in the application}
 
-In terms of user interface, the new interactive panel was added as a new tab on the left part, as viewed in \autoref{fig:ireneintgui}). The feature with the cursor following in the binned image as also been added. As almost all business logic is implemented directly in the \texttt{Form1} class, which also contains the sources of the main \gls{gui}, the code has been directly added in this class.
+In terms of user interface, the new interactive panel was added as a new tab on the left part, as viewed in \autoref{fig:ireneintgui}). The feature with the cursor following in the binned image as also been added. As almost all business logic is implemented directly in the \texttt{Form1} class, which also contains the sources of the main \gls{gui}, this specific code has been directly added in this class, and the class is linked to the \texttt{InteractiveControl} class (composition).
 
 \begin{figure}[!ht]
 \centering
@@ -918,9 +918,9 @@ In terms of user interface, the new interactive panel was added as a new tab on 
 
 The tracking step in \gls{rene} differs from the \gls{prism} implementation. In this case, the groove center is not already sought at this step, but instead the top edges delimiting a groove (the intervals as represented in \autoref{fig:irenegroove}). Then, in the processing part, the center is precisely found by looking inside the whole groove. However, while manually tracking a groove, the user does not trace both edges. Instead, he just highlights the approximate center, and the edges or computed by adding/subtracting a value conform to the groove width from this center. As the interactive tracking is based on the manual feature, the user will also follow the center.
 
-Therefore, the main difference between \gls{rene} and \gls{prism} is how to approximate this center. In \gls{prism}, the real height can be used and it is straightforward to keep track of it by finding the lowest point in the neighborhood. In our case, to keep the real center, an optimal solution would be to detect the edge sides and find the center, in a way similar to what is already done for the processing step.
+Therefore, the main difference between \gls{rene} and \gls{prism} is how to approximate this center. In \gls{prism}, the real height can be used and it is straightforward to keep track of it by finding the lowest point in the neighborhood or using parabola fitting. In this case, to keep the real center, an optimal solution would be to detect the edge sides and find the center, in a way similar to what is already done for the processing step.
 
-However, at this point, the tracking is just a rough approximation, and the real useful values are the top edges delimiting the groove. It will then be sufficient to keep track the brightest point in the neighborhood of the part pointed by the user to improve the tracking.
+However, at this point, the tracking is just a rough approximation, and the real useful values are the top edges delimiting the groove. It will then be sufficient to keep track the brightest point in the neighborhood of the part pointed by the user to improve the tracking. The curve fitting method is then irrelevant for \gls{rene} and the option is removed.
 
 \subsubsection{Original image resizing}
 
@@ -2366,7 +2366,7 @@ The existing drawing methods, \texttt{ pict\_paint()} and \texttt{snd\_paint()} 
 \chapter{Tests on sample recordings}
 \label{chap:tests}
 
-TODO.
+This chapter presents an the results of the final tests that have been performed in order to test that the final solution is functional and behaves in a natural way for the end-user.
 
 % one section for interactive, one for auto
 % explain results for specific features (automatic linking, etc.)
