@@ -49,7 +49,9 @@ The general results and tests with different records will be presented in \autor
 \chapter{Phonograph cylinders and records}
 \label{chap:phonorecords}
 
-This chapter will give a quick historical overview of the different mechanical phonograph technologies and the types of mediums encountered. It will also explain the main principles behind the analog recording
+This chapter will give a quick historical overview of the different mechanical phonograph technologies and the types of mediums encountered. It will also explain the main principles behind the analog recording.
+
+Some information, mainly historical, is taken from \autocite{wikigram12}, \autocite{wikiphono12} and \autocite{wikiphonocyl12}.
 
 \section{History}
 
@@ -154,6 +156,8 @@ The next chapter will discuss the technology developed at \gls{lbnl} in order to
 \label{chap:acqprocsys}
 
 This chapter details the systems used in the audio laboratory at \gls{lbnl} to extract records. For both systems, the main process is separated in two main steps: the acquisition and the processing. The first section is an overview of the setup and hardware used to acquire records, followed by the characteristics of this acquisition step. The last two sections present the specificities of each system, both about acquisition and processing steps.
+
+Some information is taken from previous thesis or technical report realized at \gls{lbnl}, such as \autocite{benninger12}, \autocite{heinzer12} and \autocite{haber11}.
 
 \section{Acquisition hardware}
 
@@ -408,7 +412,7 @@ To measure the height of the scanned surface, the sensor takes advantage of the 
 \label{fig:chromaber}
 \end{figure}
 
-Hence, the color reflecting in focus on the surface will depend on the distance from the lens. The sensor captures then the reflected wavelength and can deduce the height. The probe can also give the value of the brightness, that is, the captured light intensity for a given point.
+Hence, the color reflecting in focus on the surface will depend on the distance from the lens. The sensor captures then the reflected wavelength and can deduce the height. The probe can also give the value of the brightness, that is, the captured light intensity for a given point. The technical specification from the manufacturer is available in \autocite{stilsa12}.
 
 \subsubsection{Capture properties}
 \label{sec:3dcaptureprop}
@@ -515,7 +519,7 @@ To investigate properly on the previously discussed issues, a canonical test set
 
 \subsection{Graham Bell disc}
 
-A collection of Graham Bell records\footnote{More information on the recovered collection can be found on this IRENE web page: \url{http://bio16p.lbl.gov/volta-release.html}.} has been recovered using the IRENE \gls{3dprobe} at the Library of Congress in Washington DC. This collection comes from the Volta Laboratory created by Alexander Graham Bell. One of the disc in the collection, labeled 287700, is a vertically-cut wax disc. It can be viewed in \autoref{fig:belldisc}.
+A collection of Graham Bell records\footnote{More information on the recovered collection can be found on this IRENE web page: \url{http://bio16p.lbl.gov/volta-release.html}.} has been recovered using the IRENE \gls{3dprobe} at the Library of Congress in Washington DC. This collection comes from the Volta Laboratory \autocite{wikivolta12} created by Alexander Graham Bell. One of the disc in the collection, labeled 287700, is a vertically-cut wax disc. It can be viewed in \autoref{fig:belldisc}.
 
 \begin{figure}[!ht]
 \centering
@@ -537,7 +541,7 @@ On the whole record, the shifting does not seem to be very large. There is no mo
 
 \subsection{Dickson cylinder}
 
-This specific wax cylinder comes from an experimental project by William Dickson and Thomas Edison. It is the soundtrack recording for the first film with recorded sound in addition to the motion picture. It is then an early prototype of a sound-film, but without real synchronization between picture and sound. This first attempt of a sound-film is known as the \emph{Dickson Experimental Sound Film}.
+This specific wax cylinder comes from an experimental project by William Dickson and Thomas Edison \autocite{wikidickson12}. It is the soundtrack recording for the first film with recorded sound in addition to the motion picture. It is then an early prototype of a sound-film, but without real synchronization between picture and sound. This first attempt of a sound-film is known as the \emph{Dickson Experimental Sound Film}.
 
 This cylinder is seriously damaged and contains, in addition to cracks, big areas where the grooves are removed, probably due to a piece of layer that has been entirely broken. This problem can be visualized in \autoref{fig:dicksonbig}. A smaller example of a crack is presented in \autoref{fig:dicksoncrack} as it is viewed from \gls{prism} in full resolution.
 
@@ -563,7 +567,7 @@ However, even with these missing parts, the shifting remains once more quite sma
 
 \subsection{Boas recording}
 
-Franz Boas was a famous anthropologist born in 1858 in Germany. He moved to the United States in 1887 where he started to study Native North American populations. During his researches and expeditions on Vancouver Island in 1930, Boas recorded sound. Some of these records have been acquired with \gls{3dprobe} for restoration some time ago. One of the disc in the collection, labeled 0724, is a damaged wax cylinder.
+Franz Boas was a famous anthropologist born in 1858 in Germany \autocite{wikiboas12}. He moved to the United States in 1887 where he started to study Native North American populations. During his researches and expeditions on Vancouver Island in 1930, Boas recorded sound. Some of these records have been acquired with \gls{3dprobe} for restoration some time ago. One of the disc in the collection, labeled 0724, is a damaged wax cylinder.
 
 As with every cylinder, it was acquired with the \gls{3dprobe} system. This record suffers from a lot of cracks separating the data in several pieces. These separated pieces can then be quite small. \autoref{fig:0724cracks} represents a portion of the disc after the acquisition.
 
@@ -959,7 +963,7 @@ The values on an horizontal line on a acquired record (mapping to a radial line 
 
 To find the groove bottoms on the signal, one cannot use the simple mathematical derivative because the signal is too noisy. A lot of variation can happen between two different values, because the signal is not smooth as if given by a simple mathematical function. One must then use a peak detection algorithm.
 
-Different algorithms exist. For example, one can just smooth the signal by averaging it (low-pass filter) and then use the zero-derivate method. A simple well-suited method that does not alter the original signal is presented in \cite{peak12}. The idea is to define peaks and valleys. In fact, a peak is a location where the value is the highest between two valleys and a peak a location where it is the lowest between two peaks. A delta parameter defines the minimum Y distance between a peak and the next valley to really taking it into account.
+Different algorithms exist. For example, one can just smooth the signal by averaging it (low-pass filter) and then use the zero-derivate method. A simple well-suited method that does not alter the original signal is presented in \autocite{peak12}. The idea is to define peaks and valleys. In fact, a peak is a location where the value is the highest between two valleys and a peak a location where it is the lowest between two peaks. A delta parameter defines the minimum Y distance between a peak and the next valley to really taking it into account.
 
 \autoref{fig:graphpeakdet} presents a graph with examples values taken from the Bell disc and the points found by the algorithm.
 
@@ -1282,7 +1286,7 @@ The thresholding which segments the object from the background only takes into a
 \subsubsection{Morphological operations}
 \label{sec:morphop}
 
-Morphological operations are a technique to clean an image based on the pixels in the neighborhood. These are then boolean masks applied on the binary image in a way similar to the filtering operations seen before.
+Morphological operations are a technique to clean an image based on the pixels in the neighborhood. These are then boolean masks applied on the binary image in a way similar to the filtering operations seen before. The theoretical explanations in this section are partly inspired from \autocite{wikimorpho12}.
 
 As the coefficients are 0 or 1, a mask is usually defined by its shape and is called a \emph{structured element} in this context. A typical shape is the cross, as defined in \eqref{eq:morphocross}.
 
@@ -1469,7 +1473,7 @@ This section explains how to separate a chunk into several \emph{frontiers} whic
 
 \subsection{Difference with VisualAudio}
 
-At this point, the choice has been made not to directly follow the idea of \gls{visualaudio}. In the latter, the next step after the chunks detection is directly the tracking (or even processing, as there is no previous tracking step as with \gls{irene}). The portion inside the chunk is isolated by applying a mask, and the grooves are found and tracked by a method using histograms (see Chapter~6 in \cite{seydoux08}). It is only after this step that the chunks (now defined by a set of traces, or grooves) are separated in frontiers to continue towards the linking step.
+At this point, the choice has been made not to directly follow the idea of \gls{visualaudio}. In the latter, the next step after the chunks detection is directly the tracking (or even processing, as there is no previous tracking step as with \gls{irene}). The portion inside the chunk is isolated by applying a mask, and the grooves are found and tracked by a method using histograms (see Chapter~6 in \autocite{seydoux08}). It is only after this step that the chunks (now defined by a set of traces, or grooves) are separated in frontiers to continue towards the linking step.
 
 This choice was made after analyzing the \gls{visualaudio} code and documentation. This part was quite complex and it required some algorithms that did not look relevant in the case of \gls{prism}. Instead, it was decided to geometrically separate the chunk into frontiers, before finding and tracking the groove from the detected frontiers.
 
@@ -2119,7 +2123,7 @@ label={lst:analysisfit}]
 
 The removing of outliers is still relevant with this method and may also be used to help cleaning the resulting signal. For example, if the parabola is ill-formed and the value from the tracked position is indeed an outlier, it must be fixed.
 
-The next sections will explain the different characteristics that will be computed over this audio signal. Some of the implemented techniques are derived from the work in \gls{visualaudio}, from \cite{seydoux08} and \cite{benningerchunk12}.
+The next sections will explain the different characteristics that will be computed over this audio signal. Some of the implemented techniques are derived from the work in \gls{visualaudio}, from \autocite{seydoux08} and \autocite{benningerchunk12}.
 
 \subsubsection{Standard deviation}
 
@@ -2246,7 +2250,7 @@ To match the frontiers from the computed characteristics, the method \texttt{Bes
 
 \subsubsection{Using standard deviation}
 
-Comparing two standard deviation is quite easy. The implementation is based on what is done in \gls{visualaudio}, especially from the results in \cite{benningerchunk12}. A ratio $\sigma i_{rat}$ is computed between the standard deviations of two groove sections $\sigma 1$ and $\sigma 2$ with:
+Comparing two standard deviation is quite easy. The implementation is based on what is done in \gls{visualaudio}, especially from the results in \autocite{benningerchunk12}. A ratio $\sigma i_{rat}$ is computed between the standard deviations of two groove sections $\sigma 1$ and $\sigma 2$ with:
 \begin{equation}
 \label{eq:stddevratio}
 \sigma i_{rat} = \min\left(\frac{\sigma 1}{\sigma 2}, \frac{\sigma 2}{\sigma 1}\right) \; .

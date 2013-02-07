@@ -9,4 +9,5 @@ images/orig
 *.mps
 /*.pdf
 graphs/*.pdf
+graphs/*.xml
 diagrams/*.[0-9]

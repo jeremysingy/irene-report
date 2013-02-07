@@ -14,8 +14,9 @@
 
 % Encoding and internationalization
 \usepackage[francais,english]{babel}
-\usepackage{ucs}
-\usepackage[utf8x]{inputenc}
+%\usepackage{ucs} % no more used (see http://tex.stackexchange.com/questions/13067/utf8x-vs-utf8-inputenc)
+%\usepackage[utf8x]{inputenc}
+\usepackage[utf8]{inputenc}
 %\usepackage[ansinew]{inputenc} % Windows specific encoding
 %\usepackage[latin1]{inputenc} % Linux specific encoding
 \usepackage[T1]{fontenc}
@@ -71,6 +72,10 @@
 
 % Listings handling
 \usepackage{listings}
+
+% Better bibliography handling with biblatex/biber
+\usepackage{biblatex}
+\addbibresource{content/bibliography.bib}
 
 % Add bibliography and lists of xx to the TOC
 \usepackage[nottoc]{tocbibind}
