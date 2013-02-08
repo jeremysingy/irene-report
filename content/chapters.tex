@@ -165,23 +165,22 @@ Both \gls{irene} and \gls{3dprobe} use the same hardware for the acquisition. It
 
 \subsection{Components}
 
-There are two main different supports. The first one is a turntable specifically designed for flat discs with the scanner put vertically and the disc rotating horizontally. The second one enables cylinder scanning, the probe being placed horizontally and directly facing the record. \autoref{fig:labhw} represent the installation in the laboratory.
+There are two main different supports. The first one is a turntable specifically designed for flat discs with the scanner put vertically and the disc rotating horizontally. It is viewed in \autoref{fig:labirene} as installed with the 2D camera .
 
 \begin{figure}[!ht]
-    \begin{subfigure}[b]{0.49\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{images/hardware-irene}
-    \caption{The turntable to acquire flat discs.}
-    \label{fig:labirene}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{images/hardware-3d}
-    \caption{The scanning equipment for cylinders.}
-    \label{fig:lab3d}
-    \end{subfigure}
-    \caption{The acquisition hardware as installed at LBNL.}
-    \label{fig:labhw}
+\centering
+\includegraphics[width=0.8\textwidth]{images/hardware-irene}
+\caption{The acquisition hardware to acquire discs as installed at LBNL.}
+\label{fig:labirene}
+\end{figure}
+
+The second one enables cylinder scanning, the probe being placed horizontally and directly facing the record. It can is represented in \autoref{fig:lab3d} as installed laboratory, with the 3D probe.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.8\textwidth]{images/hardware-3d}
+\caption{The acquisition hardware to acquire cylinders as installed at LBNL.}
+\label{fig:lab3d}
 \end{figure}
 
 In both cases, in addition to the rotary motor, there is a X- and Z- shifting motor. The X-motor enables to shift the record to scan another portion. The Z-motor is used to adapt the sensor height for a correct focus.
@@ -201,9 +200,9 @@ Before explaining the specificities of each system, it is noteworthy to explain 
 
 As previously seen in \autoref{fig:labirene}, the setup for flat discs acquisition looks similar to an ordinary phonograph. The disc is placed on the turntable and rotates while the sensor takes a single line of capture at regular intervals.
 
-The first main difference is that an entire revolution may acquire more than a single groove (as it would be played by a phonograph needle). The line width and other properties depend on the sensor and will be detailed in the next sections.
+The first main difference is that an entire revolution consists of a sequence of lines, each of which mapped in a single groove profile. The line width and other properties depend on the sensor and optics and will be detailed in the next sections.
 
-Since each captured line are put together, an entire revolution finally results in a ring-shaped capture which is mapped in a rectangular image. The groove then maps to straight parallel lines instead of the original spiral. This mapping is more clearly seen in \autoref{fig:discmapping}.
+Since each captured line are part of a sequence, an entire revolution finally results in a ring-shaped capture which is mapped in a rectangular image. The groove then maps to straight parallel lines instead of the original spiral. This mapping is more clearly seen in \autoref{fig:discmapping}.
 
 \begin{figure}[!ht]
     \begin{subfigure}[t]{0.48\textwidth}
@@ -223,7 +222,7 @@ Since each captured line are put together, an entire revolution finally results 
     \label{fig:discmapping}
 \end{figure}
 
-It is important to note that as the mapping represents a revolution, the resulting \emph{top} and \emph{bottom} of the acquisition are in fact at the same position. As the groove is embossed as a spiral onto the disc surface, the result is not exactly vertical but slightly inclined. The groove section ending at the image bottom continues at the same horizontal position at the top (or vice versa depending on the capture direction). A radial line maps to a line (almost) perpendicular to the grooves
+It is important to note that as the mapping represents a revolution, the resulting \emph{top} and \emph{bottom} of the acquisition are in fact at the same position. As the groove is embedded as a spiral onto the disc surface, the result is not exactly vertical but slightly inclined. The groove section ending at the image bottom continues at the same horizontal position at the top (or vice versa depending on the capture direction). A radial line maps to a line (almost) perpendicular to the grooves
 
 \subsubsection{Off-axis problem}
 
@@ -238,7 +237,7 @@ This section explained the general idea of mapping. However, in practical situat
 
 This result comes from the fact that the disc is hardly \emph{exactly} put at the center of the turn table. As a groove is in reality very tight, a small off-axis of e.g. \SI{0.5}{\milli\metre} is already clearly visible on a capture of a whole revolution.
 
-However, the distortion is only problematic for visualization. The resulting sound is not altered, even for laterally-modulated records, as the frequency is very low compared to the actual embossed signal.
+However, the distortion is only problematic for visualization. The resulting sound is not strongly affected, even for laterally-modulated records because the frequency is very low compared to the actual recorded signal. Moreover, the original signal is differentiated, making the off-axis insignificant.
 
 \subsection{Cylinder mapping}
 
@@ -582,6 +581,7 @@ As with every cylinder, it was acquired with the \gls{3dprobe} system. This reco
 The grooves are clearly visible but when a crack appears, the correct matching between the different parts is difficult to spot because they are almost always shifted. Even for human eyes, the right way is difficult to follow. \gls{prism} currently fails to properly track the grooves on this record automatically.
 
 \subsection{Brigance recording}
+\label{sec:samplebrigance}
 
 William Norwood Brigance was a teacher at Wasbash College and was also the leader in the Speech Association of America. He his well-known for his work in rhetoric, teaching people how to effectively speak and improve the communication. Some of his audiovisual material has been brought to the laboratory for restoration. One of these record is a lacquer disc with many cracks.
 
@@ -606,6 +606,8 @@ This disc is the only one in the test set that has been acquired with the \gls{i
 \end{figure}
 
 We can clearly see from the binned image in \autoref{fig:brigcracks} many irregularities due to the cracks. However, the shifting is narrow and the general path to follow seems obvious. The detailed view in \autoref{fig:brigcrackdet} shows however that the crack is very thin, making it difficult to detect.
+
+In fact, these cracks are due to bubbles spread on the whole record. The main issue here is that the groove center is blurred, due to the height difference where bubbles arise. Thus, the acquisition system is unable to focus fast enough.
 
 \subsection{Conclusion}
 
@@ -1668,6 +1670,7 @@ The process detailed here is to be applied for each frontier at the top of each 
 Before talking about the actual algorithm, the next section will explain other routines added during the implementation to improve the groove detection and tracking.
 
 \subsection{Preparing the binned image}
+\label{sec:binimagecorr}
 
 The algorithms that will be explained in this section and the next one depend a lot on the binned image created previously by the program from the acquisition. During implementation, several issues appeared mostly due to the surface irregularities. Some -- e.g. the bad fibers and basic slope correction -- have already been explained during the interactive tracking implementation (see \autoref{sec:groovepreparefilter}).
 
@@ -2370,10 +2373,141 @@ The existing drawing methods, \texttt{ pict\_paint()} and \texttt{snd\_paint()} 
 \chapter{Tests on sample recordings}
 \label{chap:tests}
 
-This chapter presents an the results of the final tests that have been performed in order to test that the final solution is functional and behaves in a natural way for the end-user.
+This chapter presents an the results of the final tests that have been performed in order to test that the final solution is functional and behaves in a natural way for the end-user. The first section will explain the tests and results about the interactive tracking whereas the next one will talk about the automatic processing
 
-% one section for interactive, one for auto
-% explain results for specific features (automatic linking, etc.)
+The sample recordings will be used to apply the tests. For the interactive tracking, the records will not be entirely processed, as the goal is to specifically test the user experience. The exact parameters used for the test as well as the final resulting audio may be found in the external files (see \autoref{chap:arch-content}).
+
+\section{Interactive tracking}
+
+This test corresponds to a \gls{gui} test. The goal is to verify that the behavior corresponds to the user expectation with different situations. The tests are applied on all records except the Bell disc, because the result would be similar, and it has also been successfully processed with the automatic tracking (see \autoref{sec:testautotrack}). The two first tests are done with the implementation in \gls{prism} and the last one (Brigance) with \gls{rene}.
+
+%\subsection{Graham Bell disc}
+
+%Tracking this record is quite easy with the interactive tracking. The difficult point for the user is to look for the correct match. Once it is found, the pattern is easily copyable and the record is quickly tracked. A part of the record is viewed in \autoref{
+
+\subsection{Dickson cylinder}
+
+Tracking this record is quite easy with the interactive tracking. On the main part, there is only one big crack and scratch, but the shift is not big and easily findable. Once the pattern is found, it may be copy multiple times, to that the record is quickly tracked. A part of the result is viewed in \autoref{fig:testintdickson}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1.0\textwidth]{images/test-int-dickson}
+\caption{Test of interactive tracking on the Dickson cylinder.}
+\label{fig:testintdickson}
+\end{figure}
+
+The first run (run A) of this record has been recovered with this method. The tracking has been applied in three steps from different ranges. The first part is from 6 to 10 (there is no audio before) which contains the violin music. the second part is from 11 to 18 and contains speech, then the music starts again in the last part from 18 to 20.
+
+The final sound quality is correct though the volume is quite low. The music is audible but the speech difficult to understand. In this test, it has not been tried to optimize the processing part. The blob correction feature has been used to minimize the noise.
+
+\subsection{Boas recording}
+
+This record is more difficult to track. The main point is to find the correct shift between the cracks, which is quite tricky in the first place. However, as usual, when a first revolution is correctly tracked, tracking the rest of the record is quite easy. An overview or this record correctly tracked is presented in \autoref{fig:testintboas}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1.0\textwidth]{images/test-int-boas}
+\caption{Test of interactive tracking on the Boas recording.}
+\label{fig:testintboas}
+\end{figure}
+
+The first run (beg 3) of has been recovered. The tracking has been applied in two different steps, from range 1 to 6 and 6 to 10. It seems to be a recording of a singing with percussions, probably recorded from a Native American population. Because of noise, the final quality is quite bad.
+
+\subsection{Brigance recording}
+
+This record has been used to test the version of the interactive tracking implemented in \gls{rene}. The result of the tracking is good, as viewed in \autoref{fig:testintbrigance}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1.0\textwidth]{images/test-int-brigance}
+\caption{Test of interactive tracking on the Brigance recording.}
+\label{fig:testintbrigance}
+\end{figure}
+
+The audio result is a speech. However, the sound is very noisy. As explained in \autoref{sec:samplebrigance}, the record also has some bubbles on the its surface. Therefore, the processing step is not able to find properly the edges when the groove bottom is blurred.
+
+\subsection{Summary}
+
+These tests enabled to show that the interactive tracking works well in different situations to help the user tracking some records. All tests worked properly and in the end gave an audio result. Of course, it would take some more time to improve the sound quality, by tuning the right options.
+
+Also, as a result from these tests, some future useful improvements for this feature have been identified. These will be explained in \autoref{sec:improvements}.
+
+\section{Automatic tracking}
+\label{sec:testautotrack}
+
+The second main part of the project was about developing a solution able to automatically track some cracked records. From the implementation, a lot of different issues have been identified. The two most difficult parts are the crack and groove detection. If the cracks or the grooves are not properly detected, the whole mechanism cannot work. Indeed, the link cannot match if a groove is missing, as seen in \autoref{fig:missinggroove}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{images/grooves-missing}
+\caption[Examples of grooves not detected on a frontier.]
+{Examples of grooves not detected on a frontier. This makes the linking unusable.}
+\label{fig:missinggroove}
+\end{figure}
+
+Another important point is the tracking, which is difficult to perform if there are a lot of scratches, making it impossible to work properly. If the tracking moves out of line, it may be mingled with another groove section.
+
+Finally, a linking based only on audio comparison is not precise enough in all cases. It is quite good when the comparison occurs between silent parts and well-formed audio. However, if the audio remains similar or silent, the user has to fix the final linking. In most cases it is quite easy for a human to fix it, using by viewing the geometry. 
+
+%This section will present different results from the
+%Some have been fixed, but the main problem 
+%In the end, the new feature is able to track some records but not 
+
+\subsection{Bell disc}
+
+This record has been entirely restored using automatic tracking. The cracks on this record are detected quite easily because the brightness is very different than the regular surface (see \autoref{fig:belldisc}). Also, all the grooves are found because they are deeply embossed to the surface. However, the binned image must be transformed with the fixing algorithms (see \autoref{sec:binimagecorr}) because the surface height is very changing, both because of the scan (probe not aligned) and the cracks (the surface is altered when it occurs).
+
+The result after restoring the second part of the record is viewed in \autoref{fig:testautobell}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1.0\textwidth]{images/test-auto-bell}
+\caption[Tracking of the Bell disc using automatic tracking.]
+{Tracking of the Bell disc using automatic tracking.}
+\label{fig:testautobell}
+\end{figure}
+
+The record has been recovered in three steps, as it have four separated tracks recorded. A talking man can be heard on all these parts, though it is difficult to understand what he says because of the high noise level. However the tracking is consistent for all parts in this example.
+
+\subsection{Dickson cylinder}
+
+This record was more problematic to track automatically. In fact, the cracks are pretty well detected, but the big scratches result in weirdly-shaped chunks, making the tracking very difficult. Moreover, the grooves on this cylinder are very weakly engraved and quite thin, which makes groove detection and tracking more difficult.
+
+In the end, with proper parameters, although almost all grooves are correctly tracked, the linking step does not work and the automatic tracking is unusable. An overview of the result in a section of the acquisition is presented in \autoref{fig:testautodickson}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1.0\textwidth]{images/test-auto-dickson}
+\caption[Tracking of the Dickson cylinder using automatic tracking.]
+{Tracking of the Bell disc using automatic tracking.}
+\label{fig:testautodickson}
+\end{figure}
+
+The first pretty good tracked. The main problem comes with the big scratch. As seen in the detailed view (part right), the surface at this position is completely distorted, without any groove seen, which makes the linking impossible.
+
+\subsection{Boas recording}
+
+Another test was done on the Boas cylinder. The results are quite similar to the Dickson one. Again, even with very thin cracks the detection looks good, but some missing grooves and bad value because of ill-shaped cracks give an unusable result, as seen in \autoref{fig:testautoboas}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1.0\textwidth]{images/test-auto-dickson}
+\caption[Tracking of the Boas cylinder using automatic tracking.]
+{Tracking of the Boas cylinder using automatic tracking.}
+\label{fig:testautoboas}
+\end{figure}
+
+Almost all cracks are correctly tracked, but the final linked result is inconsistent.
+
+\section{Conclusion}
+
+These different tests have shown that the interactive is an interesting feature to help the user tracking any types of records, even if they are very damaged. The new features enhance the productivity by providing ``shortcuts'' to the user.
+
+On the other side, the automatic tracking, even if working on specific records, is not a tool appropriated in the general case. In fact, each internal function -- cracks detection, chunk detection, audio comparison -- represents a new ``brick'' that may help tracking a record. However, put together, it is very difficult to get an appropriate result in every situation.
+
+This leads to the idea of a possible solution that would stand in between a fully manual or automatic system. Specific parts that are problematic could be done or fixed manually by the user, like draw a chunk border by hand, indicating missing grooves or fix a bad tracking. These improvements will be explained more specifically in \autoref{sec:improvements}.
+
+%The interactive tracking is already a step towards automation.
 
 \chapter{Conclusion}
 \label{chap:conclusion}
@@ -2383,11 +2517,14 @@ This chapter presents an the results of the final tests that have been performed
 \section{Encountered problems}
 
 \section{Future work and improvements}
+\label{sec:improvements}
 
 %TODO One can note that this filter has been implemented from scratch and enables to solve the problem but it is not perfect. Particularly, it sets all coefficients to zero until the cutoff frequency is reached. A better
 
 %TODO In terms of software engineering, it would have been better to abstract the characteristics so that the algorithm could use any characteristic such as the standard deviation, the \gls{fft} or any other possible parameter. It was however left as  By lack of time and no real need in the current implementation both types of properties are always computed
 
 %TODO groove detection fft
+
+%TODO no fitting at all
 
 \section{Personal conclusion}

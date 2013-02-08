@@ -69,7 +69,7 @@ A new panel, accessible through the tab \emph{Cracks} has been added next to the
 
 All these configurable options are saved in a way similar to the general PRISM options, in an \emph{INI} file. The main difference is that this new file, called \emph{CracksConfig.ini}, is stored locally in the record folder, and not directly the application one.
 
-Indeed, most of the configuration is specific to the current record and it enables to have different saved configurations for each record. However, it is worth noting that the configuration is loaded at the same time as the record acquisition, and saved back when the application exits. As a consequence, loading a new record overwrites the changes in the configuration. The modifications to a current configuration must then be applied after loading.
+Indeed, most of the configuration is specific to the current record and it enables to have different saved configurations for each record. It is worth noting that the configuration is loaded at the same time as the record acquisition, and saved back when the application exits. As a consequence, loading a new record overwrites the changes in the configuration. However, the modifications are updated to the file when the processing is restarted (using the button \emph{Restart processing}) or when the program exits.
 
 \section{Starting the cracks detection}
 \label{sec:setcrackdet}
@@ -148,7 +148,7 @@ In \autoref{fig:automiss}, one groove is not properly detected. The problem is f
 
 \subsection{Improve tracking}
 
-Even if the grooves are correctly detected, the tracking requires sometimes to be fixed. Two algorithms are implemented for tracking grooves. The default one, using parabola fitting, usually gives better and smoother results. However, in some cases, the depth fitting may be better suited. The parameter \emph{Max deviation} enables to set the ``dispersion'' of the algorithm, by fixing the maximal deviation from the current position while tracking.
+Even if the grooves are correctly detected, the tracking sometimes needs to be fixed. Two algorithms are implemented for tracking grooves. The default one, using parabola fitting, usually gives better and smoother results. However, in some cases, the depth fitting may be better suited. The parameter \emph{Max deviation} enables to set the ``dispersion'' of the algorithm, by fixing the maximal deviation from the current position while tracking.
 
 \section{Groove linking}
 
