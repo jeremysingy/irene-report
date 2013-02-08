@@ -87,7 +87,7 @@ After the wax-cylinders, a lot of different materials have been used for the dis
 
 \subsection{Edison phonograph}
 
-With the early Edison phonograph, the same device was used to record and play the sound. As already explained, the sound is mechanically embossed with a needle on a tinfoil placed around the cylinder. In fact, the needle is connected to a diaphragm that vibrates when audio waves are emitted. The cylinder is put on a mechanism which can be rotated by a crank and that shifts slowly resulting in helical grooves. To improve acoustic match, a horn (tube) is used, as represented in \autoref{fig:phonoschema}.
+With the early Edison phonograph \autocite{edison1878}, the same device was used to record and play the sound. As already explained, the sound is mechanically embossed with a needle on a tinfoil placed around the cylinder. In fact, the needle is connected to a diaphragm that vibrates when audio waves are emitted. The cylinder is put on a mechanism which can be rotated by a crank and that shifts slowly resulting in helical grooves. To improve acoustic match, a horn (tube) is used, as represented in \autoref{fig:phonoschema}.
 
 \begin{figure}[!ht]
 \centering
@@ -1121,24 +1121,30 @@ However, in our case, the cracks appearing in wax cylinders and discs can be ver
 
 \subsection{Filtering}
 
-When detecting a feature on a digitalized image, the first task is to apply a filter to eliminate the noise present in the image. What is typically needed is a way of smoothing (blurring) the image. Different filters can be applied to clean the source image.
+When detecting a feature on a digitalized image, the first task is to apply a filter to eliminate or rather reduce the noise present in the image. What is typically needed is a way of smoothing (blurring) the image. Different filters can be applied to clean the source image.
 
 \subsubsection{Convolution}
 
-The mathematical operation for applying a filter is called a convolution (noted $\ast$). In the case of an image, the source can be viewed as matrix $A$. The new image is computed by applying a convolution matrix, also called \emph{kernel}, which contains different weights . To compute the new pixel value, the weighted sum of the current pixel and all the pixels around is calculated using the coefficients in the kernel.
+The mathematical operation for applying a filter is called a convolution. In the case of an image, the source can be viewed as a matrix. The new image is computed by applying a convolution matrix, also called \emph{kernel}, which contains different weights. Convolution then replaces one pixel value with a new value determined as a function of a group of pixels. The size of the group is determined by the kernel size and the (linear) coefficients are the kernel values. It is also possible for the function to be non-linear but that can be considered as a special case. For the linear this means
+\begin{equation}
+\label{eq:convolution}
+b^{\ast}_{mn} = \sum_{i=m-a,j=n-b}^{m+a,n+b} K_{ij} p_{ij}
+\end{equation}
+with $A$ the source image, $B$ the destination, $K$ the kernel and $a,b$ determined by the kernel size such as $a = \left\lfloor \frac{size_x}{2} \right\rfloor$ and $b = \left\lfloor \frac{size_y}{2} \right\rfloor$.
 
+With the mathematical notation $\ast$, not to be confused with matrix multiplication, the equation for a $3 \times 3$ kernel would then simply become
 \begin{equation}
 \label{eq:convolsimple}
 B =
 \begin{bmatrix}
-1/9 & 1/9 & 1/9 \\
-1/9 & 1/9 & 1/9 \\
-1/9 & 1/9 & 1/9
+k_{11} & k_{12} & k_{13} \\
+k_{21} & k_{22} & k_{23} \\
+k_{31} & k_{32} & k_{33}
 \end{bmatrix}
-\ast A
+\ast A \; .
 \end{equation}
 
-In \eqref{eq:convolsimple}, the $3 \times 3$ kernel results in a simple blur consisting of the average of all pixel values around. The dimensions of a convolution matrix must be an odd value but it is not necessarily square.
+If the coefficients of $K$ were all the same in \eqref{eq:convolsimple}, the kernel would result in a simple blur consisting of the average of all pixel values around. The dimensions of a convolution matrix must be an odd value but it is not necessarily square.
 
 \subsubsection{Blurring types}
 
@@ -1178,7 +1184,7 @@ An example of a $5 \times 5$ kernel applying a Gaussian blur with $\sigma = 0.8$
 
 Another common filtering method is the median blur. The principle is slightly different than a convolution. Instead of computing a weighted sum, the new pixel value is computed by taking the median of the values selected by the kernel. It is no longer an averaging but a sorting operation. The selected value is thus an existing one and is less subject to degenerate pixels. The outcome is that the median filter preserves edges better than the other filters. The different filtering methods can be seen in \autoref{fig:filtermeth}.
 
-All the filters in this example remove the noise in the image. The regular blur seems to remove information on the cracks while the Gaussian filter gives a better result (the crack edges are less blurred). The crack area is even better preserved with the median filter.
+All the filters in this example reduce the noise in the image. The regular blur seems to remove information on the cracks while the Gaussian filter gives a better result (the crack edges are less blurred). The crack area is even better preserved with the median filter.
 
 \begin{figure}[!ht]
 \centering
@@ -1190,11 +1196,11 @@ All the filters in this example remove the noise in the image. The regular blur 
 
 \subsection{Segmentation}
 
-Once the noise is removed in the source image, the next step is to segment the image. This process groups the pixels with common properties that we want to keep as valuable information (commonly called the object), and distinguishes them from the rest (the background). In this case, we want to keep the chunks areas and remove the cracks.
+Once the noise is reduced in the source image, the next step is to segment the image. This process groups the pixels with common properties that we want to keep as valuable information (commonly called the object), and distinguishes them from the rest (the background). In this case, we want to keep the chunks areas and remove the cracks.
 
 \subsubsection{Histogram}
 
-A common tool helping for the segmentation operation is the histogram. A histogram represents the statistical distribution of a variable. Therefore, computing the histogram of an image means to compute the number of occurrences of each pixel values (usually in the range \numrange[range-phrase=--]{0}{255} for a bitmap). In our case this corresponds to the brightness intensity.
+A common tool helping for the segmentation operation is the histogram. A histogram represents the statistical distribution of a variable. Therefore, computing the histogram of an image means to compute the number of occurrences of each pixel values (for example in the range \numrange[range-phrase=--]{0}{255} for an 8-bit greyscale image). In our case this corresponds to the brightness intensity.
 
 The histogram of a portion of the brightness image from a cracked disc can be seen in \autoref{fig:histocrack}.
 
@@ -1206,11 +1212,11 @@ The histogram of a portion of the brightness image from a cracked disc can be se
 \addplot +[mark=none, fill=blue] table[x expr=\coordindex,y=y] {graphs/histo-crack.dat};
 \end{axis}
 \end{tikzpicture}
-\caption{Histogram of a cracked record portion.}
+\caption{Histogram of a portion of the cracked record.}
 \label{fig:histocrack}
 \end{figure}
 
-This histogram shows clearly different peaks on the intensity value. The first peak represents very dark pixel values. As predicted, this is the intensity inside the crack area, which is clearly detached from the rest of the image. The cracks is approximately represented by the intensity between \numrange[range-phrase=--]{0}{10} and the rest of the image in the intensity \numrange[range-phrase=--]{11}{255}.
+This histogram shows clearly different peaks on the intensity value. The first peak represents very dark pixel values. As predicted, this is the intensity inside the crack area, which is clearly detached from the rest of the image. The crack is approximately represented by the intensity between \numrange[range-phrase=--]{0}{10} and the rest of the image in the intensity \numrange[range-phrase=--]{11}{255}.
 
 \subsubsection{Thresholding}
 \label{sec:chunkthresh}
@@ -2512,19 +2518,60 @@ This leads to the idea of a possible solution that would stand in between a full
 \chapter{Conclusion}
 \label{chap:conclusion}
 
+To conclude this thesis, the current chapter reviews the initial objectives and summarizes problems encountered during the project. It also proposes different views for future work and improvements based upon the current state of the project. Finally a personal conclusion is presented.
+
 \section{Objectives review}
 
-\section{Encountered problems}
+The main objectives of the project are detailed in \autoref{sec:mainobjectives}.
+
+\subsection{Analysis}
+
+The first main objective was about analyzing the existing programs and becoming familiar with the codebase and the main algorithms involved. After a phase of pure code analysis, the majority of the code was gradually studied while adding the first new features, with the early tests of the interactive tracking feature.
+
+An analysis of the cracked records algorithm in \gls{visualaudio} was also made, but more theoretically by studying \autocite{seydoux08}. Later in the project, the differences between the systems showed that although the basic idea could be used, the implementation would be quite different and require specific solutions.
+
+\subsection{Implementation}
+
+Then, the main part of the project was to find different ways to restore cracked record in an efficient way. The work to improve the manual tracking led the new interactive tracking, adding different features which proved to be very useful for the user. The feature has been implemented bot in \gls{rene} for 2D acquisitions and in \gls{prism} for 3D.
+
+As a further step, the next goal was to find a way of automatically processing some damaged records, as it is possible in certain situations with \gls{visualaudio}. The final implementation is a complete system which tries to find the cracks for tracking damaged records. This solution works in some cases but may still be improved in several ways (see below).
+
+Regarding the available recordings and the types of damages, only an implementation for \gls{prism} has been completed. The specific damages on Brigance disc, the only tested 2D acquisition, were almost impossible to find with image processing. Moreover, it suffers from other problems such as focus and is easily tracked with the interactive tracking.
+
+About integration and avoiding regression, the new features have been implemented as separate as possible from the rest of the program, so that it is easily maintainable (for example with the use of a facade). A secondary objective was to improve the software architecture. Some technical details have been improved but for a better result, a deep software reengineering should be performed, which was out of the scope of this thesis.
 
 \section{Future work and improvements}
 \label{sec:improvements}
+%This section , a lot of different problems occurred and had to be fixed. Of course, not everything can be detailed but here is a list summarizing the mains encountered issues.
 
-%TODO One can note that this filter has been implemented from scratch and enables to solve the problem but it is not perfect. Particularly, it sets all coefficients to zero until the cutoff frequency is reached. A better
+The final results from the researches conducted during this thesis open the way to many possible future work. Not only some specific points regarding the implementation may be improved but also some new ideas emerged given the current stage. Some of these are explained in the next sections.
 
-%TODO In terms of software engineering, it would have been better to abstract the characteristics so that the algorithm could use any characteristic such as the standard deviation, the \gls{fft} or any other possible parameter. It was however left as  By lack of time and no real need in the current implementation both types of properties are always computed
+\subsection{Interactive tracking}
 
-%TODO groove detection fft
+The interactive tracking already offers some useful new features. While tracking records, other ideas came to improve it. Firstly, it could be useful to be able to fix an area already tracked, without being forced to cancel everything after it. One could imagine a way to move or remove an existing point by clicking on it.
 
-%TODO no fitting at all
+Another improvement would be a way to ``jump'' over a crack ar a part without audio, that means, to be able to cut off the tracking in several pieces (with a result similar to what is done in the automatic tracking). Until now, the path is always continuous and the user just passes through the cracks. In the final audio, this often results in some heavy clicks adding disturbing noise.
+
+As a detail, one can also note that in the final implementation the groove center is always automatically fixed (using fitting or depth correction). In some bad areas, the user might want to set the position exactly. It could also be possible to set the maximum deviation (now fixed from the groove width).
+
+\subsection{Cracks and groove detection}
+
+The cracks and groove detection were the most problematic parts during the implementation. Particularly for groove detection, there is a lot of other possible things. The peak detection followed by a cleaning pass is not really satisfactory. In some cases, it could be better to base the detection of the grooves using e.g. the Fourier analysis in a way similar to the existing Fourier tracking. Knowing the phase from the groove signal could give results less sensitive to outliers. 
+
+Regarding the cracks detection, one possibility is also to let the user draw the chunk borders, for example on the binned image. On certain records, the main chunks may be obvious to the human eye. In fact, an early test in this direction has already been tested in the end of the project. In the \texttt{CracksProcessor} class, a method called \texttt{ProcessTestManual()} has been implemented, enabling the create some chunk (for now directly from the code).
+
+In a step beyond, one could imagine to let the user fox or do manually the parts giving wrong results, and let the original code do the rest automatically. The current implementation is flexible enough to be used from any step to any other.
+
+\subsection{Tracking in chunks}
+
+The implemented tracking methods inside a chunk could be also improved. It would also be useful to detect when a groove is mingled to another, warning that one of the initial groove is badly tracked.
+
+\subsection{Linking and audio analysis}
+
+The audio analysis is not perfect in any case. It would be possible to improve it by improving the signal creation or the comparison formulas. For example, the high-pass filter has been implemented from scratch. Particularly, it sets all coefficients to zero until the cutoff frequency is reached. A better way would be to use a common filter like Butterworth.
+
+Also, another way would be to take a totally different approach. In essence, analyzing the audio is not sufficient for comparing grooves. One could imagine a solution using the geometry, e.g. if two grooves are the first ones from the record border, they should probably be linked together.
 
 \section{Personal conclusion}
+
+%TODO
