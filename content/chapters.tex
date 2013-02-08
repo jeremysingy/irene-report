@@ -34,18 +34,19 @@ Old records can suffer from degradations. One of the most common is known as ``c
 
 Up to now, \gls{irene} and \gls{3dprobe} cannot automatically process such damaged records, because the groove traces are sometimes widely separated and may be shifted from each other. Though a special feature is implemented, enabling the user to manually track the traces, it is not a perfect tool for practical use. Moreover, even with such a feature, it could be really difficult to visually find the correct shifting when the traces look similar.
 
-The aim of this Master's thesis is to find ways to read correctly these kinds of degraded records with the solutions developed at LBNL by Carl Haber and his team. In a first step, an improvement of the manual tracking will be implemented. It is still useful to keep it for some cases, e.g for special early recordings or when a disc is heavily cracked.
+The aim of this Master's thesis is to find ways to correctly read these kinds of degraded records with the solutions developed at LBNL by Carl Haber and his team. In a first step, an improvement of the manual tracking will be implemented. It is still useful to keep it for some cases, e.g for special early recordings or when a disc is heavily cracked.
 
 Then, the next step will be to design and implement a tracking feature able to process cracked records and link their traces automatically. \gls{visualaudio} already implements a feature enabling to track cracked discs in an automatic or semi-automatic way. It can then be taken as an example, though it will obviously not be possible to directly adopt its implementation, as the systems are quite different.
 
 \section{Report structure}
 
-This report is separated into three main sections. The first one corresponds to the analysis performed in order to have a good understanding of the subject before starting on the actual project. \autoref{chap:phonorecords} details the important points to know about phonograph records, history as well as main techniques implemented between the 19th and the 20th century. Then, \ref{chap:acqprocsys} will presents the current solutions developed at \gls{lbnl}. Both the 2D and 3D acquisition systems will be presented, as well as the processing part involving the different softwares.
+This report is separated into three main sections. The first one corresponds to the analysis performed in order to have a good understanding of the subject before starting on the actual project. \autoref{chap:phonorecords} details the important points to know about phonograph records, history as well as the main techniques implemented between the 19th and the 20th century. Then, \autoref{chap:acqprocsys} will presents the current solutions developed at \gls{lbnl}. Both the 2D and 3D acquisition systems will be presented, as well as the processing part involving the different softwares.
 
 The second part will present the main work realized during the thesis. \autoref{chap:mantrack} will detail the improvements to help the user for the restoration of profoundly damaged records, using a manual solution. Then, the implementation of a prototype able to automatically process damaged records in certain circumstances while be presented in \autoref{chap:autoprocess}.
 
 The general results and tests with different records will be presented in \autoref{chap:tests}. Finally, \autoref{chap:conclusion} will summarize the objectives and results, explain the remaining problems and propose further work related to the subject.
 
+\cleardoublepage
 \chapter{Phonograph cylinders and records}
 \label{chap:phonorecords}
 
@@ -152,6 +153,7 @@ This chapter gave an idea of the phonograph history and different devices, showi
 
 The next chapter will discuss the technology developed at \gls{lbnl} in order to extract optically the sound from old records.
 
+\cleardoublepage
 \chapter{Acquisition and processing systems}
 \label{chap:acqprocsys}
 
@@ -619,6 +621,7 @@ This chapter presented an overview of the solutions developed at \gls{lbnl}. It 
 
 The following chapters will cover the existing ways of figuring out these issues, and present new features implemented during this thesis to improve and ease the recovery of these damaged records.
 
+\cleardoublepage
 \chapter{Manual tracking}
 \label{chap:mantrack}
 
@@ -1034,6 +1037,7 @@ This part of the project ended with a new feature to the current system. The new
 
 The next chapter will present some ways to detect the cracks in a record. This will be a first step for the implementation of an automatic system to track damaged records, as well as a way of providing further information to the user for the manual tracking feature.
 
+\cleardoublepage
 \chapter{Towards an automatic processing}
 \label{chap:autoprocess}
 
@@ -1654,11 +1658,6 @@ The frontier extraction is handled by the \texttt{CrackedChunk} class itself and
 
 The created frontiers are stored and exposed in two separated lists, \texttt{Tops} and \texttt{Bottoms}. A single frontier is described by its own class \texttt{Frontier} which contains several information, mainly the points composing its border in the \texttt{Border} property. The interpolation is also performed directly in the constructor, using the Interpolate method previously discussed and implemented in \texttt{Utils}, which contains utilities used specifically by the cracked records processing and put in the same namespace.
 
-%TODO
-%\subsection{Results}
-%
-%This algorithm works particularly well. The only parameter to be correctly adjust is the X-delta. Of %course, when a frontier is vertical it could be seen as a 
-
 \section{Groove detection}
 \label{sec:groovedetect}
 
@@ -1678,21 +1677,20 @@ Before talking about the actual algorithm, the next section will explain other r
 \subsection{Preparing the binned image}
 \label{sec:binimagecorr}
 
-The algorithms that will be explained in this section and the next one depend a lot on the binned image created previously by the program from the acquisition. During implementation, several issues appeared mostly due to the surface irregularities. Some -- e.g. the bad fibers and basic slope correction -- have already been explained during the interactive tracking implementation (see \autoref{sec:groovepreparefilter}).
+The algorithms that will be explained in this section and the next one depend a lot on the binned image created previously by the program from the acquisition. During implementation, several issues appeared, mostly due to the surface irregularities. Some -- e.g. the bad fibers and basic slope correction -- have already been explained during the interactive tracking implementation (see \autoref{sec:groovepreparefilter}).
 
 \subsubsection{Slope correction}
 
 The slope correction already implemented in \gls{prism} is applied at loading time, directly on the detailed acquisition and using a fixed user-defined value. During tests, it has been discovered that the slope may change from an area to another, making this feature insufficient. For the existing tracking methods, this is usually not an issue, but the signal was sometimes too degenerate too detect and track the grooves properly.
 
 A routine has been added, enabling too fix the slope on the whole binned image after its creation. This enables to improve the tracking without affecting the processed audio. The principle is to compute a linear regression of all samples from all scans and subtract the resulting line from the initial signal. The result is visualized in \autoref{fig:slopecorr}.
-%TODO continue?
 
 \begin{figure}[!ht]
 \tikzsetnextfilename{slope-correction}
 \centering
 \begin{tikzpicture}
 \begin{axis} [ unit vector ratio*=2 1 1, width=0.7\textwidth,
-legend style={at={(1.1,0.5)},anchor=west}]%draw=none
+legend style={cells={anchor=west},at={(1.1,0.5)},anchor=west}]%draw=none
 %,xlabel=x,ylabel=value,xmin=0, xmax=2
 \addplot +[mark=none] table[x expr=\coordindex,y expr=0.1*\thisrow{raw}-500, restrict x to domain=0:600] {graphs/slope-correction.dat};
 \addplot +[mark=none] table[x expr=\coordindex,y expr=0.1*(\thisrow{slope}+1585), restrict x to domain=0:600] {graphs/slope-correction.dat};
@@ -1704,7 +1702,11 @@ legend style={at={(1.1,0.5)},anchor=west}]%draw=none
 \label{fig:slopecorr}
 \end{figure}
 
-This slope correction may be use or not by the user by choosing an option that was added in the \gls{gui} (see \autoref{chap:usermanauto}).
+This slope correction may be activated by the user by selecting a new option in the \gls{gui} (see \autoref{chap:usermanauto}).
+
+\subsubsection{Subtract average}
+
+A further step, after applying the slope correction, is to subtract the height average so that all separated part have approximately the same height, improving the final signal waveform. To avoid outliers at the scan limits (every 180 points), the starting height of a scan is also equalized the last one of the previous scan, removing the last visible differences.
 
 \subsection{Creating signal}
 
@@ -1794,9 +1796,8 @@ This tracking method works quite well in practice and rarely fails to follow the
     \centering
     \tikzsetnextfilename{depth-finder-prob}
     \begin{tikzpicture}
-    \begin{axis} [width=0.8\textwidth]
-    %legend style={at={(1.1,0.5)},anchor=west,draw=none}]
-    %,xlabel=x,ylabel=value,xmin=0, xmax=2
+    \begin{axis} [width=0.8\textwidth,
+    legend style={cells={anchor=west}, draw=none}]
     \addplot +[mark=none, forget plot] table[x expr=\coordindex,y=y] {graphs/depth-finder-prob.dat};
     \addplot +[only marks, mark=*, mark options={fill=gray,draw=gray}, restrict x to domain=15:15] table[x expr=\coordindex,y=y] {graphs/depth-finder-prob.dat};
     \addplot +[only marks, mark=*, mark options={fill=red,draw=red}, restrict x to domain=3:3] table[x expr=\coordindex,y=y] {graphs/depth-finder-prob.dat};
@@ -1850,7 +1851,7 @@ In fact, curve fitting methods are already implemented in \gls{prism}. They are 
 \centering
 \begin{tikzpicture}
 \begin{axis}[width=0.6\textwidth,
-legend style={at={(1.1,0.5)},anchor=west}]%draw=none
+legend style={at={(1.1,0.5)},anchor=west, cells={anchor=west}}]%draw=none
 %,xlabel=x,ylabel=value,xmin=0, xmax=2
 \addplot +[mark=none] table[x expr=\coordindex,y=y] {graphs/fit-finder-ex.dat};
 \addplot +[mark=none] table[x expr=\coordindex,y=yfit] {graphs/fit-finder-ex.dat};
@@ -1928,8 +1929,6 @@ As often, the raw results cannot be directly use in some cases. Firstly, what ha
 
 This eventuality has to be checked with the proper code. The simple test is to ensure that the vertex is located in the neighborhood by checking the distance from the last point. If too far, the current center may be set to the previous value. The parabola direction can also be tested with the sign of the $a$ coefficient. If $a >= 0$, the corresponding vertex should not be taken into account.
 
-%TODO first setting with depth, algo, etc.
-
 \subsection{Stop condition}
 
 At this point, the groove center may be tracked with different methods. The remaining work is to find a stop condition for the algorithm, i.e. when the chunk contour has been reached (routine \texttt{FindStopPos()} in the previous pseudocode). As seen in \autoref{fig:groovetrack}, the groove can reach any of the groove's bottom frontiers. 
@@ -1994,7 +1993,6 @@ Before actually linking all groove sections together, a previous step must be pe
 
 The first observation is that a single frontier can be linked to several different other ones, for example when two chunks are located beside the same frontier. Another important result is that it is possible that two frontiers of the same chunk have to be linked. This can happen for example in the case of thin crack not entirely detected, as already seen in \autoref{fig:crackbellprob}.
 
-%TODO link with final implementation description
 This step must be seen as a general problem over the record: at this point it is assumed that we have two collections containing all bottom and top frontiers of all chunks in the record. The algorithm iterates over all bottom frontiers and tries to assign their corresponding linked frontiers.
 
 \subsubsection{Frontier section}
@@ -2094,7 +2092,7 @@ Bad values are replaced with a interpolation of the neighbors. The result of thi
 \centering
 \begin{tikzpicture}
 \begin{axis} [width=0.7\textwidth, unit vector ratio*=1 0.6 1, xticklabels={,,},
-legend style={at={(1.05,0.5)},anchor=west}]
+legend style={at={(1.05,0.5)},anchor=west,cells={anchor=west}}]
 \addplot +[mark=none, restrict x to domain=50:130, color=gray, style=dashed] table[x expr=\coordindex,y=yraw] {graphs/remove-outliers.dat};
 \addplot +[mark=none, restrict x to domain=50:130, color=blue] table[x expr=\coordindex,y=ycleaned] {graphs/remove-outliers.dat};
 \legend{Raw signal, Cleaned signal};
@@ -2108,12 +2106,19 @@ legend style={at={(1.05,0.5)},anchor=west}]
 
 Even with outliers correction, the result is not perfect and could be noisy. Another better way to get the audio signal is to use curve fitting, as explained for tracking in \autoref{sec:trackfit}. Thi time, the vertex of the parabola is used for the signal value. However, unlike tracking, the center position is not corrected. Indeed, it varies not much and taking the vertex is sufficient to get a proper value. This method also has the benefit of smoothing noisy values. The difference with both methods is visualized in \autoref{fig:simplefitcomp}.
 
+As for the tracking, the eventuality of a degenerated parabola must be tested. If it is inversed or the vertex is away from the tracked position, the signal value is computed from the tracked position. The corresponding algorithm is presented in \autoref{lst:analysisfit}.
+
+\lstinputlisting[language={[Sharp]C},
+caption={Audio analysis using curve fitting.},
+label={lst:analysisfit}]
+{listings/analysis-fitting.cs}
+
 \begin{figure}[!ht]
 \tikzsetnextfilename{analysis-fitting-comp}
 \centering
 \begin{tikzpicture}
 \begin{axis} [width=0.7\textwidth, unit vector ratio*=1 1 1, xticklabels={,,},
-legend style={at={(1.05,0.5)},anchor=west}]
+legend style={at={(1.05,0.5)},anchor=west,cells={anchor=west}}]
 \addplot +[mark=none, restrict x to domain=50:130] table[x expr=\coordindex,y=ynorm] {graphs/analysis-fitting-comp.dat};
 \addplot +[mark=none, restrict x to domain=50:130] table[x expr=\coordindex,y=yfit] {graphs/analysis-fitting-comp.dat};
 \legend{First method, Fitting method};
@@ -2123,14 +2128,7 @@ legend style={at={(1.05,0.5)},anchor=west}]
 \label{fig:simplefitcomp}
 \end{figure}
 
-As for the tracking, the eventuality of a degenerated parabola must be tested. If it is inversed or the vertex is away from the tracked position, the signal value is computed from the tracked position. The corresponding algorithm is presented in \autoref{lst:analysisfit}.
-
-\lstinputlisting[language={[Sharp]C},
-caption={Audio analysis using curve fitting.},
-label={lst:analysisfit}]
-{listings/analysis-fitting.cs}
-
-The removing of outliers is still relevant with this method and may also be used to help cleaning the resulting signal. For example, if the parabola is ill-formed and the value from the tracked position is indeed an outlier, it must be fixed.
+The outliers removing is still relevant with this method and may also be used to help cleaning the resulting signal. For example, if the parabola is ill-formed and the value from the tracked position is indeed an outlier, it must be fixed.
 
 The next sections will explain the different characteristics that will be computed over this audio signal. Some of the implemented techniques are derived from the work in \gls{visualaudio}, from \autocite{seydoux08} and \autocite{benningerchunk12}.
 
@@ -2151,7 +2149,7 @@ The way to solve this issue is to apply a high-pass filter over the signal. This
 \centering
 \begin{tikzpicture}
 \begin{axis} [width=0.7\textwidth, unit vector ratio*=1 0.7 1, xticklabels={,,},
-legend style={at={(1.05,0.5)},anchor=west}]
+legend style={at={(1.05,0.5)},anchor=west,cells={anchor=west}}]
 \addplot +[mark=none] table[x expr=\coordindex,y expr=\thisrow{yraw}-271] {graphs/fft-filter-ex.dat};
 \addplot +[mark=none] table[x expr=\coordindex,y=yfiltered] {graphs/fft-filter-ex.dat};
 \legend{Without filter, With high-pass filter};
@@ -2195,8 +2193,8 @@ Multiplying the signal by this window smooths the result. The difference with or
 \tikzsetnextfilename{windows-comp}
 \centering
 \begin{tikzpicture}
-\begin{axis} [width=0.8\textwidth, ymax=3000, xlabel=Frequency,ylabel=Magitude %, unit vector ratio*=1 0.7 1, xticklabels={,,} %,
-%legend style={at={(1.05,0.5)},anchor=west}]
+\begin{axis} [width=0.8\textwidth, ymax=3000, xlabel=Frequency,ylabel=Magnitude,
+legend style={cells={anchor=west},draw=none}]
 ]
 \addplot +[mark=none] table[x=freq,y=yrect] {graphs/windows-comp.dat};
 \addplot +[mark=none] table[x=freq,y=yhann] {graphs/windows-comp.dat};
@@ -2220,7 +2218,7 @@ f = \frac{i f_s}{N} \; .
 Given parameter values, only frequencies between the defined range are then stored as characteristic.
 
 \subsection{Audio comparison}
-%TODO is it explained with the threshold for indicating the user?
+
 Now that different properties have been computed at the beginning and end of every groove section, we must find a way to compare them together and get a value indicating the likelihood of a match. Comparing the audio cannot give an exact result in the general case. We cannot say that two grooves match together just because their audio signal is similar. The following list presents different cases that can happen.
 
 \begin{description}
@@ -2272,6 +2270,8 @@ This results in a ratio in the range $[0,1]$. To improve the results, this ratio
 l = \frac{1}{N} \sum_{i=1}^{N} \sigma i_{rat} \overline{\sigma}
 \end{equation}
 
+In \gls{visualaudio}, there is also a notion of \emph{reliability}. The reliability is a computed value used to determine whether the shift may be fixed as-is or if the user should review the linking. In the current implementation, given the first results, it was decided to show all linkings to the user and therefore the reliability is not calculated. This way, the user may fix any previously computed linking.
+
 \subsubsection{Using FFT}
 
 Using \gls{fft} to compare signal is more problematic. In the first tests, an idea was to find the $n$ greatest peaks in the spectrum representing the most represented frequencies and compare the distance between frequency and/or magnitude. After several tries, it did not give better results and was difficult to implement properly in the general case.
@@ -2301,7 +2301,6 @@ The method \texttt{BestMatching()} in \texttt{FrontierSection} will then try dif
 \subsection{Track building}
 
 At this point, the linking is almost done. Before starting the regular processing from the tracked data, it remains to create this data. The final tracked points are defined as tracks. A single record may have more than one track. For example, it may happen that the groove cannot continue at a defined point if it is not linked. In this case, the current track is stopped and a new one is started from the next scanned revolution. This enables to track records in several steps even if some parts were not entirely well detected.
-%TODO stop beyond frontiers?
 
 \subsubsection{Overview}
 
@@ -2344,6 +2343,8 @@ The main point is the \texttt{GrooveLinker()} class which implements the operati
 \section{Integration and other considerations}
 \label{sec:autointegration}
 
+\subsection{Integration in the existing software}
+
 As seen in the previous sections, the whole procedure to automatically build an appropriate tracking on a cracked records requires a lot of different steps, and thus the final architecture becomes rapidly complicated.
 
 To simplify the integration and use within the current \gls{prism} implementation and avoid bloating the existing code base, a class named \texttt{CracksProcessor} has been added. This latter acts as a facade between the classes described in the sections above (representing business objects) and the rest of the program. It simplifies the whole process by providing simple functions and using the appropriate submodules. Moreover, it is useful to make the link between all parameters that are configurable by the end-user. A summary of the main classes composing the new module and their integration in the rest of the program is presented in \autoref{fig:crackintegrdiag}.
@@ -2374,18 +2375,17 @@ The \texttt{ObjectDrawer} class is a utility to draw all results, as the actual 
 
 The existing drawing methods, \texttt{ pict\_paint()} and \texttt{snd\_paint()} are already implemented in the \texttt{frmMain} class. To draw these new objects, they call the \texttt{DrawObjects()} method to the facade which then dispatches the drawing properly. The exact same code is used to draw the objects on the binned or the detailed image. The corresponding matrix transforms are computed priorly in the paint methods (this technique is described in \autoref{sec:intdrawing}).
 
-%TODO add general information/considerations
-
+\cleardoublepage
 \chapter{Tests on sample recordings}
 \label{chap:tests}
 
-This chapter presents an the results of the final tests that have been performed in order to test that the final solution is functional and behaves in a natural way for the end-user. The first section will explain the tests and results about the interactive tracking whereas the next one will talk about the automatic processing
+This chapter presents an overview of the final tests that have been performed in order to test that the final solution is functional and behaves in a natural way for the end-user. The first section will explain the tests and results about the interactive tracking whereas the next one will talk about the automatic processing
 
-The sample recordings will be used to apply the tests. For the interactive tracking, the records will not be entirely processed, as the goal is to specifically test the user experience. The exact parameters used for the test as well as the final resulting audio may be found in the external files (see \autoref{chap:arch-content}).
+The sample recordings will be used to apply the tests. The exact parameters used for the test as well as the final resulting audio may be found in the external files (see \autoref{chap:arch-content}).
 
 \section{Interactive tracking}
 
-This test corresponds to a \gls{gui} test. The goal is to verify that the behavior corresponds to the user expectation with different situations. The tests are applied on all records except the Bell disc, because the result would be similar, and it has also been successfully processed with the automatic tracking (see \autoref{sec:testautotrack}). The two first tests are done with the implementation in \gls{prism} and the last one (Brigance) with \gls{rene}.
+This part of the tests corresponds to a \gls{gui} and final user test. The goal is to verify that the behavior corresponds to the user expectation in all situations. The tests are applied on all records except the Bell disc, which has been successfully processed with the automatic tracking (see \autoref{sec:testautotrack}). The two first tests are done with the implementation in \gls{prism} and the last one (Brigance) with \gls{rene}.
 
 %\subsection{Graham Bell disc}
 
@@ -2393,7 +2393,7 @@ This test corresponds to a \gls{gui} test. The goal is to verify that the behavi
 
 \subsection{Dickson cylinder}
 
-Tracking this record is quite easy with the interactive tracking. On the main part, there is only one big crack and scratch, but the shift is not big and easily findable. Once the pattern is found, it may be copy multiple times, to that the record is quickly tracked. A part of the result is viewed in \autoref{fig:testintdickson}.
+Tracking this record is quite easy with the interactive tracking. On the main part, there is only one big crack and scratch, but the shift is not big and easily findable. Once the pattern is found, it may be copied multiple times, so that the record is quickly tracked. A part of the result is viewed in \autoref{fig:testintdickson}.
 
 \begin{figure}[!ht]
 \centering
@@ -2404,11 +2404,11 @@ Tracking this record is quite easy with the interactive tracking. On the main pa
 
 The first run (run A) of this record has been recovered with this method. The tracking has been applied in three steps from different ranges. The first part is from 6 to 10 (there is no audio before) which contains the violin music. the second part is from 11 to 18 and contains speech, then the music starts again in the last part from 18 to 20.
 
-The final sound quality is correct though the volume is quite low. The music is audible but the speech difficult to understand. In this test, it has not been tried to optimize the processing part. The blob correction feature has been used to minimize the noise.
+The final sound quality is correct though the volume is quite low. The music is audible but the speech difficult to understand. In this test, it has not been tried to optimize the processing part. However, the blob correction feature has been used to minimize the noise.
 
 \subsection{Boas recording}
 
-This record is more difficult to track. The main point is to find the correct shift between the cracks, which is quite tricky in the first place. However, as usual, when a first revolution is correctly tracked, tracking the rest of the record is quite easy. An overview or this record correctly tracked is presented in \autoref{fig:testintboas}.
+This record is more difficult to track. The main point is to find the correct shift between the cracks, which is quite tricky in the first place. However, as usual, when a first revolution is correctly tracked, tracking the rest of the record is very quick. An overview or this record correctly tracked is presented in \autoref{fig:testintboas}.
 
 \begin{figure}[!ht]
 \centering
@@ -2417,11 +2417,11 @@ This record is more difficult to track. The main point is to find the correct sh
 \label{fig:testintboas}
 \end{figure}
 
-The first run (beg 3) of has been recovered. The tracking has been applied in two different steps, from range 1 to 6 and 6 to 10. It seems to be a recording of a singing with percussions, probably recorded from a Native American population. Because of noise, the final quality is quite bad.
+The first run (beg 3) of this record has been successfully recovered. The tracking has been applied in two different steps, from range 1 to 6 and 6 to 10. It seems to be a recording of a singing with percussions, probably recorded from a Native American population. Because of noise, the final audio quality is very bad and the processing should be tuned for a better result.
 
 \subsection{Brigance recording}
 
-This record has been used to test the version of the interactive tracking implemented in \gls{rene}. The result of the tracking is good, as viewed in \autoref{fig:testintbrigance}.
+This record has been used to test the version of the interactive tracking implemented in \gls{rene}. The result for the tracking is good, as viewed in \autoref{fig:testintbrigance}.
 
 \begin{figure}[!ht]
 \centering
@@ -2430,11 +2430,11 @@ This record has been used to test the version of the interactive tracking implem
 \label{fig:testintbrigance}
 \end{figure}
 
-The audio result is a speech. However, the sound is very noisy. As explained in \autoref{sec:samplebrigance}, the record also has some bubbles on the its surface. Therefore, the processing step is not able to find properly the edges when the groove bottom is blurred.
+The assisted tracking (see \autoref{sec:intfeatures}) works also well on this record, centering to the position where the brightness is the highest. The audio result is a speech but the sound is once more very noisy. As explained in \autoref{sec:samplebrigance}, the record also has some bubbles on the its surface. Therefore, the processing step is not able to find properly the edges when the groove bottom is blurred.
 
 \subsection{Summary}
 
-These tests enabled to show that the interactive tracking works well in different situations to help the user tracking some records. All tests worked properly and in the end gave an audio result. Of course, it would take some more time to improve the sound quality, by tuning the right options.
+These tests enabled to show that the interactive tracking works well in different situations to help the user tracking some records. All tests worked properly and allowed to output a final audio result. Of course, it would take some more time to improve the sound quality, by correctly tuning the processing options.
 
 Also, as a result from these tests, some future useful improvements for this feature have been identified. These will be explained in \autoref{sec:improvements}.
 
@@ -2453,15 +2453,11 @@ The second main part of the project was about developing a solution able to auto
 
 Another important point is the tracking, which is difficult to perform if there are a lot of scratches, making it impossible to work properly. If the tracking moves out of line, it may be mingled with another groove section.
 
-Finally, a linking based only on audio comparison is not precise enough in all cases. It is quite good when the comparison occurs between silent parts and well-formed audio. However, if the audio remains similar or silent, the user has to fix the final linking. In most cases it is quite easy for a human to fix it, using by viewing the geometry. 
-
-%This section will present different results from the
-%Some have been fixed, but the main problem 
-%In the end, the new feature is able to track some records but not 
+Finally, the linking, which is only based on audio comparison, is not precise enough in all cases. It is quite good when the comparison occurs between silent parts and well-formed audio. However, if the audio remains similar or silent, the user may have to fix the final linking. In most cases it is quite easy for a human to fix it, by viewing the general record geometry. 
 
 \subsection{Bell disc}
 
-This record has been entirely restored using automatic tracking. The cracks on this record are detected quite easily because the brightness is very different than the regular surface (see \autoref{fig:belldisc}). Also, all the grooves are found because they are deeply embossed to the surface. However, the binned image must be transformed with the fixing algorithms (see \autoref{sec:binimagecorr}) because the surface height is very changing, both because of the scan (probe not aligned) and the cracks (the surface is altered when it occurs).
+This record has been entirely restored using this feature. The cracks are detected quite easily because the brightness is very different compared to the regular surface (see \autoref{fig:belldisc}). Also, all the grooves are found because they are deeply engraved to the surface. However, the binned image must be transformed with the fixing algorithms (see \autoref{sec:binimagecorr}) because the surface height is very changing, both because of the scan (probe not aligned) and the cracks (the surface is sometimes altered when it occurs).
 
 The result after restoring the second part of the record is viewed in \autoref{fig:testautobell}.
 
@@ -2473,11 +2469,11 @@ The result after restoring the second part of the record is viewed in \autoref{f
 \label{fig:testautobell}
 \end{figure}
 
-The record has been recovered in three steps, as it have four separated tracks recorded. A talking man can be heard on all these parts, though it is difficult to understand what he says because of the high noise level. However the tracking is consistent for all parts in this example.
+The record has been recovered in four steps, as it has four clearly separated tracks. A talking man can be heard on all these parts, though it is difficult to understand what he says because of the high noise level. However the tracking is consistent for all parts in this example.
 
 \subsection{Dickson cylinder}
 
-This record was more problematic to track automatically. In fact, the cracks are pretty well detected, but the big scratches result in weirdly-shaped chunks, making the tracking very difficult. Moreover, the grooves on this cylinder are very weakly engraved and quite thin, which makes groove detection and tracking more difficult.
+This record was more problematic to track automatically. In fact, the cracks are pretty well detected, but the big scratches result in weirdly-shaped chunks, making the tracking very difficult. Moreover the groove detection and tracking is difficult because the grooves are very weakly engraved and quite thin.
 
 In the end, with proper parameters, although almost all grooves are correctly tracked, the linking step does not work and the automatic tracking is unusable. An overview of the result in a section of the acquisition is presented in \autoref{fig:testautodickson}.
 
@@ -2489,11 +2485,11 @@ In the end, with proper parameters, although almost all grooves are correctly tr
 \label{fig:testautodickson}
 \end{figure}
 
-The first pretty good tracked. The main problem comes with the big scratch. As seen in the detailed view (part right), the surface at this position is completely distorted, without any groove seen, which makes the linking impossible.
+In this example, the left part is correctly tracked. The main problem comes with the big scratch on the right side. As seen in the detailed view, the surface at this position is completely distorted, without any groove seen, which makes the linking impossible.
 
 \subsection{Boas recording}
 
-Another test was done on the Boas cylinder. The results are quite similar to the Dickson one. Again, even with very thin cracks the detection looks good, but some missing grooves and bad value because of ill-shaped cracks give an unusable result, as seen in \autoref{fig:testautoboas}.
+Another test was done on the Boas cylinder. The results are quite similar to the Dickson one. Again, even with very thin cracks the detection looks good, but some missing grooves and bad values because of ill-shaped cracks give an unusable result, as seen in \autoref{fig:testautoboas}.
 
 \begin{figure}[!ht]
 \centering
@@ -2507,14 +2503,13 @@ Almost all cracks are correctly tracked, but the final linked result is inconsis
 
 \section{Conclusion}
 
-These different tests have shown that the interactive is an interesting feature to help the user tracking any types of records, even if they are very damaged. The new features enhance the productivity by providing ``shortcuts'' to the user.
+These different tests have shown that the interactive tracking is an interesting feature to help the user on any type of record, even deeply damaged. The new features enhance the productivity by providing ``shortcuts'' and new tools.
 
-On the other side, the automatic tracking, even if working on specific records, is not a tool appropriated in the general case. In fact, each internal function -- cracks detection, chunk detection, audio comparison -- represents a new ``brick'' that may help tracking a record. However, put together, it is very difficult to get an appropriate result in every situation.
+On the other hand, the automatic tracking, even if working on specific records, is not an appropriated tool in the general case. In fact, each internal function -- cracks detection, chunk detection, audio comparison -- represents a new ``brick'' that may help tracking a record. However, put together, it is very difficult to get an appropriate result in every situation.
 
-This leads to the idea of a possible solution that would stand in between a fully manual or automatic system. Specific parts that are problematic could be done or fixed manually by the user, like draw a chunk border by hand, indicating missing grooves or fix a bad tracking. These improvements will be explained more specifically in \autoref{sec:improvements}.
+This leads to the idea of a possible solution that would stand in between a fully manual or automatic system. Specific parts that are problematic could be done or fixed manually by the user, like drawing a chunk border by hand, indicating missing grooves or fixing a bad tracking. These improvements will be explained more specifically in \autoref{sec:improvements}.
 
-%The interactive tracking is already a step towards automation.
-
+\cleardoublepage
 \chapter{Conclusion}
 \label{chap:conclusion}
 
@@ -2522,56 +2517,61 @@ To conclude this thesis, the current chapter reviews the initial objectives and 
 
 \section{Objectives review}
 
-The main objectives of the project are detailed in \autoref{sec:mainobjectives}.
+The main objectives of the project are detailed in the requirements (\autoref{sec:mainobjectives}). A summary of the achieved objectives is presented in the next sections.
 
 \subsection{Analysis}
 
-The first main objective was about analyzing the existing programs and becoming familiar with the codebase and the main algorithms involved. After a phase of pure code analysis, the majority of the code was gradually studied while adding the first new features, with the early tests of the interactive tracking feature.
+The first main objective was about analyzing the existing programs and becoming familiar with the codebase and the involved algorithms. After a phase of pure code analysis, the majority of the application was gradually studied while adding the first new features, with the early tests of the interactive tracking feature.
 
 An analysis of the cracked records algorithm in \gls{visualaudio} was also made, but more theoretically by studying \autocite{seydoux08}. Later in the project, the differences between the systems showed that although the basic idea could be used, the implementation would be quite different and require specific solutions.
 
 \subsection{Implementation}
 
-Then, the main part of the project was to find different ways to restore cracked record in an efficient way. The work to improve the manual tracking led the new interactive tracking, adding different features which proved to be very useful for the user. The feature has been implemented bot in \gls{rene} for 2D acquisitions and in \gls{prism} for 3D.
+The main part of the project was to find different ways to restore cracked record in an efficient way. The work to improve the manual tracking led the new interactive tracking, adding different features which proved to be very useful for the user. The feature has been implemented both in \gls{rene} for 2D acquisitions and in \gls{prism} for 3D.
 
-As a further step, the next goal was to find a way of automatically processing some damaged records, as it is possible in certain situations with \gls{visualaudio}. The final implementation is a complete system which tries to find the cracks for tracking damaged records. This solution works in some cases but may still be improved in several ways (see below).
+As a further step, the next goal was to find a way of automatically processing some damaged records, as it is possible in certain situations with \gls{visualaudio}. The final implementation is a complete system which tries to find the cracks for tracking damaged records. This solution works in some cases but may still be improved in several ways (see \autoref{sec:improvements}).
 
-Regarding the available recordings and the types of damages, only an implementation for \gls{prism} has been completed. The specific damages on Brigance disc, the only tested 2D acquisition, were almost impossible to find with image processing. Moreover, it suffers from other problems such as focus and is easily tracked with the interactive tracking.
+Regarding the available recordings and the types of damage, only an implementation for \gls{prism} has been completed. The specific damages on the Brigance disc, the only tested 2D acquisition, were almost impossible to find with image processing. Moreover, this record suffers from more important problems such as focus and is easily tracked with the interactive tracking.
 
-About integration and avoiding regression, the new features have been implemented as separate as possible from the rest of the program, so that it is easily maintainable (for example with the use of a facade). A secondary objective was to improve the software architecture. Some technical details have been improved but for a better result, a deep software reengineering should be performed, which was out of the scope of this thesis.
+\subsection{Other}
+
+About integration and avoiding regression, the new features have been implemented as separate as possible from the rest of the program, so that it is easily maintainable (for example with the use of a facade). A secondary objective was to improve the software architecture. Some technical details have been improved and some bugs fixed, but for the general design, a deep software reengineering should be applied, which was out of the scope of this thesis.
 
 \section{Future work and improvements}
 \label{sec:improvements}
-%This section , a lot of different problems occurred and had to be fixed. Of course, not everything can be detailed but here is a list summarizing the mains encountered issues.
 
-The final results from the researches conducted during this thesis open the way to many possible future work. Not only some specific points regarding the implementation may be improved but also some new ideas emerged given the current stage. Some of these are explained in the next sections.
+The final results from the researches conducted during this thesis open the way to many possible future work. Not only some specific points regarding the implementation may be improved but some new ideas also emerged given the current stage. Some of these are explained in the next sections.
 
 \subsection{Interactive tracking}
 
-The interactive tracking already offers some useful new features. While tracking records, other ideas came to improve it. Firstly, it could be useful to be able to fix an area already tracked, without being forced to cancel everything after it. One could imagine a way to move or remove an existing point by clicking on it.
+The interactive tracking already offers some useful new features. While tracking records, other ideas came to improve it. Firstly, it could be useful to be able to fix an area already tracked, without being forced to cancel everything after it. One could imagine a way of moving or removing an existing point by clicking on it.
 
-Another improvement would be a way to ``jump'' over a crack ar a part without audio, that means, to be able to cut off the tracking in several pieces (with a result similar to what is done in the automatic tracking). Until now, the path is always continuous and the user just passes through the cracks. In the final audio, this often results in some heavy clicks adding disturbing noise.
+Another idea is to be able to ``jump'' over a crack while tracking, that is, to be able to cut off the tracking in several pieces (with a result similar to what is done in the automatic tracking). Until now, the path is always continuous and the user just passes through the cracks. In the final audio, this often results in some heavy clicks adding disturbing noise.
 
-As a detail, one can also note that in the final implementation the groove center is always automatically fixed (using fitting or depth correction). In some bad areas, the user might want to set the position exactly. It could also be possible to set the maximum deviation (now fixed from the groove width).
+As a detail, one can also note that in the final implementation the groove center is always automatically fixed (using fitting or depth correction). In some bad areas, the user might want to exactly set the position and avoid badly corrected center. It could also be possible to set the maximum deviation (currently fixed from the groove width).
 
 \subsection{Cracks and groove detection}
 
-The cracks and groove detection were the most problematic parts during the implementation. Particularly for groove detection, there is a lot of other possible things. The peak detection followed by a cleaning pass is not really satisfactory. In some cases, it could be better to base the detection of the grooves using e.g. the Fourier analysis in a way similar to the existing Fourier tracking. Knowing the phase from the groove signal could give results less sensitive to outliers. 
+The cracks and groove detection was the most problematic part during the implementation. Particularly for groove detection, there is a lot of other possible things. The peak detection followed by a cleaning pass is not really satisfactory. In some cases, it would be better to base the detection on a Fourier analysis in a way similar to the existing Fourier tracking. Knowing the phase from the groove signal could give results less sensitive to outliers. 
 
-Regarding the cracks detection, one possibility is also to let the user draw the chunk borders, for example on the binned image. On certain records, the main chunks may be obvious to the human eye. In fact, an early test in this direction has already been tested in the end of the project. In the \texttt{CracksProcessor} class, a method called \texttt{ProcessTestManual()} has been implemented, enabling the create some chunk (for now directly from the code).
+Regarding the cracks detection, one possibility is also to allow the user to draw the chunk borders, for example on the binned image. On certain records, the main chunks may be obvious to the human eye. In fact, an early attempt in this direction has already been tested. In the \texttt{CracksProcessor} class, a method called \texttt{ProcessTestManual()} has been implemented, that embeds fixed-shaped chunks. An adaptation of the user interface would allow to interactively create those chunks.
 
-In a step beyond, one could imagine to let the user fox or do manually the parts giving wrong results, and let the original code do the rest automatically. The current implementation is flexible enough to be used from any step to any other.
+In a step beyond, one could imagine to allow the user to fix or manually perform any particular step resulting in wrong effects. The rest of the mechanism would be able to do the remaining tasks automatically. The current implementation is flexible enough to be used from any step to another.
 
 \subsection{Tracking in chunks}
 
-The implemented tracking methods inside a chunk could be also improved. It would also be useful to detect when a groove is mingled to another, warning that one of the initial groove is badly tracked.
+The implemented tracking methods could be also improved. It would also be useful to detect when a groove is mingled to another, warning that one of the initial grooves is badly tracked.
 
 \subsection{Linking and audio analysis}
 
-The audio analysis is not perfect in any case. It would be possible to improve it by improving the signal creation or the comparison formulas. For example, the high-pass filter has been implemented from scratch. Particularly, it sets all coefficients to zero until the cutoff frequency is reached. A better way would be to use a common filter like Butterworth.
+As already stated, the audio analysis for linking is not perfect for all cases. It would be possible to improve it by refining the signal creation or the comparison formulas. For example, the high-pass filter has been implemented from scratch. Particularly, it sets all coefficients to zero until the cutoff frequency is reached, which may lead to unstable with FFT transforms. Instead, it would be possible to use a common filter, for example Butterworth.
 
-Also, another way would be to take a totally different approach. In essence, analyzing the audio is not sufficient for comparing grooves. One could imagine a solution using the geometry, e.g. if two grooves are the first ones from the record border, they should probably be linked together.
+To conclude, it might be worth trying a totally different approach. In essence, analyzing the audio is not sufficient for comparing grooves. One could imagine a solution using the geometry, e.g. if two grooves are the first ones from the record border, they should probably be linked together.
 
 \section{Personal conclusion}
 
-%TODO
+From a personal perspective, working on this project has been very informative and rewarding. It allowed me to learn several aspects of signal processing by contributing to an actively used and maintained project.
+
+Of course, in the beginning it was not easy to get used to all theoretical principles and to apply them to an existing complex software. But finally, I think that all efforts enabled to bring new ideas and tools that will help people involved in the restoration of recordings with \gls{irene}. Also, the fact that the final outcome is tangible (i.e. hearing sounds from historical and early recordings) was really motivating.
+
+More generally, the experience of living in Berkeley for a whole semester was a great opportunity, allowing me to work in a famous Laboratory. I discovered new places, met new people and could practice English speaking and writing.

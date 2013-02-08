@@ -1,4 +1,5 @@
 
+\cleardoublepage
 \chapter{Automatic Processing User Manual}
 \label{chap:usermanauto}
 
@@ -74,7 +75,11 @@ Indeed, most of the configuration is specific to the current record and it enabl
 \section{Starting the cracks detection}
 \label{sec:setcrackdet}
 
-First of all, to use this tracking method, one must select the \emph{Cracks auto} tracking option in PRISM which has been added after the existing ones. Then, when loading the record, the program will try to find the cracks, track the record and stop before the final processing. At this point, a view similar to \autoref{fig:cracksdetex} is presented.
+First of all, to use this tracking method, one must select the \emph{Cracks auto} tracking option in PRISM which has been added after the existing ones. Then, when loading the record, the program will try to find the cracks, track the record and stop before the final processing.
+
+Furthermore, to improve groove detection and tracking, some cleaning functions may be applied by selecting the new options \emph{Subtract slope} and \emph{Average 180} nest to the tracking options. These allow to improve the created binned image by removing unintended height differences due to the multiple scans and therefore emphasize the actual groove shape once the signal is normalized (see \autoref{sec:binimagecorr}).
+
+At this point, a view similar to \autoref{fig:cracksdetex} is presented.
 
 \begin{figure}[!ht]
 \centering

@@ -22,9 +22,9 @@
 
 % Autoref config
 \renewcommand{\chapterautorefname}{Chapter}
-%\renewcommand{\sectionautorefname}{Section}
-%\renewcommand{\subsectionautorefname}{Subsection}
-%\renewcommand{\subsubsectionautorefname}{Subsection}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Subsection}
+\renewcommand{\subsubsectionautorefname}{Subsection}
 
 %\pagenumbering{alph} % Avoid the problem with glossary hyperrefs
 
@@ -52,11 +52,14 @@
 \include{content/frontmatter}
 
 % Include the actual report content
+\cleardoublepage
 \maindocstyle
 \include{content/chapters}
 
 % Glossary and bibliography
+\cleardoublepage
 \printglossaries
+\cleardoublepage
 %\nocite{*} % to print out not cited bibliography as well
 \printbibliography[heading=bibintoc]
 
